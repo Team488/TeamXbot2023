@@ -20,7 +20,7 @@ public class TankDriveWithJoysticksCommand extends BaseCommand {
 
     @Override
     public void initialize() {
-
+        log.info("Initializing");
     }
 
     @Override
@@ -28,7 +28,5 @@ public class TankDriveWithJoysticksCommand extends BaseCommand {
         driveSubsystem.tankDrive(
             oi.gamepad.getLeftVector().y, 
             oi.gamepad.getRightVector().y);
-
     }
-
 }

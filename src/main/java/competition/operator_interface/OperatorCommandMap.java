@@ -1,19 +1,23 @@
 package competition.operator_interface;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
+
+/**
+ * Maps operator interface buttons to commands
+ */
 @Singleton
 public class OperatorCommandMap {
-    // For mapping operator interface buttons to commands
-
+    
     // Example for setting up a command to fire when a button is pressed:
-    /*
     @Inject
     public void setupMyCommands(
             OperatorInterface operatorInterface,
-            MyCommand myCommand)
+            SetRobotHeadingCommand resetHeading)
     {
-        operatorInterface.leftButtons.getifAvailable(1).whenPressed(myCommand);
+        resetHeading.setHeadingToApply(90);
+        operatorInterface.gamepad.getifAvailable(1).whenPressed(resetHeading);
     }
-    */
 }

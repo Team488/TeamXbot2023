@@ -12,5 +12,6 @@
   },
   "wpilib.online": true,
   "coverage-gutters.coverageReportFileName": "**/jacoco/**/html/index.html",
-  "coverage-gutters.xmlname": "**/jacocoTestReport.xml"
+  "coverage-gutters.xmlname": "**/jacocoTestReport.xml",
+  "java.test.defaultConfig": "default"
 }
