@@ -7,11 +7,9 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "bin/": true,
-    ".classpath": true,
-    ".project": true
-  },
-  "wpilib.online": true,
-  "coverage-gutters.coverageReportFileName": "**/jacoco/**/html/index.html",
-  "coverage-gutters.xmlname": "**/jacocoTestReport.xml",
-  "java.test.defaultConfig": "default"
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  }
 }
