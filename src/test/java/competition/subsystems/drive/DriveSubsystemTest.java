@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import xbot.common.injection.BaseWPITest;
+import competition.BaseCompetitionTest;
 
-public class DriveSubsystemTest extends BaseWPITest {
+public class DriveSubsystemTest extends BaseCompetitionTest {
     @Test
     public void testTankDrive() {
         DriveSubsystem driveSubsystem = this.injector.getInstance(DriveSubsystem.class);
         driveSubsystem.tankDrive(1, 1);
 
-        assertEquals(1, driveSubsystem.leftMaster.getMotorOutputPercent(), 0.001);
-        assertEquals(1, driveSubsystem.rightMaster.getMotorOutputPercent(), 0.001);
+        assertEquals(1, driveSubsystem.leftLeader.getMotorOutputPercent(), 0.001);
+        assertEquals(1, driveSubsystem.rightLeader.getMotorOutputPercent(), 0.001);
     }
 }

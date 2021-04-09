@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2020.2.2"
+    id "edu.wpi.first.GradleRIO" version "2021.2.2"
     id 'org.hidetake.ssh' version "2.9.0"
     id 'checkstyle'
     id 'jacoco'
@@ -49,6 +49,7 @@ repositories {
         url "https://mvnrepository.com/artifact/com.google.inject/guice"
         url "http://first.wpi.edu/FRC/roborio/maven/release"
         url "http://devsite.ctr-electronics.com/maven/release/"
+        url "http://www.revrobotics.com/content/sw/max/sdk/maven/"
     }
     
     flatDir {
@@ -60,7 +61,7 @@ repositories {
 def includeDesktopSupport = true
 
 List<String> wpilibDesktopJni(String platform) {
-    return ["edu.wpi.first.thirdparty.frc2020.opencv:opencv-jni:${wpi.opencvVersion}:${platform}@jar".toString(),
+    return ["edu.wpi.first.thirdparty.frc2021.opencv:opencv-jni:${wpi.opencvVersion}:${platform}@jar".toString(),
             "edu.wpi.first.hal:hal-jni:${wpi.wpilibVersion}:${platform}@jar".toString(),
             "edu.wpi.first.wpiutil:wpiutil-jni:${wpi.wpilibVersion}:${platform}@jar".toString(),
             "edu.wpi.first.ntcore:ntcore-jni:${wpi.wpilibVersion}:${platform}@jar".toString(),
@@ -88,10 +89,12 @@ dependencies {
     compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
     compile group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: '4.2.2'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'org.json', name:'json', version: '20201115'
 
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+    simulation "edu.wpi.first.halsim:halsim_ds_socket:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

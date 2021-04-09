@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import competition.operator_interface.OperatorInterface;
 import competition.subsystems.drive.DriveSubsystem;
 import xbot.common.command.BaseCommand;
+import xbot.common.math.MathUtils;
 
 public class TankDriveWithJoysticksCommand extends BaseCommand {
 
@@ -26,7 +27,8 @@ public class TankDriveWithJoysticksCommand extends BaseCommand {
     @Override
     public void execute() {
         driveSubsystem.tankDrive(
-            oi.gamepad.getLeftVector().y, 
-            oi.gamepad.getRightVector().y);
+            MathUtils.deadband(oi.gamepad.getLeftVector().y, 0.15), 
+            MathUtils.deadband(oi.gamepad.getRightVector().y, 0.15)
+        );
     }
 }
