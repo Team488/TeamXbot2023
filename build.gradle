@@ -1,9 +1,11 @@
+import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
+
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2021.2.2"
-    id 'org.hidetake.ssh' version "2.9.0"
+    id "edu.wpi.first.GradleRIO" version "2022.1.1" 
     id 'checkstyle'
     id 'jacoco'
+    id 'org.hidetake.ssh' version "2.9.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -12,33 +14,41 @@ targetCompatibility = JavaVersion.VERSION_11
 def ROBOT_MAIN_CLASS = "competition.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
-// This is added by GradleRIO's backing project EmbeddedTools.
+// This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
-        roboRIO("roborio") {
+        roborio(getTargetTypeClass('RoboRIO')) {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = frc.getTeamNumber()
-        }
-    }
-    artifacts {
-        frcJavaArtifact('frcJava') {
-            targets << "roborio"
-            // Debug can be overridden by command line, for use with VSCode
-            debug = frc.getDebugOrDefault(false)
-        }
-        // Built in artifact to deploy arbitrary files to the roboRIO.
-        fileTreeArtifact('frcStaticFileDeploy') {
-            // The directory below is the local directory to deploy
-            files = fileTree(dir: 'src/main/deploy')
-            // Deploy to RoboRIO target, into /home/lvuser/deploy
-            targets << "roborio"
-            directory = '/home/lvuser/deploy'
+            team = project.frc.getTeamNumber()
+            debug = project.frc.getDebugOrDefault(false)
+
+            artifacts {
+                // First part is artifact name, 2nd is artifact type
+                // getTargetTypeClass is a shortcut to get the class type using a string
+
+                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                }
+
+                // Static files artifact
+                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('src/main/deploy')
+                    directory = '/home/lvuser/deploy'
+                }
+            }
         }
     }
 }
+
+def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+
+// Set to true to use debug for JNI.
+wpi.java.debugJni = false
+
+// Set this to true to enable desktop support.
+def includeDesktopSupport = false
 
 // Maven central needed for JUnit
 repositories {
@@ -47,18 +57,15 @@ repositories {
     
     maven {
         url "https://mvnrepository.com/artifact/com.google.inject/guice"
-        url "http://first.wpi.edu/FRC/roborio/maven/release"
-        url "http://devsite.ctr-electronics.com/maven/release/"
-        url "http://www.revrobotics.com/content/sw/max/sdk/maven/"
+        url "https://first.wpi.edu/FRC/roborio/maven/release"
+        url "https://devsite.ctr-electronics.com/maven/release/"
+        url "https://www.revrobotics.com/content/sw/max/sdk/maven/"
     }
     
     flatDir {
        dirs 'SeriouslyCommonLib/build/libs'
    }
 }
-
-// Set this to true to enable desktop support.
-def includeDesktopSupport = true
 
 List<String> wpilibDesktopJni(String platform) {
     return ["edu.wpi.first.thirdparty.frc2021.opencv:opencv-jni:${wpi.opencvVersion}:${platform}@jar".toString(),
@@ -71,40 +78,46 @@ List<String> wpilibDesktopJni(String platform) {
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
-    implementation "xbot.common:scl"
-    implementation wpi.deps.wpilib()
-    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+    implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
 
+    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
-    implementation wpi.deps.vendor.java()
-    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+
+    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+    simulationDebug wpi.sim.enableDebug()
+
+    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+    simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
-    testImplementation(wpilibDesktopJni(wpi.platforms.desktop))
-    testImplementation(wpi.deps.vendor.jni(wpi.platforms.desktop))
 
-
-    compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
-    compile group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: '4.2.2'
-    compile group: 'log4j', name: 'log4j', version: '1.2.17'
-    compile group: 'org.json', name:'json', version: '20201115'
-
-    // Enable simulation gui support. Must check the box in vscode to enable support
-    // upon debugging
-    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
-    simulation "edu.wpi.first.halsim:halsim_ds_socket:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"
+    implementation "xbot.common:scl"
+    implementation group: 'com.google.inject', name: 'guice', version: '4.2.2'
+    implementation group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: '4.2.2'
+    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    implementation group: 'org.json', name:'json', version: '20201115'
 }
 
-// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
-// in order to make them all available at runtime. Also adding the manifest so WPILib
-// knows where to look for our Robot Class.
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
+
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
+
+// Our custom gradle stuff after this line
 
 remotes {
     rio {
@@ -130,14 +143,6 @@ task('copyResources') {
 checkstyle {
     toolVersion = '8.7'
     configFile = file('SeriouslyCommonLib/xbotcheckstyle.xml')
-}
-
-checkstyleMain{
-    logging.setLevel(LogLevel.WARN)
-}
-
-checkstyleTest{
-    logging.setLevel(LogLevel.WARN)
 }
 
 task checkstyle(type: Checkstyle) {
