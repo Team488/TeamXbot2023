@@ -6,7 +6,7 @@ public class stopLauncherCommand extends BaseCommand{
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
+        log.info("Initializing");
         
     }
 

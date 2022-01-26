@@ -12,8 +12,7 @@ public class launcherSetPointCommand extends BaseSetpointCommand{
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
-        
+        log.info("Initializing");        
     }
 
     @Override

@@ -28,7 +28,7 @@ public class pewPewCommand extends BaseCommand{
 
     @Override
     public void initialize() {
-        log.info("initializing");
+        log.info("Initializing");
     }
 
     @Override
