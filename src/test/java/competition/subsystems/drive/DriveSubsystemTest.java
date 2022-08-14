@@ -9,7 +9,7 @@ import competition.BaseCompetitionTest;
 public class DriveSubsystemTest extends BaseCompetitionTest {
     @Test
     public void testTankDrive() {
-        DriveSubsystem driveSubsystem = this.injector.getInstance(DriveSubsystem.class);
+        DriveSubsystem driveSubsystem = (DriveSubsystem)getInjectorComponent().driveSubsystem();
         driveSubsystem.tankDrive(1, 1);
 
         assertEquals(1, driveSubsystem.leftLeader.getMotorOutputPercent(), 0.001);

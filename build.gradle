@@ -2,7 +2,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2022.2.1" 
+    id "edu.wpi.first.GradleRIO" version "2022.3.1" 
     id 'checkstyle'
     id 'jacoco'
     id 'org.hidetake.ssh' version "2.9.0"
@@ -55,7 +55,8 @@ repositories {
     mavenCentral()
     
     maven {
-        url "https://mvnrepository.com/artifact/com.google.inject/guice"
+        url "https://mvnrepository.com/artifact/com.google.dagger/dagger"
+        url "https://mvnrepository.com/artifact/com.google.dagger/dagger-compiler"
         url "https://first.wpi.edu/FRC/roborio/maven/release"
         url "https://devsite.ctr-electronics.com/maven/release/"
         url "https://www.revrobotics.com/content/sw/max/sdk/maven/"
@@ -97,10 +98,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     implementation "xbot.common:scl"
-    implementation group: 'com.google.inject', name: 'guice', version: '4.2.2'
-    implementation group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: '4.2.2'
     implementation group: 'log4j', name: 'log4j', version: '1.2.17'
     implementation group: 'org.json', name:'json', version: '20201115'
+    
+    implementation 'com.google.dagger:dagger:2.43.2'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.43.2'
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.43.2'
 }
 
 wpi.sim.addGui().defaultEnabled = true
@@ -138,6 +141,9 @@ task('copyResources') {
         }
     }
 }
+
+sourceSets.main.java.srcDirs += "build/generated/sources/annotationProcessor/java/main"
+sourceSets.test.java.srcDirs += "build/generated/sources/annotationProcessor/java/test"
 
 checkstyle {
     toolVersion = '8.7'

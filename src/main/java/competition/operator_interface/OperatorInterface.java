@@ -1,10 +1,10 @@
 package competition.operator_interface;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import xbot.common.controls.sensors.XXboxController;
-import xbot.common.injection.wpi_factories.CommonLibFactory;
+import xbot.common.controls.sensors.XXboxController.XXboxControllerFactory;
 import xbot.common.logging.RobotAssertionManager;
 
 /**
@@ -16,8 +16,8 @@ public class OperatorInterface {
     public XXboxController gamepad;
 
     @Inject
-    public OperatorInterface(CommonLibFactory factory, RobotAssertionManager assertionManager) {
-        gamepad = factory.createXboxController(0);
+    public OperatorInterface(XXboxControllerFactory controllerFactory, RobotAssertionManager assertionManager) {
+        gamepad = controllerFactory.create(0);
         gamepad.setLeftInversion(false, true);
         gamepad.setRightInversion(true, true);
     }
