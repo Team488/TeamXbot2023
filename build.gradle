@@ -4,7 +4,7 @@ plugins {
     id "java"
     id "eclipse"
     id "com.diffplug.eclipse.apt" version "3.39.0"
-    id "edu.wpi.first.GradleRIO" version "2022.3.1" 
+    id "edu.wpi.first.GradleRIO" version "2023.1.1" 
     id 'checkstyle'
     id 'jacoco'
     id 'org.hidetake.ssh' version "2.9.0"
@@ -59,22 +59,11 @@ repositories {
     maven {
         url "https://mvnrepository.com/artifact/com.google.dagger/dagger"
         url "https://mvnrepository.com/artifact/com.google.dagger/dagger-compiler"
-        url "https://first.wpi.edu/FRC/roborio/maven/release"
-        url "https://devsite.ctr-electronics.com/maven/release/"
-        url "https://www.revrobotics.com/content/sw/max/sdk/maven/"
     }
     
     flatDir {
        dirs 'SeriouslyCommonLib/build/libs'
    }
-}
-
-List<String> wpilibDesktopJni(String platform) {
-    return ["edu.wpi.first.thirdparty.frc2021.opencv:opencv-jni:${wpi.opencvVersion}:${platform}@jar".toString(),
-            "edu.wpi.first.hal:hal-jni:${wpi.wpilibVersion}:${platform}@jar".toString(),
-            "edu.wpi.first.wpiutil:wpiutil-jni:${wpi.wpilibVersion}:${platform}@jar".toString(),
-            "edu.wpi.first.ntcore:ntcore-jni:${wpi.wpilibVersion}:${platform}@jar".toString(),
-            "edu.wpi.first.cscore:cscore-jni:${wpi.wpilibVersion}:${platform}@jar".toString()]
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -117,9 +106,15 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+// Configure jar and deploy tasks
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+// Configure string concat to always inline compile
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add '-XDstringConcat=inline'
+}
 
 // Our custom gradle stuff after this line
 
