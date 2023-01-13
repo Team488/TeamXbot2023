@@ -3,7 +3,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 plugins {
     id "java"
     id "eclipse"
-    id "com.diffplug.eclipse.apt" version "3.39.0"
+    id "com.diffplug.eclipse.apt" version "3.40.0"
     id "edu.wpi.first.GradleRIO" version "2023.1.1" 
     id 'checkstyle'
     id 'jacoco'
@@ -90,11 +90,11 @@ dependencies {
 
     implementation "xbot.common:scl"
     implementation group: 'log4j', name: 'log4j', version: '1.2.17'
-    implementation group: 'org.json', name:'json', version: '20201115'
+    implementation group: 'org.json', name:'json', version: '20220924'
     
-    implementation 'com.google.dagger:dagger:2.43.2'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.43.2'
-    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.43.2'
+    implementation 'com.google.dagger:dagger:2.44.2'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.44.2'
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.44.2'
 }
 
 wpi.sim.addGui().defaultEnabled = true
