@@ -88,8 +88,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
             }
         }
         setupStatusFrames();
-
-        this.register();
     }
 
     /**
