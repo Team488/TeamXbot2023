@@ -72,6 +72,9 @@ public class OperatorCommandMap {
                     return angleTarget.get();
                 });
 
+        swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
+        swerveToPoint.setMaxPower(0.35);
+
         // Precision Commands
         StartEndCommand activatePrecisionRotation = new StartEndCommand(
                 () -> drive.setPrecisionRotationActive(true),
