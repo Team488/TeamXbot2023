@@ -8,6 +8,7 @@ import competition.injection.swerve.SwerveInstance;
 import competition.injection.swerve.SwerveSingleton;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.math.WrappedRotation2d;
@@ -72,6 +73,12 @@ public class SwerveModuleSubsystem extends BaseSubsystem {
     public SwerveModuleState getCurrentState() {
         return new SwerveModuleState(
             this.getDriveSubsystem().getCurrentValue() / BasePoseSubsystem.INCHES_IN_A_METER,
+            Rotation2d.fromDegrees(this.getSteeringSubsystem().getCurrentValue()));
+    }
+
+    public SwerveModulePosition getcurrentPosition() {
+        return new SwerveModulePosition(
+            this.getDriveSubsystem().getCurrentPositionValue() / BasePoseSubsystem.INCHES_IN_A_METER,
             Rotation2d.fromDegrees(this.getSteeringSubsystem().getCurrentValue()));
     }
 

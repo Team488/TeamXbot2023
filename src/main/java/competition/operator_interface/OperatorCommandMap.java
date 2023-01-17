@@ -85,6 +85,6 @@ public class OperatorCommandMap {
                 () -> drive.setIsRobotOrientedDrive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
-        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
     }
 }
