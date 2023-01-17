@@ -5,12 +5,15 @@ import javax.inject.Singleton;
 
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import xbot.common.controls.sensors.XTimer;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
 import xbot.common.math.FieldPose;
 import xbot.common.math.WrappedRotation2d;
+import xbot.common.math.XYPair;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
@@ -18,7 +21,7 @@ import xbot.common.subsystems.pose.BasePoseSubsystem;
 public class PoseSubsystem extends BasePoseSubsystem {
 
     private final DriveSubsystem drive;
-    final SwerveDriveOdometry swerveOdometry;
+    final SwerveDrivePoseEstimator swerveOdometry;
     private final VisionSubsystem vision;
 
     @Inject
@@ -57,7 +60,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // FrontLeft, FrontRight, RearLeft, RearRight.
         // When initializing SwerveDriveOdometry, we need to use the same order.
 
-        swerveOdometry = new SwerveDriveOdometry(
+        swerveOdometry = new SwerveDrivePoseEstimator(
             drive.getSwerveDriveKinematics(), 
             getCurrentHeading(), 
             new SwerveModulePosition[] {
@@ -65,7 +68,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
                 drive.getFrontRightSwerveModuleSubsystem().getcurrentPosition(),
                 drive.getRearLeftSwerveModuleSubsystem().getcurrentPosition(),
                 drive.getRearRightSwerveModuleSubsystem().getcurrentPosition()
-            });
+            },
+            new Pose2d());
     }
 
 
@@ -91,11 +95,18 @@ public class PoseSubsystem extends BasePoseSubsystem {
     protected void updateOdometry() {
         // The swerve modules return units in meters, which is what the swerve odometry expects.
         // In principle the input/output here is unitless, but we're using meters for consistency.
-        
+
+        // Try to get some vision sauce in there
+        XYPair aprilCoords = vision.getAprilCoodinates();
+        if (aprilCoords != null) {
+            Pose2d aprilPos = new Pose2d(-aprilCoords.y, aprilCoords.x, new Rotation2d(0));
+            swerveOdometry.addVisionMeasurement(aprilPos, XTimer.getFPGATimestamp() - 0.030);
+        }
+
         Pose2d updatedPosition = swerveOdometry.update(
             this.getCurrentHeading(),
             getSwerveModulePositions()
-        );
+        );       
 
         // Convert back to inches
         totalDistanceX.set(updatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
