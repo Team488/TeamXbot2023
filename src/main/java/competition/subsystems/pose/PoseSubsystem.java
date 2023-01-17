@@ -97,6 +97,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // In principle the input/output here is unitless, but we're using meters for consistency.
 
         // Try to get some vision sauce in there
+        // TODO: I forgot we have all sorts of frame shifting going on, so we probably need to remove the X/Y swapping in the vision system
+        // and feed it straight into the odometry, then do the shifting at the very end when we convert back to inches.
         XYPair aprilCoords = vision.getAprilCoodinates();
         if (aprilCoords != null) {
             Pose2d aprilPos = new Pose2d(-aprilCoords.y, aprilCoords.x, new Rotation2d(0));
