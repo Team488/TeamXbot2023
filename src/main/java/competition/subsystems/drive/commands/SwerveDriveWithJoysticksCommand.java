@@ -116,7 +116,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
                 (a) -> MathUtils.exponentAndRetainSign(a, (int) input_exponent.get()));
 
         // create new vector with the scaled magnitude and angle
-        XYPair translationIntent = XYPair.fromPolar(rawAngle, updatedMagnitude);
+        XYPair translationIntent = XYPair.fromPolar(rawAngle-90, updatedMagnitude);
 
         // --------------------------------------------------
         // Rotation

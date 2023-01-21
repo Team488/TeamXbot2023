@@ -33,7 +33,7 @@ public class OperatorCommandMap {
             DriveSubsystem drive,
             PoseSubsystem pose,
             VisionSubsystem vision) {
-        resetHeading.setHeadingToApply(90);
+        resetHeading.setHeadingToApply(0);
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));

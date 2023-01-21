@@ -153,7 +153,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         XYPair fieldRelativeVector = translation.clone();
         
         // 90 degrees is the defined "forward" direction for a driver
-        fieldRelativeVector.rotate(90 - currentHeading);
+        fieldRelativeVector.rotate(- currentHeading);
         
         // send the rotated vector to be driven
         move(fieldRelativeVector, rotation, centerOfRotation);

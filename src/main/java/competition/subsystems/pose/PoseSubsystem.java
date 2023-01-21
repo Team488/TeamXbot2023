@@ -85,7 +85,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
         // Convert back to inches
         totalDistanceX.set(updatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
-        totalDistanceY.set(updatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER); 
+        totalDistanceY.set(updatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
     }
 
     public void setCurrentPosition(double newXPosition, double newYPosition, WrappedRotation2d heading) {

@@ -4,7 +4,7 @@ plugins {
     id "java"
     id "eclipse"
     id "com.diffplug.eclipse.apt" version "3.40.0"
-    id "edu.wpi.first.GradleRIO" version "2023.1.1" 
+    id "edu.wpi.first.GradleRIO" version "2023.2.1"
     id 'checkstyle'
     id 'jacoco'
     id 'org.hidetake.ssh' version "2.9.0"
