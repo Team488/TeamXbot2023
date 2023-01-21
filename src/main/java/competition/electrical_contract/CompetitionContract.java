@@ -104,4 +104,14 @@ public class CompetitionContract extends ElectricalContract {
         }
     }
 
+    @Override
+    public DeviceInfo getLowerArmLeftMotor() {
+        return new DeviceInfo(1,false);
+    }
+
+    @Override
+    public DeviceInfo getLowerArmRightMotor() {
+        return new DeviceInfo(2,false);
+    }
+
 }

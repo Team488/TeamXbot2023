@@ -15,5 +15,9 @@ public abstract class ElectricalContract {
 
     public abstract DeviceInfo getSteeringEncoder(SwerveInstance swerveInstance);
 
+    public abstract DeviceInfo getLowerArmLeftMotor();
+
+    public abstract DeviceInfo getLowerArmRightMotor();
+
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
 }
