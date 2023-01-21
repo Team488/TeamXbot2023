@@ -3,17 +3,23 @@ package competition.subsystems.ClawArm;
 import competition.electrical_contract.ElectricalContract;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANTalon;
+import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 
 public  class clawArmSkeleton{
     private XCANTalon ClawMotor;
-    private prefix
-    ;
+
+
     private static String CLOSECONE = "close_cone";
     private static String CLOSECUBE = "close_cube";
     private static String OPENARM = "open_arm";
+
+    private final DoubleProperty Open;
+    private final DoubleProperty closedCone;
+
+    private final DoubleProperty closedCube;
 
     // true = open || false = close
     private static void ChangeClaw(String Answer){
@@ -34,9 +40,10 @@ public  class clawArmSkeleton{
         this.ClawMotor = sparkMaxFactor.create(eContract.getClawMotor(),this.getPrefix(),"lowerArmLeftMotor");
         propFactory.setPrefix(this.getPrefix());
 
-        this.powerProp = propFactory.createPersistentProperty("Standard Motor Power", 1);
-        extendLimit = propFactory.createPersistentProperty("extendLimit",0);
-        retractLimit = propFactory.createPersistentProperty("retractLimit",0);
+        
+        Open = propFactory.createPersistentProperty("Open",0);
+        closedCone = propFactory.createPersistentProperty("closedCone",0);
+        closedCube = propFactory.createPersistentProperty("closedCube", 0)
     }
 
     public static void Open(){

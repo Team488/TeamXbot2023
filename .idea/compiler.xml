@@ -32,10 +32,10 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.7.0/51736992f422993a1e741051bdf3c12801bc1ca1/kotlin-stdlib-common-1.7.0.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" />
         </processorPath>
+        <module name="GitHub.TeamXbot2023-1.test" />
+        <module name="GitHub.TeamXbot2023-1.SeriouslyCommonLib.test" />
         <module name="TeamXbot2023-1.SeriouslyCommonLib.main" />
         <module name="TeamXbot2023-1.main" />
-        <module name="TeamXbot2023-1.test" />
-        <module name="TeamXbot2023-1.SeriouslyCommonLib.test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11" />
