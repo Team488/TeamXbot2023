@@ -3,6 +3,7 @@ package competition.subsystems.arm;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
@@ -18,6 +19,7 @@ import xbot.common.command.BaseSubsystem;
 public class LowerArmSubsystem extends BaseSubsystem{
     public XCANSparkMax lowerArmLeftMotor;
     public XCANSparkMax lowerArmRightMotor;
+    public final ElectricalContract contract;
     public DoubleProperty powerProp;
 
     public final DoubleProperty extendLimit;
@@ -28,25 +30,43 @@ public class LowerArmSubsystem extends BaseSubsystem{
         this.lowerArmLeftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
         this.lowerArmRightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
         propFactory.setPrefix(this.getPrefix());
+        this.contract = eContract;
 
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power", 1);
         extendLimit = propFactory.createPersistentProperty("extendLimit",0);
         retractLimit = propFactory.createPersistentProperty("retractLimit",0);
+        setSoftLimit(false);
     }
 
     private void setMotorPower(double power){
         lowerArmLeftMotor.set(power);
         lowerArmRightMotor.set(power);
     }
+
     //set limits for extending and retracting
-    public void configSoftLimits(){
-    }
-    private void enableSoftLimits(){
+    private void setSoftLimit(boolean enabled){
+        if(contract.isArmReady()){
+            if(enabled){
+                enableSoftLimit(true);
+                configSoftLimit(extendLimit.get(),retractLimit.get());
 
+            }
+                enableSoftLimit(false);
+        }
     }
-    private void disableSoftLimits(){
+    private void configSoftLimit(double extend,double retract){
+        lowerArmLeftMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,(float)extend);
+        lowerArmRightMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,(float)extend);
+        lowerArmLeftMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)retract);
+        lowerArmRightMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)retract);
+    }
+    private void enableSoftLimit(boolean on){
+        lowerArmLeftMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,on);
+        lowerArmRightMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,on);
+        lowerArmLeftMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,on);
+        lowerArmRightMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,on);
+    }
 
-    }
     public void goForward(){
         setMotorPower(powerProp.get());
     }
