@@ -17,5 +17,5 @@ public abstract class ElectricalContract {
 
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
 
-    public abstract XYPair getClawMotor();
+    public abstract DeviceInfo getClawMotor();
 }
