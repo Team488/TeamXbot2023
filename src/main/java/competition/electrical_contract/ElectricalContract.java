@@ -18,6 +18,10 @@ public abstract class ElectricalContract {
     public abstract DeviceInfo getLowerArmLeftMotor();
 
     public abstract DeviceInfo getLowerArmRightMotor();
+    public abstract DeviceInfo getUpperArmLeftMotor();
+    public abstract  DeviceInfo getUpperArmRightMotor();
 
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
+
+
 }

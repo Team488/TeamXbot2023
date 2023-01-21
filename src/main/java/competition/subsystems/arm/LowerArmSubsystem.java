@@ -24,9 +24,9 @@ public class LowerArmSubsystem extends BaseSubsystem{
     public final DoubleProperty retractLimit;
 
     @Inject
-    public LowerArmSubsystem(XCANSparkMaxFactory sparkMaxFactor, ElectricalContract eContract, PropertyFactory propFactory){
-        this.lowerArmLeftMotor = sparkMaxFactor.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
-        this.lowerArmRightMotor = sparkMaxFactor.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
+    public LowerArmSubsystem(XCANSparkMaxFactory sparkMaxFactory, ElectricalContract eContract, PropertyFactory propFactory){
+        this.lowerArmLeftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
+        this.lowerArmRightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
         propFactory.setPrefix(this.getPrefix());
 
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power", 1);
@@ -39,6 +39,9 @@ public class LowerArmSubsystem extends BaseSubsystem{
         lowerArmRightMotor.set(power);
     }
     //set limits for extending and retracting
+    public void setLimits(){
+
+    }
 
     public void goForward(){
         setMotorPower(powerProp.get());
