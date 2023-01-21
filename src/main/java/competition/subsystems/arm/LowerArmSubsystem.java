@@ -39,10 +39,14 @@ public class LowerArmSubsystem extends BaseSubsystem{
         lowerArmRightMotor.set(power);
     }
     //set limits for extending and retracting
-    public void setLimits(){
+    public void configSoftLimits(){
+    }
+    private void enableSoftLimits(){
 
     }
+    private void disableSoftLimits(){
 
+    }
     public void goForward(){
         setMotorPower(powerProp.get());
     }

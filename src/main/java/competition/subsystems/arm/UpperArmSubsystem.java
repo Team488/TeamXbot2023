@@ -28,15 +28,23 @@ public class UpperArmSubsystem extends BaseSubsystem {
         propFactory.setPrefix(this.getPrefix());
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power",1);
         upperLimit = propFactory.createPersistentProperty("upperLimit",0);
-        lowerLimit = propFactory.createPersistentProperty("lowerLimt",0);
+        lowerLimit = propFactory.createPersistentProperty("lowerLimit",0);
     }
     private void setMotorPower(double power){
-        upperArmRightMotor.set(power);
+        upperArmLeftMotor.set(power);
         upperArmRightMotor.set(power);
     }
     //set limits for arm rotation
-    public void setLimits(){
-        
+    public void configSoftLimits(){
+        upperLimit = (int) upperArmMaxHeight.get();
+        lowerLimit = (int) startingPos; //set lower limit to maximum backwards rotation
+    }
+
+    private void enableSoftLimits(){
+
+    }
+    private void disableSoftLimits(){
+
     }
     public void forwardRotation(){
         setMotorPower(powerProp.get());
