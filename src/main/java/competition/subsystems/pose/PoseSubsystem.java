@@ -30,32 +30,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
         this.drive = drive;
         this.vision = vision;
 
-        /* Remember: WPILib uses a different coordinate convention than our legacy code. Theirs:
-        //   0,+y. 90 degrees
-        //       ----------------------------
-        //       |                          |
-        // Driver|                          |
-        //       |                          |
-        //       |                          |
-        //       ----------------------------
-        //     0,0                        +x,0. 0 degrees
-        //
-        // Our  code:
-        //     0,0                        +y,90 degrees
-        //       ----------------------------
-        //       |                          |
-        // Driver|                          |
-        //       |                          |
-        //       |                          |
-        //       ----------------------------
-        //     x,0. 0 degrees
-        //
-        // However, this isn't really a big deal - since both systems respect the "Right hand rule" (e.g. the Y axis is 90 degrees CCW to the X axis)
-        // we can just ignore the difference. Any tool that looks at our position will be confused, since we will appear to be driving outside the field,
-        // but it will work just fine for our own code.
-        // That being said, at some point we should probably switch to the WPILib convention, since there are a number of path-planning tools and other
-         utilities that expect the same conventions. */
-
         // In the DriveSubsystem, the swerve modules were initialized in this order:
         // FrontLeft, FrontRight, RearLeft, RearRight.
         // When initializing SwerveDriveOdometry, we need to use the same order.
@@ -97,11 +71,10 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // In principle the input/output here is unitless, but we're using meters for consistency.
 
         // Try to get some vision sauce in there
-        // TODO: I forgot we have all sorts of frame shifting going on, so we probably need to remove the X/Y swapping in the vision system
         // and feed it straight into the odometry, then do the shifting at the very end when we convert back to inches.
         XYPair aprilCoords = vision.getAprilCoodinates();
         if (aprilCoords != null) {
-            Pose2d aprilPos = new Pose2d(-aprilCoords.y, aprilCoords.x, new Rotation2d(0));
+            Pose2d aprilPos = new Pose2d(aprilCoords.x, aprilCoords.y, getCurrentHeading());
             swerveOdometry.addVisionMeasurement(aprilPos, XTimer.getFPGATimestamp() - 0.030);
         }
 
@@ -111,8 +84,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
         );       
 
         // Convert back to inches
-        totalDistanceX.set(updatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
-        totalDistanceY.set(-updatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
+        totalDistanceX.set(updatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
+        totalDistanceY.set(updatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER); 
     }
 
     public void setCurrentPosition(double newXPosition, double newYPosition, WrappedRotation2d heading) {
