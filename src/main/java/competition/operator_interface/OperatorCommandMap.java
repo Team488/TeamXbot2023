@@ -44,7 +44,7 @@ public class OperatorCommandMap {
                 () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
+        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
     }
 
     @Inject

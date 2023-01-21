@@ -59,8 +59,6 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
             setupStatusFrames();
             this.motorController.setSmartCurrentLimit(45);
         }
-
-        this.register();
     }
 
     /**
