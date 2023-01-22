@@ -7,7 +7,6 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
@@ -68,24 +67,46 @@ public class PoseSubsystem extends BasePoseSubsystem {
     @Override
     protected void updateOdometry() {
         // The swerve modules return units in meters, which is what the swerve odometry expects.
-        // In principle the input/output here is unitless, but we're using meters for consistency.
+        // In principle the input/output here is unitless, but we're using meters internally for any calculations
+        // while still presenting inches externally to dashboards.
 
+        // Update the basic odometry (gyro, encoders)
+        Pose2d updatedPosition = swerveOdometry.update(
+                this.getCurrentHeading(),
+                getSwerveModulePositions()
+        );
+
+        // As a prototype, consider any AprilTag seen to be at field coordinates 0,0. Use that information
+        // to position the robot on the field.
+        //improveOdometryUsingSimpleAprilTag();
+
+        // Use PhotonLib to read multiple AprilTags and get a field-accurate position.
+        improveOdometryUsingPhotonLib(updatedPosition);
+
+        var estimatedPosition = swerveOdometry.getEstimatedPosition();
+
+        // Convert back to inches
+        totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
+        totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
+    }
+
+    private void improveOdometryUsingSimpleAprilTag() {
         // Try to get some vision sauce in there
         // and feed it straight into the odometry, then do the shifting at the very end when we convert back to inches.
-        XYPair aprilCoords = vision.getAprilCoodinates();
+        XYPair aprilCoords = vision.getAprilCoordinates();
         if (aprilCoords != null) {
             Pose2d aprilPos = new Pose2d(aprilCoords.x, aprilCoords.y, getCurrentHeading());
             swerveOdometry.addVisionMeasurement(aprilPos, XTimer.getFPGATimestamp() - 0.030);
         }
+    }
 
-        Pose2d updatedPosition = swerveOdometry.update(
-            this.getCurrentHeading(),
-            getSwerveModulePositions()
-        );       
-
-        // Convert back to inches
-        totalDistanceX.set(updatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
-        totalDistanceY.set(updatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
+    private void improveOdometryUsingPhotonLib(Pose2d recentPosition) {
+        var photonEstimatedPose = vision.getPhotonVisionEstimatedPose(recentPosition);
+        if (photonEstimatedPose.isPresent()) {
+            // Get the result data, which has both coordinates and timestamps
+            var camPose = photonEstimatedPose.get();
+            swerveOdometry.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+        }
     }
 
     public void setCurrentPosition(double newXPosition, double newYPosition, WrappedRotation2d heading) {
