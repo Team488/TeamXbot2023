@@ -1,19 +1,14 @@
 {
-  "java.autobuild.enabled": true,
   "java.import.gradle.enabled": true,
+  "java.autobuild.enabled": false,
   "java.configuration.updateBuildConfiguration": "automatic",
-  "java.import.generatesMetadataFilesAtProjectRoot": true,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/bin/": true,
-    "**/.classpath": true,
-    "**/.project": true,
-    "**/.settings": true,
-    "**/.factorypath": true
+    "**/.settings": true
   },
   "wpilib.selectDefaultSimulateExtension": true,
   "java.test.config": [
@@ -30,5 +25,6 @@
     "coverage-gutters.coverageFileNames": [
         "jacocoTestReport.xml"
     ],
-    "problems.decorations.enabled": true
+    "problems.decorations.enabled": true,
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
 }
