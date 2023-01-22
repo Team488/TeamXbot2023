@@ -160,6 +160,10 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // By doing this inversion, the vector will better map onto a typical cartesian coordinate system.
             XYPair headingVector = new XYPair(-oi.driverGamepad.getRightStickX(), oi.driverGamepad.getRightStickY());
 
+            // The next step is to rotate the vector. The FRC frame assumes "forward" is 0 degrees, but the typical cartesian setup
+            // of a joystick would have "forward" as 90 degrees.
+            headingVector = headingVector.rotate(-90);
+
             double desiredHeading = 0;
             
             if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get()) {
