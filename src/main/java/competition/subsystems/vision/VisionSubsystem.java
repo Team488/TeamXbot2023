@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.logging.RobotAssertionManager;
 import xbot.common.logic.TimeStableValidator;
+import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -17,6 +18,9 @@ public class VisionSubsystem extends BaseSubsystem {
     public static final String FIX_ACQUIRED_PROPERTY = "gloworm/hasTarget";
     public static final String TARGET_YAW_PROPERTY = "gloworm/targetYaw";
     public static final String TARGET_PITCH_PROPERTY = "gloworm/targetPitch";
+
+    public static final String TARGET_POSE = "TemporaryCam/targetPose";
+    public static final String LATENCY_MILLIS = "TemporaryCam/latencyMillis";
 
     final RobotAssertionManager assertionManager;
     final BooleanProperty isInverted;
@@ -76,5 +80,17 @@ public class VisionSubsystem extends BaseSubsystem {
             return -1;
         }
         return 1;
+    }
+
+    public XYPair getAprilCoodinates() {
+        NetworkTable aprilTable = NetworkTableInstance.getDefault().getTable(VISION_TABLE);
+        double[] targetPose = aprilTable.getEntry(TARGET_POSE).getDoubleArray(new double[0]);
+        if (targetPose.length == 0) {
+            return null;
+        }
+        if (Math.abs(targetPose[0]) < 0.01 && Math.abs(targetPose[1]) < 0.01) {
+            return null;
+        }
+        return new XYPair(targetPose[1], -targetPose[0]);
     }
 }

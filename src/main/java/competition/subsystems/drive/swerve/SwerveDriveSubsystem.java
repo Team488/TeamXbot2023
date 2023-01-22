@@ -121,6 +121,14 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
         this.targetVelocity.set(value);
     }
 
+    public double getCurrentPositionValue() {
+        if (this.contract.isDriveReady()) {
+            return this.motorController.getPosition() * this.inchesPerMotorRotation.get();
+        } else {
+            return 0;
+        }
+    }
+
     @Override
     public void setPower(double power) {
         if (this.contract.isDriveReady()) {

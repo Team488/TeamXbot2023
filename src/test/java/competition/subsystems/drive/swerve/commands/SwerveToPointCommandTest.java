@@ -30,26 +30,27 @@ public class SwerveToPointCommandTest extends BaseFullSwerveTest {
         command.initialize();
         command.execute();
 
-        checkAllModuleAngle(45);
+        checkAllModuleAngle(-45);
         checkAllModulesGoingForward(true);
 
         pose.setCurrentPosition(100, 0);
         command.execute();
 
-        checkAllModuleAngle(90);
+        checkAllModuleAngle(0);
         checkAllModulesGoingForward(true);
 
         pose.setCurrentPosition(100, 150);
         command.execute();
 
-        checkAllModuleAngle(90);
+        // Angles don't change due to swerve module optimization (no need to rotate if we can just drive backwards)
+        checkAllModuleAngle(0);
         checkAllModulesGoingForward(false);
     }
 
     @Test
     public void robotSimpleRelativeMotionTest() {
         command.setRobotRelativeMotion();
-        command.setTargetPosition(new XYPair(0, 60), 90);
+        command.setTargetPosition(new XYPair(60, 0), 0);
 
         command.initialize();
         command.execute();
@@ -68,15 +69,15 @@ public class SwerveToPointCommandTest extends BaseFullSwerveTest {
     public void robotOffsetRelativeMotionTest() {
 
         pose.setCurrentHeading(-45); 
-        setAllSteeringModuleAngles(-45);
+        setAllSteeringModuleAngles(90);
 
         command.setRobotRelativeMotion();
-        command.setTargetPosition(new XYPair(0, 60), 90);
+        command.setTargetPosition(new XYPair(0, 60), 0);
 
         command.initialize();
         command.execute();
 
-        checkAllModulesGoingForward(false);
+        checkAllModulesGoingForward(true);
 
         command.setTargetPosition(new XYPair(0,0), 0);
         setAllSteeringModuleAngles(90);
@@ -112,21 +113,21 @@ public class SwerveToPointCommandTest extends BaseFullSwerveTest {
         setAllSteeringModuleAngles(90);
 
         command.setRobotRelativeMotion();
-        command.setTargetPosition(new XYPair(0, -60), -90);
+        command.setTargetPosition(new XYPair(0, -60), -45);
 
         command.initialize();
         command.execute();
 
-        assertEquals(0, command.getActiveTargetPosition().x, 0.01);
-        assertEquals(60, command.getActiveTargetPosition().y, 0.01);
-        assertEquals(90, WrappedRotation2d.fromDegrees(command.getActiveHeading()).getDegrees(), 0.01);
+        assertEquals(-60, command.getActiveTargetPosition().x, 0.01);
+        assertEquals(0, command.getActiveTargetPosition().y, 0.01);
+        assertEquals(-135, WrappedRotation2d.fromDegrees(command.getActiveHeading()).getDegrees(), 0.01);
 
         command.initialize();
         command.execute();
 
-        assertEquals(0, command.getActiveTargetPosition().x, 0.01);
-        assertEquals(60, command.getActiveTargetPosition().y, 0.01);
-        assertEquals(90, WrappedRotation2d.fromDegrees(command.getActiveHeading()).getDegrees(), 0.01);
+        assertEquals(-60, command.getActiveTargetPosition().x, 0.01);
+        assertEquals(0, command.getActiveTargetPosition().y, 0.01);
+        assertEquals(-135, WrappedRotation2d.fromDegrees(command.getActiveHeading()).getDegrees(), 0.01);
     }
 
 }

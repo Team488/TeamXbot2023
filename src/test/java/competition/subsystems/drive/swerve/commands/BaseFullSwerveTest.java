@@ -10,6 +10,7 @@ import competition.operator_interface.OperatorInterface;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import xbot.common.controls.sensors.mock_adapters.MockCANCoder;
+import xbot.common.subsystems.pose.BasePoseSubsystem;
 
 @Ignore
 public abstract class BaseFullSwerveTest extends BaseCompetitionTest{
@@ -25,8 +26,8 @@ public abstract class BaseFullSwerveTest extends BaseCompetitionTest{
         oi = getInjectorComponent().operatorInterface();
         pose = (PoseSubsystem)getInjectorComponent().poseSubsystem();
         
-        pose.setCurrentHeading(90);
-        setAllSteeringModuleAngles(90);
+        pose.setCurrentHeading(BasePoseSubsystem.FACING_AWAY_FROM_DRIVERS);
+        setAllSteeringModuleAngles(0);
     }
 
     protected void setAllSteeringModuleAngles(double angle) {
