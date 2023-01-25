@@ -8,12 +8,16 @@ import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
 import xbot.common.math.FieldPose;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.math.XYPair;
+import xbot.common.properties.Field2dProperty;
 import xbot.common.properties.PropertyFactory;
+import xbot.common.properties.XPropertyManager;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
 @Singleton
@@ -22,12 +26,16 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final DriveSubsystem drive;
     final SwerveDrivePoseEstimator swerveOdometry;
     private final VisionSubsystem vision;
+    private final Field2d fieldForDisplay;
 
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
         super(gyroFactory, propManager);
         this.drive = drive;
         this.vision = vision;
+
+        fieldForDisplay = new Field2d();
+        SmartDashboard.putData("Field", fieldForDisplay);
 
         // In the DriveSubsystem, the swerve modules were initialized in this order:
         // FrontLeft, FrontRight, RearLeft, RearRight.
@@ -88,6 +96,9 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // Convert back to inches
         totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
         totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
+
+        fieldForDisplay.setRobotPose(estimatedPosition);
+
     }
 
     private void improveOdometryUsingSimpleAprilTag() {
