@@ -61,7 +61,7 @@ public class VisionSubsystem extends BaseSubsystem {
         forwardAprilCamera = new PhotonCamera("forwardAprilCamera");
 
         try {
-            aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2022RapidReact.m_resourceFile);
+            aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
             visionWorking = true;
             log.info("Successfully loaded AprilTagFieldLayout");
         } catch (IOException e) {
