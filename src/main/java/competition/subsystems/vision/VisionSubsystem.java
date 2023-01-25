@@ -91,6 +91,6 @@ public class VisionSubsystem extends BaseSubsystem {
         if (Math.abs(targetPose[0]) < 0.01 && Math.abs(targetPose[1]) < 0.01) {
             return null;
         }
-        return new XYPair(targetPose[1], -targetPose[0]);
+        return new XYPair(-targetPose[0], -targetPose[1]);
     }
 }
