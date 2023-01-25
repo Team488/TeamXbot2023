@@ -17,6 +17,7 @@ public class Robot extends BaseRobot {
         super.initializeSystems();
         getInjectorComponent().subsystemDefaultCommandMap();
         getInjectorComponent().operatorCommandMap();
+        getInjectorComponent().lightsCommunicationSubsystem();
     }
 
     protected BaseRobotComponent createDaggerComponent() {
