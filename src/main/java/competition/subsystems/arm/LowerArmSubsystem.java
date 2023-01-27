@@ -27,15 +27,14 @@ public class LowerArmSubsystem extends BaseSubsystem{
 
     @Inject
     public LowerArmSubsystem(XCANSparkMaxFactory sparkMaxFactory, ElectricalContract eContract, PropertyFactory propFactory){
+        this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.lowerArmLeftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
             this.lowerArmRightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
         }
         propFactory.setPrefix(this.getPrefix());
         this.contract = eContract;
-
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power", 1);
-        this.contract = eContract;
         extendLimit = propFactory.createPersistentProperty("extendLimit",0);
         retractLimit = propFactory.createPersistentProperty("retractLimit",0);
         setSoftLimit(false);
