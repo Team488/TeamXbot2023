@@ -33,13 +33,28 @@ public class ArmPositionSolver {
         // A = arccos((b^2 + c^2 - a^2) / 2bc)
 
         XYPair targetEndEffectorPosition = new XYPair(targetX, targetZ);
-        double angleLowerJoint = Math.toDegrees(Math.acos((Math.pow(this.configuration.getLowerArmLength(), 2) + Math.pow(targetEndEffectorPosition.getMagnitude(), 2) - Math.pow(this.configuration.getUpperArmLength(), 2)) / (2 * this.configuration.getLowerArmLength() * targetEndEffectorPosition.getMagnitude())));
-        double angleUpperJoint = Math.toDegrees(Math.acos((Math.pow(this.configuration.getLowerArmLength(), 2) + Math.pow(this.configuration.getUpperArmLength(), 2) - Math.pow(targetEndEffectorPosition.getMagnitude(), 2)) / (2 * this.configuration.getLowerArmLength() * this.configuration.getUpperArmLength())));
+        double angleLowerJoint = getAngleFromCosineLaw(
+                this.configuration.getLowerArmLength(),
+                targetEndEffectorPosition.getMagnitude(),
+                this.configuration.getUpperArmLength()
+        );
+        double angleUpperJoint = getAngleFromCosineLaw(
+                this.configuration.getLowerArmLength(),
+                this.configuration.getUpperArmLength(),
+                targetEndEffectorPosition.getMagnitude()
+        );
         double angleHorizonToLowerJoint = targetEndEffectorPosition.getAngle();
 
         Rotation2d angleLowerJointRelativeToHorizon = Rotation2d.fromDegrees(angleLowerJoint).plus(Rotation2d.fromDegrees(angleHorizonToLowerJoint));
         Rotation2d angleUpperJointRelativeToHorizon = angleLowerJointRelativeToHorizon.plus(Rotation2d.fromDegrees(angleUpperJoint)).plus(Rotation2d.fromDegrees(180));
 
         return new ArmPositionState(angleLowerJointRelativeToHorizon, angleUpperJointRelativeToHorizon);
+    }
+
+    private static double getAngleFromCosineLaw(double adjacent1Length, double adjacent2length, double oppositeLength) {
+        return Math.toDegrees(
+                Math.acos(
+                    (Math.pow(adjacent1Length, 2) + Math.pow(adjacent2length, 2) - Math.pow(oppositeLength, 2))
+                            / (2 * adjacent1Length * adjacent2length)));
     }
 }
