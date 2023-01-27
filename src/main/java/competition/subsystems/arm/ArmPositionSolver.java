@@ -45,8 +45,11 @@ public class ArmPositionSolver {
         );
         double angleHorizonToLowerJoint = targetEndEffectorPosition.getAngle();
 
-        Rotation2d angleLowerJointRelativeToHorizon = Rotation2d.fromDegrees(angleLowerJoint).plus(Rotation2d.fromDegrees(angleHorizonToLowerJoint));
-        Rotation2d angleUpperJointRelativeToHorizon = angleLowerJointRelativeToHorizon.plus(Rotation2d.fromDegrees(angleUpperJoint)).plus(Rotation2d.fromDegrees(180));
+        Rotation2d angleLowerJointRelativeToHorizon = Rotation2d.fromDegrees(angleLowerJoint)
+                .plus(Rotation2d.fromDegrees(angleHorizonToLowerJoint));
+        Rotation2d angleUpperJointRelativeToHorizon = angleLowerJointRelativeToHorizon
+                .plus(Rotation2d.fromDegrees(angleUpperJoint))
+                .plus(Rotation2d.fromDegrees(180));
 
         return new ArmPositionState(angleLowerJointRelativeToHorizon, angleUpperJointRelativeToHorizon);
     }
