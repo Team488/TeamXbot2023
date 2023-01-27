@@ -123,8 +123,8 @@ public class CompetitionContract extends ElectricalContract {
         return new DeviceInfo(4,false);
     }
 
-    public boolean isArmReady(){
-        return true;
-    };
+    public boolean isLowerArmReady() { return true;}
+
+    public boolean isUpperArmReady() { return true;}
 
 }

@@ -19,33 +19,38 @@ import xbot.common.command.BaseSubsystem;
 public class LowerArmSubsystem extends BaseSubsystem{
     public XCANSparkMax lowerArmLeftMotor;
     public XCANSparkMax lowerArmRightMotor;
-    public final ElectricalContract contract;
+    public ElectricalContract contract;
     public DoubleProperty powerProp;
 
-    public final DoubleProperty extendLimit;
-    public final DoubleProperty retractLimit;
+    public  DoubleProperty extendLimit;
+    public  DoubleProperty retractLimit;
 
     @Inject
     public LowerArmSubsystem(XCANSparkMaxFactory sparkMaxFactory, ElectricalContract eContract, PropertyFactory propFactory){
-        this.lowerArmLeftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
-        this.lowerArmRightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
+        if(contract.isLowerArmReady()){
+            this.lowerArmLeftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
+            this.lowerArmRightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
+        }
         propFactory.setPrefix(this.getPrefix());
         this.contract = eContract;
 
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power", 1);
+        this.contract = eContract;
         extendLimit = propFactory.createPersistentProperty("extendLimit",0);
         retractLimit = propFactory.createPersistentProperty("retractLimit",0);
         setSoftLimit(false);
     }
 
     public void setMotorPower(double power){
-        lowerArmLeftMotor.set(power);
-        lowerArmRightMotor.set(power);
+        if(contract.isLowerArmReady()){
+            lowerArmLeftMotor.set(power);
+            lowerArmRightMotor.set(power);
+        }
     }
 
     //set limits for extending and retracting
     private void setSoftLimit(boolean enabled){
-        if(contract.isArmReady()){
+        if(contract.isLowerArmReady()){
             if(enabled){
                 enableSoftLimit(true);
                 configSoftLimit(extendLimit.get(),retractLimit.get());

@@ -23,7 +23,7 @@ public class ControlArmsWithJoyStickCommand extends BaseCommand {
     }
 
     public void initialize(){
-
+        log.info("Initializing!");
     }
 
     public void execute(){

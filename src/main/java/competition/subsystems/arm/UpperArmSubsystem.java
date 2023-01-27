@@ -25,8 +25,10 @@ public class UpperArmSubsystem extends BaseSubsystem {
     public  DoubleProperty lowerLimit;
     @Inject
     public  UpperArmSubsystem(XCANSparkMaxFactory sparkMaxFactory,ElectricalContract eContract, PropertyFactory propFactory){
-        this.upperArmLeftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(),this.getPrefix(),"upperArmLeftMotor");
-        this.upperArmRightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(),this.getPrefix(),"upperArmRightMotor");
+        if(contract.isUpperArmReady()){
+            this.upperArmLeftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(),this.getPrefix(),"upperArmLeftMotor");
+            this.upperArmRightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(),this.getPrefix(),"upperArmRightMotor");
+        }
         propFactory.setPrefix(this.getPrefix());
         this.contract = eContract;
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power",1);
@@ -35,13 +37,15 @@ public class UpperArmSubsystem extends BaseSubsystem {
         setSoftLimit(false);
     }
     public void setMotorPower(double power){
-        upperArmLeftMotor.set(power);
-        upperArmRightMotor.set(power);
+        if(contract.isUpperArmReady()){
+            upperArmLeftMotor.set(power);
+            upperArmRightMotor.set(power);
+        }
     }
 
     //set limits for arm rotation
     private void setSoftLimit(boolean enabled){
-        if(contract.isArmReady()){
+        if(contract.isUpperArmReady()){
             if(enabled){
                 enableSoftLimit(true);
                 configSoftLimit(upperLimit.get(),lowerLimit.get());

@@ -20,7 +20,8 @@ public abstract class ElectricalContract {
     public abstract DeviceInfo getLowerArmRightMotor();
     public abstract DeviceInfo getUpperArmLeftMotor();
     public abstract  DeviceInfo getUpperArmRightMotor();
-    public abstract  boolean isArmReady();
+    public abstract  boolean isLowerArmReady();
+    public  abstract  boolean isUpperArmReady();
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
 
 
