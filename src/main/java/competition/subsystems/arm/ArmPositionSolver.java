@@ -1,0 +1,45 @@
+package competition.subsystems.arm;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import xbot.common.math.XYPair;
+
+public class ArmPositionSolver {
+    private final ArmPositionSolverConfiguration configuration;
+
+    public ArmPositionSolver(ArmPositionSolverConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    public ArmPositionSolverConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    /**
+     * Calculate the target rotation of each arm joint given a target end-effector position
+     * @param targetX The distance in front of or behind the robot (in inches) relative to the fixed arm pivot.
+     * @param targetZ The distance above or below the fixed pivot (in inches)
+     */
+    public ArmPositionState solveArmJointPositions(double targetX, double targetZ) {
+        // The arm is made up of two links. LinkA is fixed to a pivot point on the base of the robot (Joint1).
+        // LinkA is a four-bar linkage. LinkB is attached to the other end of LinkA at Joint2. LinkA is a four-bar
+        // linkage, so Joint2's rotation is not affected by the rotation of Joint1.
+
+        // We can use the cosine law to calculate the angles of a triangle formed by the two links (L1, L2)
+        //        J2
+        //       /  \
+        //     LA    LB
+        //    /       \
+        //  J1  - - -  EE
+        // A = arccos((b^2 + c^2 - a^2) / 2bc)
+
+        XYPair targetEndEffectorPosition = new XYPair(targetX, targetZ);
+        double angleLowerJoint = Math.toDegrees(Math.acos((Math.pow(this.configuration.getLowerArmLength(), 2) + Math.pow(targetEndEffectorPosition.getMagnitude(), 2) - Math.pow(this.configuration.getUpperArmLength(), 2)) / (2 * this.configuration.getLowerArmLength() * targetEndEffectorPosition.getMagnitude())));
+        double angleUpperJoint = Math.toDegrees(Math.acos((Math.pow(this.configuration.getLowerArmLength(), 2) + Math.pow(this.configuration.getUpperArmLength(), 2) - Math.pow(targetEndEffectorPosition.getMagnitude(), 2)) / (2 * this.configuration.getLowerArmLength() * this.configuration.getUpperArmLength())));
+        double angleHorizonToLowerJoint = targetEndEffectorPosition.getAngle();
+
+        Rotation2d angleLowerJointRelativeToHorizon = Rotation2d.fromDegrees(angleLowerJoint).plus(Rotation2d.fromDegrees(angleHorizonToLowerJoint));
+        Rotation2d angleUpperJointRelativeToHorizon = angleLowerJointRelativeToHorizon.plus(Rotation2d.fromDegrees(angleUpperJoint)).plus(Rotation2d.fromDegrees(180));
+
+        return new ArmPositionState(angleLowerJointRelativeToHorizon, angleUpperJointRelativeToHorizon);
+    }
+}
