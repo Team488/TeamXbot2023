@@ -34,7 +34,7 @@ public class UpperArmSubsystem extends BaseSubsystem {
         lowerLimit = propFactory.createPersistentProperty("lowerLimit",0);
         setSoftLimit(false);
     }
-    private void setMotorPower(double power){
+    public void setMotorPower(double power){
         upperArmLeftMotor.set(power);
         upperArmRightMotor.set(power);
     }

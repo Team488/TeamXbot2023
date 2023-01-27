@@ -38,7 +38,7 @@ public class LowerArmSubsystem extends BaseSubsystem{
         setSoftLimit(false);
     }
 
-    private void setMotorPower(double power){
+    public void setMotorPower(double power){
         lowerArmLeftMotor.set(power);
         lowerArmRightMotor.set(power);
     }
