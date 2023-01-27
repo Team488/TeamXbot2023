@@ -96,7 +96,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     private void setupStatusFrames() {
         if (this.contract.isDriveReady()) {
             // We need to re-set frame intervals after a device reset.
-            if (this.motorController.getStickyFault(FaultID.kHasReset)) {
+            if (this.motorController.getStickyFault(FaultID.kHasReset) && this.motorController.getLastError() != REVLibError.kHALError) {
                 log.info("Setting status frame periods.");
 
                 // See https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
@@ -166,11 +166,11 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     }
 
     /**
-     * Mark the current encoder position as facing forward (90 degrees)
+     * Mark the current encoder position as facing forward (0 degrees)
      */
     public void calibrateHere() {
         if (this.contract.isDriveReady()) {
-            this.motorController.setPosition(90 / degreesPerMotorRotation.get());
+            this.motorController.setPosition(0);
         }
         this.calibrated = true;
     }
