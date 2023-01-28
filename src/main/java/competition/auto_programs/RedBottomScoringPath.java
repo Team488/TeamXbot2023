@@ -13,6 +13,7 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
     RedBottomScoringPath(Provider<SwerveToPointCommand> swerveToPointProvider,PoseSubsystem pose)
     {
         pose.setCurrentPosition(594, 16);
+        pose.setCurrentHeading(0);
         var turn180AndGoToGamePiece = swerveToPointProvider.get();
         turn180AndGoToGamePiece.setFieldRelativeMotion();
         turn180AndGoToGamePiece.setMaxPower(0.5);
