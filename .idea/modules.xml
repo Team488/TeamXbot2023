@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/GitHub.TeamXbot2023-1.SeriouslyCommonLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/GitHub.TeamXbot2023-1.SeriouslyCommonLib.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GitHub.TeamXbot2023-1.test.iml" filepath="$PROJECT_DIR$/.idea/modules/GitHub.TeamXbot2023-1.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/TeamXbot2023-1.SeriouslyCommonLib.main.iml" filepath="$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/TeamXbot2023-1.SeriouslyCommonLib.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/TeamXbot2023-1.SeriouslyCommonLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/TeamXbot2023-1.SeriouslyCommonLib.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/TeamXbot2023-1.main.iml" filepath="$PROJECT_DIR$/.idea/modules/TeamXbot2023-1.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/TeamXbot2023-1.test.iml" filepath="$PROJECT_DIR$/.idea/modules/TeamXbot2023-1.test.iml" />
     </modules>
   </component>

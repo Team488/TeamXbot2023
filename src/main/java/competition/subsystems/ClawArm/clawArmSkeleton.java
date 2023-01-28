@@ -12,10 +12,14 @@ import javax.inject.Inject;
 public  class clawArmSkeleton extends BaseSubsystem {
     private static XCANSparkMax ClawMotor;
 
+    public enum ClawState{
+        closeCube,
+        closeCone,
+        openArm
 
-    private static String CLOSECONE = "close_cone";
-    private static String CLOSECUBE = "close_cube";
-    private static String OPENARM = "open_arm";
+    }
+
+//
 
     private  final DoubleProperty Open;
     private  final DoubleProperty closedCone;
@@ -23,17 +27,17 @@ public  class clawArmSkeleton extends BaseSubsystem {
     private  final DoubleProperty closedCube;
 
     // true = open || false = close
-    private void ChangeClaw(String Answer){
-        if(Answer.equals(OPENARM)){
+    private void ChangeClaw(ClawState state){
+        if(state == ClawState.openArm){
             //open claw
             ClawMotor.set(Open.get());
 
         }
-        else if(Answer.equals(CLOSECONE)){
+        else if(state == ClawState.closeCone){
             //close claw to cone length
             ClawMotor.set(closedCone.get());
         }
-        else if(Answer.equals(CLOSECUBE)){
+        else if(state == ClawState.closeCube){
             //close claw to cube length
             ClawMotor.set(closedCube.get());
         }
@@ -47,18 +51,18 @@ public  class clawArmSkeleton extends BaseSubsystem {
         
         Open = propFactory.createPersistentProperty("Open",0);
         closedCone = propFactory.createPersistentProperty("closedCone",0);
-        closedCube = propFactory.createPersistentProperty("closedCube", 0)
+        closedCube = propFactory.createPersistentProperty("closedCube", 0);
     }
 
     public  void Open(){
-        ChangeClaw(OPENARM);
+        ChangeClaw(ClawState.openArm);
     }
 
     public  void GrabCone(){
-        ChangeClaw(CLOSECONE);
+        ChangeClaw(ClawState.closeCone);
     }
 
     public  void GrabCube(){
-        ChangeClaw(CLOSECUBE);
+        ChangeClaw(ClawState.closeCube);
     }
 }
