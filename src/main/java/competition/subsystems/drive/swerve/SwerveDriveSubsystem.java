@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import com.revrobotics.REVLibError;
 import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
@@ -67,7 +68,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
     private void setupStatusFrames() {
         if (this.contract.isDriveReady()) {
             // We need to re-set frame intervals after a device reset.
-            if (this.motorController.getStickyFault(FaultID.kHasReset)) {
+            if (this.motorController.getStickyFault(FaultID.kHasReset) && this.motorController.getLastError() != REVLibError.kHALError) {
                 log.info("Setting status frame periods.");
 
                 // See https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
@@ -119,6 +120,14 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
     @Override
     public void setTargetValue(double value) {
         this.targetVelocity.set(value);
+    }
+
+    public double getCurrentPositionValue() {
+        if (this.contract.isDriveReady()) {
+            return this.motorController.getPosition() * this.inchesPerMotorRotation.get();
+        } else {
+            return 0;
+        }
     }
 
     @Override

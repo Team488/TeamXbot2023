@@ -34,7 +34,7 @@ public class OperatorCommandMap {
             DriveSubsystem drive,
             PoseSubsystem pose,
             VisionSubsystem vision) {
-        resetHeading.setHeadingToApply(90);
+        resetHeading.setHeadingToApply(0);
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
@@ -74,6 +74,9 @@ public class OperatorCommandMap {
                     return angleTarget.get();
                 });
 
+        swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
+        swerveToPoint.setMaxPower(0.35);
+
         // Precision Commands
         StartEndCommand activatePrecisionRotation = new StartEndCommand(
                 () -> drive.setPrecisionRotationActive(true),
@@ -84,7 +87,11 @@ public class OperatorCommandMap {
                 () -> drive.setIsRobotOrientedDrive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
+<<<<<<< HEAD
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(bluebottom);
+=======
+        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+>>>>>>> main
     }
 }

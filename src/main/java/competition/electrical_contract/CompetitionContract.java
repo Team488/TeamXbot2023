@@ -92,16 +92,39 @@ public class CompetitionContract extends ElectricalContract {
     public XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance) {
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new XYPair(-15, 15);
-            case "FrontRightDrive":
                 return new XYPair(15, 15);
-            case "RearLeftDrive":
-                return new XYPair(-15, -15);
-            case "RearRightDrive":
+            case "FrontRightDrive":
                 return new XYPair(15, -15);
+            case "RearLeftDrive":
+                return new XYPair(-15, 15);
+            case "RearRightDrive":
+                return new XYPair(-15, -15);
             default:
                 return new XYPair(0, 0);
         }
     }
+
+    @Override
+    public DeviceInfo getLowerArmLeftMotor() {
+        return new DeviceInfo(1,false);
+    }
+
+    @Override
+    public DeviceInfo getLowerArmRightMotor() {
+        return new DeviceInfo(2,false);
+    }
+
+    public DeviceInfo getUpperArmLeftMotor(){
+        return new DeviceInfo(3,false);
+    }
+
+    @Override
+    public DeviceInfo getUpperArmRightMotor() {
+        return new DeviceInfo(4,false);
+    }
+
+    public boolean isLowerArmReady() { return true;}
+
+    public boolean isUpperArmReady() { return true;}
 
 }

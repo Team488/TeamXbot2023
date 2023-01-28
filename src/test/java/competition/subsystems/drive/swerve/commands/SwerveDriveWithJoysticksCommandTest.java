@@ -23,14 +23,14 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         command.initialize();
         command.execute();
 
-        checkAllModuleAngle(90);
+        checkAllModuleAngle(0);
         checkAllModulePower(1);
 
         ((MockXboxControllerAdapter)oi.driverGamepad).setLeftStick(new XYPair(1, 1));
 
         command.execute();
 
-        checkAllModuleAngle(45);
+        checkAllModuleAngle(-45);
         checkAllModulePower(1);
     }
 

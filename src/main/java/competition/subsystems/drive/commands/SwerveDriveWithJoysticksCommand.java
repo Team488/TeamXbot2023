@@ -116,7 +116,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
                 (a) -> MathUtils.exponentAndRetainSign(a, (int) input_exponent.get()));
 
         // create new vector with the scaled magnitude and angle
-        XYPair translationIntent = XYPair.fromPolar(rawAngle, updatedMagnitude);
+        XYPair translationIntent = XYPair.fromPolar(rawAngle-90, updatedMagnitude);
 
         // --------------------------------------------------
         // Rotation
@@ -159,6 +159,10 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // is a "negative" rotation, so the X axis is usually inverted to take that into account). 
             // By doing this inversion, the vector will better map onto a typical cartesian coordinate system.
             XYPair headingVector = new XYPair(-oi.driverGamepad.getRightStickX(), oi.driverGamepad.getRightStickY());
+
+            // The next step is to rotate the vector. The FRC frame assumes "forward" is 0 degrees, but the typical cartesian setup
+            // of a joystick would have "forward" as 90 degrees.
+            headingVector = headingVector.rotate(-90);
 
             double desiredHeading = 0;
             
