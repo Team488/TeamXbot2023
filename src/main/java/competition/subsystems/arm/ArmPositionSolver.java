@@ -24,7 +24,7 @@ public class ArmPositionSolver {
         // LinkA is a four-bar linkage. LinkB is attached to the other end of LinkA at Joint2. LinkA is a four-bar
         // linkage, so Joint2's rotation is not affected by the rotation of Joint1.
 
-        // We can use the cosine law to calculate the angles of a triangle formed by the two links (L1, L2)
+        // We can use the cosine law to calculate the angles of a triangle formed by the two links (LA, LB)
         //        J2
         //       /  \
         //     LA    LB
