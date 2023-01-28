@@ -33,6 +33,12 @@ public class ArmPositionSolver {
         // A = arccos((b^2 + c^2 - a^2) / 2bc)
 
         XYPair targetEndEffectorPosition = new XYPair(targetX, targetZ);
+
+        // Check that the target position is within reach
+        if (targetEndEffectorPosition.getMagnitude() > this.configuration.getUpperArmLength() + this.configuration.getLowerArmLength()) {
+            return new ArmPositionState(new Rotation2d(0), new Rotation2d(0), false);
+        }
+
         double angleLowerJoint = getAngleFromCosineLaw(
                 this.configuration.getLowerArmLength(),
                 targetEndEffectorPosition.getMagnitude(),
@@ -51,7 +57,7 @@ public class ArmPositionSolver {
                 .plus(Rotation2d.fromDegrees(angleUpperJoint))
                 .plus(Rotation2d.fromDegrees(180));
 
-        return new ArmPositionState(angleLowerJointRelativeToHorizon, angleUpperJointRelativeToHorizon);
+        return new ArmPositionState(angleLowerJointRelativeToHorizon, angleUpperJointRelativeToHorizon, true);
     }
 
     private static double getAngleFromCosineLaw(double adjacent1Length, double adjacent2length, double oppositeLength) {

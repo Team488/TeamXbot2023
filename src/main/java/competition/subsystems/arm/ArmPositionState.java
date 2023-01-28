@@ -7,9 +7,12 @@ public class ArmPositionState {
 
     private final Rotation2d upperJointRotation;
 
-    public ArmPositionState(Rotation2d lowerJointRotation, Rotation2d upperJointRotation) {
+    private final boolean isSolveable;
+
+    public ArmPositionState(Rotation2d lowerJointRotation, Rotation2d upperJointRotation, boolean isSolveable) {
         this.lowerJointRotation = lowerJointRotation;
         this.upperJointRotation = upperJointRotation;
+        this.isSolveable = isSolveable;
     }
 
     /**
@@ -27,4 +30,10 @@ public class ArmPositionState {
     public Rotation2d getUpperJointRotation() {
         return upperJointRotation;
     }
+
+    /**
+     * Gets whether the solver thinks it returns a valid result
+     * @return True if the solver result should be valid.
+     */
+    public boolean isSolveable() { return isSolveable; }
 }
