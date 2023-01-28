@@ -26,4 +26,8 @@ pluginManagement {
     }
 }
 
-include(':SeriouslyCommonLib')
+includeBuild('./SeriouslyCommonLib') {
+    dependencySubstitution {
+        substitute module('xbot.common:scl') with project(':')
+    }
+}
