@@ -54,12 +54,12 @@ public class SwerveToPointCommand extends BaseCommand {
             // "go backwards 60 inches" from the robot's perspective.
             // If the robot was pointed at field 0 degrees (right) this would mean setting
             // a field-relative target of -60, 0 (move the robot left 60 inches).
-            targetPosition.rotate(pose.getCurrentHeading().getDegrees() - PoseSubsystem.FACING_AWAY_FROM_DRIVERS);
+            targetPosition.rotate(pose.getCurrentHeading().getDegrees());
             
             targetPosition = pose.getCurrentFieldPose().getPoint().clone().add(targetPosition);
 
             // Then, move the target heading itself. 
-            targetHeading = pose.getCurrentHeading().getDegrees() - 90 + targetHeading;
+            targetHeading = pose.getCurrentHeading().getDegrees() + targetHeading;
         }
 
         log.info(String.format("Swerve to point targets: (%f, %f), %f", targetPosition.x, targetPosition.y, targetHeading));
