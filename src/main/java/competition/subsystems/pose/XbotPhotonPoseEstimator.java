@@ -26,14 +26,22 @@ package competition.subsystems.pose;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The PhotonPoseEstimator class filters or combines readings from all the AprilTags visible at a
@@ -184,7 +192,7 @@ public class XbotPhotonPoseEstimator {
     /**
      * Set the maximum PoseAmbiguity a target can have and still be used for pose updates.
      *
-     * @param maximumPoseAmbiguityThreshold
+     * @param maximumPoseAmbiguityThreshold Temp
      */
     public void setMaximumPoseAmbiguityThreshold(double maximumPoseAmbiguityThreshold) {
         this.maximumPoseAmbiguityThreshold = maximumPoseAmbiguityThreshold;
@@ -227,6 +235,8 @@ public class XbotPhotonPoseEstimator {
                 break;
             case CLOSEST_TO_LAST_POSE:
                 setReferencePose(lastPose);
+                estimatedPose = closestToReferencePoseStrategy(cameraResult, referencePose);
+                break;
             case CLOSEST_TO_REFERENCE_POSE:
                 estimatedPose = closestToReferencePoseStrategy(cameraResult, referencePose);
                 break;
@@ -270,7 +280,7 @@ public class XbotPhotonPoseEstimator {
 
         // Although there are confirmed to be targets, none of them may be fiducial
         // targets.
-        if (lowestAmbiguityTarget == null) return Optional.empty();
+        if (lowestAmbiguityTarget == null) {return Optional.empty()};
 
         int targetFiducialId = lowestAmbiguityTarget.getFiducialId();
 
@@ -308,7 +318,7 @@ public class XbotPhotonPoseEstimator {
             // Don't report errors for non-fiducial targets. This could also be resolved by
             // adding -1 to
             // the initial HashSet.
-            if (targetFiducialId == -1) continue;
+            if (targetFiducialId == -1) {continue};
 
             Optional<Pose3d> targetPosition = fieldTags.getTagPose(target.getFiducialId());
 
@@ -386,7 +396,7 @@ public class XbotPhotonPoseEstimator {
             // Don't report errors for non-fiducial targets. This could also be resolved by
             // adding -1 to
             // the initial HashSet.
-            if (targetFiducialId == -1) continue;
+            if (targetFiducialId == -1) {continue};
 
             Optional<Pose3d> targetPosition = fieldTags.getTagPose(target.getFiducialId());
 
