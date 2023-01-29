@@ -1,18 +1,18 @@
 package competition.electrical_contract;
 
-import javax.inject.Inject;
-
 import competition.injection.swerve.SwerveInstance;
 import competition.subsystems.pose.PoseSubsystem;
 import xbot.common.injection.electrical_contract.DeviceInfo;
 import xbot.common.math.XYPair;
 
-public class CompetitionContract extends ElectricalContract {
+import javax.inject.Inject;
+
+public class PracticeContract2022 extends CompetitionContract {
 
     protected final double simulationScalingValue = 256.0 * PoseSubsystem.INCHES_IN_A_METER;
 
     @Inject
-    public CompetitionContract() {}
+    public PracticeContract2022() {}
 
     @Override
     public boolean isDriveReady() {
@@ -31,7 +31,7 @@ public class CompetitionContract extends ElectricalContract {
                 return new DeviceInfo(31, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(29, false, simulationScalingValue);
+                return new DeviceInfo(28, false, simulationScalingValue);
 
             case "RearLeftDrive":
                 return new DeviceInfo(38, false, simulationScalingValue);
@@ -53,35 +53,13 @@ public class CompetitionContract extends ElectricalContract {
                 return new DeviceInfo(30, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(28, false, simulationScalingValue);
+                return new DeviceInfo(29, false, simulationScalingValue);
 
             case "RearLeftDrive":
                 return new DeviceInfo(39, false, simulationScalingValue);
 
             case "RearRightDrive":
                 return new DeviceInfo(20, false, simulationScalingValue);
-
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public DeviceInfo getSteeringEncoder(SwerveInstance swerveInstance) {
-        double simulationScalingValue = 1.0;
-
-        switch (swerveInstance.getLabel()) {
-            case "FrontLeftDrive":
-                return new DeviceInfo(51, false, simulationScalingValue);
-
-            case "FrontRightDrive":
-                return new DeviceInfo(52, false, simulationScalingValue);
-
-            case "RearLeftDrive":
-                return new DeviceInfo(53, false, simulationScalingValue);
-
-            case "RearRightDrive":
-                return new DeviceInfo(54, false, simulationScalingValue);
 
             default:
                 return null;
@@ -105,26 +83,12 @@ public class CompetitionContract extends ElectricalContract {
     }
 
     @Override
-    public DeviceInfo getLowerArmLeftMotor() {
-        return new DeviceInfo(1,false);
+    public boolean isUpperArmReady() {
+        return false;
     }
 
     @Override
-    public DeviceInfo getLowerArmRightMotor() {
-        return new DeviceInfo(2,false);
+    public boolean isLowerArmReady() {
+        return false;
     }
-
-    public DeviceInfo getUpperArmLeftMotor(){
-        return new DeviceInfo(3,false);
-    }
-
-    @Override
-    public DeviceInfo getUpperArmRightMotor() {
-        return new DeviceInfo(4,false);
-    }
-
-    public boolean isLowerArmReady() { return true;}
-
-    public boolean isUpperArmReady() { return true;}
-
 }
