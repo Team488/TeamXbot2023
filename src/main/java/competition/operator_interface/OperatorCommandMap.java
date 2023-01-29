@@ -3,6 +3,7 @@ package competition.operator_interface;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
@@ -56,6 +57,7 @@ public class OperatorCommandMap {
     public void setupMobilityCommands(OperatorInterface oi,
             TurnLeft90DegreesCommand turnleft90,
             SwerveToPointCommand swerveToPoint,
+            BlueBottomScoringPath bluebottom,
             DriveSubsystem drive,
             PropertyFactory pf) {
 
@@ -85,6 +87,7 @@ public class OperatorCommandMap {
                 () -> drive.setIsRobotOrientedDrive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
-        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(bluebottom);
     }
 }
