@@ -1,10 +1,12 @@
 package competition.operator_interface;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import competition.subsystems.drive.DriveSubsystem;
-import competition.subsystems.drive.commands.*;
+import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
+import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
+import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveToPointCommand;
+import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.simple.SimpleSetPowerCommand;
 import competition.subsystems.vision.VisionSubsystem;
@@ -16,6 +18,9 @@ import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Maps operator interface buttons to commands
