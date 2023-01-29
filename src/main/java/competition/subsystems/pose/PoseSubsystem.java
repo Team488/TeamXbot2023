@@ -32,6 +32,11 @@ public class PoseSubsystem extends BasePoseSubsystem {
         this.drive = drive;
         this.vision = vision;
 
+
+        // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
+        // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
+        // is the only class we have that manages direct calls to SmartDashboard. Maybe we should broaden it to a more
+        // generic "XSmartDashboard" class for scenarios like these?
         fieldForDisplay = new Field2d();
         SmartDashboard.putData("Field", fieldForDisplay);
 
@@ -86,17 +91,20 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // to position the robot on the field.
         //improveOdometryUsingSimpleAprilTag();
 
-        // Use PhotonLib to read multiple AprilTags and get a field-accurate position.
+        // As a better prototype, use PhotonLib to evaluate multiple AprilTags and get a field-accurate position.
         improveOdometryUsingPhotonLib(updatedPosition);
 
+        // TODO: as an even better prototype, use a multi-target PNP solver (not yet available, but coming soon?)
+
+        // Pull out the new estimated pose from odometry. Note that for now, we only pull out X and Y
+        // and trust the gyro implicitly. Eventually, we should allow the gyro to be updated via vision
+        // if we have a lot of confidence in the vision data.
         var estimatedPosition = swerveOdometry.getEstimatedPosition();
 
         // Convert back to inches
         totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
         totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
-
         fieldForDisplay.setRobotPose(estimatedPosition);
-
     }
 
     private void improveOdometryUsingSimpleAprilTag() {
@@ -114,6 +122,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
         if (photonEstimatedPose.isPresent()) {
             // Get the result data, which has both coordinates and timestamps
             var camPose = photonEstimatedPose.get();
+            // TODO: If this pose is wildly different than our current pose, we should set some warning flag
+            // that commands can consume to pause any major robot motions.
             swerveOdometry.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
         }
     }
