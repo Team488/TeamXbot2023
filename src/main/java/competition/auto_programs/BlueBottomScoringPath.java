@@ -7,7 +7,6 @@ import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import xbot.common.command.NamedInstantCommand;
 import xbot.common.math.XYPair;
 
 public class BlueBottomScoringPath extends SequentialCommandGroup{
