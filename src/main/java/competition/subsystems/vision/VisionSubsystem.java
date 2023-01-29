@@ -1,5 +1,6 @@
 package competition.subsystems.vision;
 
+import competition.subsystems.pose.XbotPhotonPoseEstimator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -42,7 +43,7 @@ public class VisionSubsystem extends BaseSubsystem {
     final TimeStableValidator fixIsStable;
     NetworkTable visionTable;
     AprilTagFieldLayout aprilTagFieldLayout;
-    PhotonPoseEstimator photonPoseEstimator;
+    XbotPhotonPoseEstimator photonPoseEstimator;
     boolean visionWorking = false;
 
 
@@ -74,11 +75,12 @@ public class VisionSubsystem extends BaseSubsystem {
 
         //Cam mounted half a meter forward of center, half a meter up from center, and facing forward.
         Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
-        photonPoseEstimator = new PhotonPoseEstimator(
+        photonPoseEstimator = new XbotPhotonPoseEstimator(
             aprilTagFieldLayout, 
-            PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, 
+            XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
             forwardAprilCamera, 
             robotToCam);
+        photonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
     }
 
     public double getBearingToHub() {

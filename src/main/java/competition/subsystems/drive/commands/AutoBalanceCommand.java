@@ -31,8 +31,13 @@ public class AutoBalanceCommand extends BaseCommand {
     @Override
     public void execute() {
         double currentAngle = pose.getRobotPitch();
+
+        if (Math.abs(currentAngle) < 1.5) {
+            currentAngle = 0;
+        }
+
         double power = pidManager.calculate(0, currentAngle);
 
-        drive.move(new XYPair(0,power), 0);
+        drive.move(new XYPair(power,0), 0);
     }
 }
