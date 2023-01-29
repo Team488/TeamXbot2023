@@ -65,7 +65,6 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
         finalReturnToScoringZone.setMaxPower(0.5);
         finalReturnToScoringZone.setMaxTurningPower(0.5);
         finalReturnToScoringZone.setTargetPosition(new XYPair(584,64), 0);
-
         this.addCommands(finalReturnToScoringZone);
     }
 }
