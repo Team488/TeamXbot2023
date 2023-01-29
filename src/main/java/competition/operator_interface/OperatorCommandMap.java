@@ -2,6 +2,7 @@ package competition.operator_interface;
 
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.drive.DriveSubsystem;
+import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
@@ -18,9 +19,11 @@ import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
+import xbot.common.subsystems.autonomous.SetAutonomousCommand;
 import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 /**
@@ -56,7 +59,12 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
-        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).onTrue(regularSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
+    }
+
+    @Inject
+    public void setupAutonomousDriveCommands(OperatorInterface oi, AutoBalanceCommand balanceCommand) {
+        oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
     }
 
     @Inject
@@ -65,16 +73,10 @@ public class OperatorCommandMap {
     }
 
     @Inject
-    public void setupSimpleSubsystemCommands(OperatorInterface oi, SimpleSetPowerCommand command)
-    {
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(command);
-    }
-
-    @Inject
     public void setupMobilityCommands(OperatorInterface oi,
             TurnLeft90DegreesCommand turnleft90,
             SwerveToPointCommand swerveToPoint,
-            BlueBottomScoringPath bluebottom,
+
             DriveSubsystem drive,
             PropertyFactory pf) {
 
@@ -105,6 +107,13 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
-        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(bluebottom);
+    }
+
+    @Inject
+    public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
+                                        OperatorInterface oi,
+                                        BlueBottomScoringPath bluebottom) {
+        var setBlueBottomScoring = setAutonomousCommandProvider.get();
+        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueButtomScoring");
     }
 }

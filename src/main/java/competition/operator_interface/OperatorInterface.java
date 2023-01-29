@@ -46,8 +46,4 @@ public class OperatorInterface {
         return operatorDeadband.get();
     }
 
-    @Inject
-    public void setupAutonomousDriveCommands(AutoBalanceCommand balanceCommand) {
-        driverGamepad.getXboxButton(XboxButton.Y).whileTrue(balanceCommand);
-    }
 }
