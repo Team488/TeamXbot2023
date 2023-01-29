@@ -7,7 +7,7 @@ import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
 
-public class PracticeContract2022 extends ElectricalContract {
+public class PracticeContract2022 extends CompetitionContract {
 
     protected final double simulationScalingValue = 256.0 * PoseSubsystem.INCHES_IN_A_METER;
 
@@ -67,28 +67,6 @@ public class PracticeContract2022 extends ElectricalContract {
     }
 
     @Override
-    public DeviceInfo getSteeringEncoder(SwerveInstance swerveInstance) {
-        double simulationScalingValue = 1.0;
-
-        switch (swerveInstance.getLabel()) {
-            case "FrontLeftDrive":
-                return new DeviceInfo(51, false, simulationScalingValue);
-
-            case "FrontRightDrive":
-                return new DeviceInfo(52, false, simulationScalingValue);
-
-            case "RearLeftDrive":
-                return new DeviceInfo(53, false, simulationScalingValue);
-
-            case "RearRightDrive":
-                return new DeviceInfo(54, false, simulationScalingValue);
-
-            default:
-                return null;
-        }
-    }
-
-    @Override
     public XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance) {
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
@@ -102,5 +80,15 @@ public class PracticeContract2022 extends ElectricalContract {
             default:
                 return new XYPair(0, 0);
         }
+    }
+
+    @Override
+    public boolean isUpperArmReady() {
+        return false;
+    }
+
+    @Override
+    public boolean isLowerArmReady() {
+        return false;
     }
 }
