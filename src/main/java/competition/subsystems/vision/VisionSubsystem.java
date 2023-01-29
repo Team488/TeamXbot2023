@@ -58,6 +58,10 @@ public class VisionSubsystem extends BaseSubsystem {
         waitForStableFixTime = pf.createPersistentProperty("Fix stable time", 0.1);
         fixIsStable = new TimeStableValidator(() -> waitForStableFixTime.get());
 
+        // TODO: Add resiliency to this subsystem, so that if the camera is not connected, it doesn't cause a pile
+        // of errors. Some sort of VisionReady in the ElectricalContract may also make sense. Similarly,
+        // we need to handle cases like not having the AprilTag data loaded.
+
         forwardAprilCamera = new PhotonCamera("forwardAprilCamera");
 
         try {
