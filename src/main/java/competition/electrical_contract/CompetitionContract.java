@@ -106,21 +106,21 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public DeviceInfo getLowerArmLeftMotor() {
-        return new DeviceInfo(1,false);
+        return new DeviceInfo(37,true);
     }
 
     @Override
     public DeviceInfo getLowerArmRightMotor() {
-        return new DeviceInfo(2,false);
+        return new DeviceInfo(22,false);
     }
 
     public DeviceInfo getUpperArmLeftMotor(){
-        return new DeviceInfo(3,false);
+        return new DeviceInfo(35,false);
     }
 
     @Override
     public DeviceInfo getUpperArmRightMotor() {
-        return new DeviceInfo(4,false);
+        return new DeviceInfo(24,false);
     }
 
     public boolean isLowerArmReady() { return true;}

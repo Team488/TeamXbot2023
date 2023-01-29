@@ -31,6 +31,8 @@ public class LowerArmSubsystem extends BaseSubsystem{
         if(contract.isLowerArmReady()){
             this.lowerArmLeftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(),this.getPrefix(),"lowerArmLeftMotor");
             this.lowerArmRightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(),this.getPrefix(),"lowerArmRightMotor");
+
+            lowerArmLeftMotor.follow(lowerArmRightMotor, contract.getLowerArmLeftMotor().inverted);
         }
         propFactory.setPrefix(this.getPrefix());
         this.powerProp = propFactory.createPersistentProperty("Standard Motor Power", 1);
