@@ -280,7 +280,7 @@ public class XbotPhotonPoseEstimator {
 
         // Although there are confirmed to be targets, none of them may be fiducial
         // targets.
-        if (lowestAmbiguityTarget == null) {return Optional.empty()};
+        if (lowestAmbiguityTarget == null) {return Optional.empty();}
 
         int targetFiducialId = lowestAmbiguityTarget.getFiducialId();
 
@@ -318,7 +318,7 @@ public class XbotPhotonPoseEstimator {
             // Don't report errors for non-fiducial targets. This could also be resolved by
             // adding -1 to
             // the initial HashSet.
-            if (targetFiducialId == -1) {continue};
+            if (targetFiducialId == -1) {continue;}
 
             Optional<Pose3d> targetPosition = fieldTags.getTagPose(target.getFiducialId());
 
@@ -396,7 +396,7 @@ public class XbotPhotonPoseEstimator {
             // Don't report errors for non-fiducial targets. This could also be resolved by
             // adding -1 to
             // the initial HashSet.
-            if (targetFiducialId == -1) {continue};
+            if (targetFiducialId == -1) {continue;}
 
             Optional<Pose3d> targetPosition = fieldTags.getTagPose(target.getFiducialId());
 
@@ -450,7 +450,7 @@ public class XbotPhotonPoseEstimator {
             // Don't report errors for non-fiducial targets. This could also be resolved by
             // adding -1 to
             // the initial HashSet.
-            if (targetFiducialId == -1) continue;
+            if (targetFiducialId == -1) {continue;}
 
             Optional<Pose3d> targetPosition = fieldTags.getTagPose(target.getFiducialId());
 
@@ -488,7 +488,7 @@ public class XbotPhotonPoseEstimator {
         Translation3d transform = new Translation3d();
         Rotation3d rotation = new Rotation3d();
 
-        if (estimatedRobotPoses.isEmpty()) return Optional.empty();
+        if (estimatedRobotPoses.isEmpty()) {return Optional.empty();}
 
         for (Pair<PhotonTrackedTarget, Pose3d> pair : estimatedRobotPoses) {
             // Total ambiguity is non-zero confirmed because if it was zero, that pose was
