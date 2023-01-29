@@ -4,10 +4,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import competition.subsystems.drive.DriveSubsystem;
-import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
-import competition.subsystems.drive.commands.SwerveToPointCommand;
-import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
+import competition.subsystems.drive.commands.*;
 import competition.subsystems.pose.PoseSubsystem;
+import competition.subsystems.simple.SimpleSetPowerCommand;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -32,6 +31,9 @@ public class OperatorCommandMap {
             SetRobotHeadingCommand resetHeading,
             DriveSubsystem drive,
             PoseSubsystem pose,
+            DebuggingSwerveWithJoysticksCommand debugSwerve,
+            GoToNextActiveSwerveModuleCommand nextModule,
+            SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision) {
         resetHeading.setHeadingToApply(0);
 
@@ -45,11 +47,21 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
+
+        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
+        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).onTrue(regularSwerve);
     }
 
     @Inject
     public void setupGeneralSwerveCommands(SetSwerveMotorControllerPidParametersCommand setSteeringPidValues) {
         setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
+    }
+
+    @Inject
+    public void setupSimpleSubsystemCommands(OperatorInterface oi, SimpleSetPowerCommand command)
+    {
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(command);
     }
 
     @Inject
