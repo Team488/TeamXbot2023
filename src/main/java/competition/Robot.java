@@ -2,6 +2,7 @@
 package competition;
 
 import competition.injection.components.BaseRobotComponent;
+import competition.injection.components.DaggerPracticeComponent;
 import competition.injection.components.DaggerRobotComponent;
 import competition.injection.components.DaggerSimulationComponent;
 import competition.subsystems.pose.PoseSubsystem;
@@ -21,7 +22,11 @@ public class Robot extends BaseRobot {
 
     protected BaseRobotComponent createDaggerComponent() {
         if (BaseRobot.isReal()) {
-            return DaggerRobotComponent.create();
+            // TODO: Figure out some elegant way to detect 2022 vs 2023 chassis and return the appropriate component.
+            // until then, you'll have to manually change this line to return the correct component.
+            return DaggerPracticeComponent.create();
+            //return DaggerRobotComponent.create();
+
         } else {
             return DaggerSimulationComponent.create();
         }

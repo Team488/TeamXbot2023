@@ -138,7 +138,7 @@ task('copyResources') {
 }
 
 checkstyle {
-    toolVersion = '8.7'
+    toolVersion = '10.6.0'
     configFile = file('SeriouslyCommonLib/xbotcheckstyle.xml')
 }
 
