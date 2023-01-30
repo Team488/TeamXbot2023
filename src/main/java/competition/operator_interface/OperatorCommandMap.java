@@ -1,13 +1,16 @@
 package competition.operator_interface;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.drive.DriveSubsystem;
+import competition.subsystems.drive.commands.AutoBalanceCommand;
+import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
+import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
+import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.pose.PoseSubsystem;
+import competition.subsystems.simple.SimpleSetPowerCommand;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -16,7 +19,12 @@ import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
+import xbot.common.subsystems.autonomous.SetAutonomousCommand;
 import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * Maps operator interface buttons to commands
@@ -32,6 +40,9 @@ public class OperatorCommandMap {
             SetRobotHeadingCommand resetHeading,
             DriveSubsystem drive,
             PoseSubsystem pose,
+            DebuggingSwerveWithJoysticksCommand debugSwerve,
+            GoToNextActiveSwerveModuleCommand nextModule,
+            SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision) {
         resetHeading.setHeadingToApply(0);
 
@@ -45,6 +56,23 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
+
+        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
+        oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
+
+        NamedInstantCommand enableCollectorRotation =
+                new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
+        NamedInstantCommand disableCollectorRotation =
+                new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
+
+        oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
+        oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+    }
+
+    @Inject
+    public void setupAutonomousDriveCommands(OperatorInterface oi, AutoBalanceCommand balanceCommand) {
+        oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
     }
 
     @Inject
@@ -56,6 +84,7 @@ public class OperatorCommandMap {
     public void setupMobilityCommands(OperatorInterface oi,
             TurnLeft90DegreesCommand turnleft90,
             SwerveToPointCommand swerveToPoint,
+
             DriveSubsystem drive,
             PropertyFactory pf) {
 
@@ -85,6 +114,14 @@ public class OperatorCommandMap {
                 () -> drive.setIsRobotOrientedDrive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
-        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+    }
+
+    @Inject
+    public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
+                                        OperatorInterface oi,
+                                        BlueBottomScoringPath bluebottom) {
+        var setBlueBottomScoring = setAutonomousCommandProvider.get();
+        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueButtomScoring");
     }
 }
