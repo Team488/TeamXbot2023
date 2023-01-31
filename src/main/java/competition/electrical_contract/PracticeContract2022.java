@@ -16,28 +16,28 @@ public class PracticeContract2022 extends CompetitionContract {
 
     @Override
     public boolean isDriveReady() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean areCanCodersReady() {
-        return true;
+        return false;
     }
 
     @Override
     public DeviceInfo getDriveNeo(SwerveInstance swerveInstance) {
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(31, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",31, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(28, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",28, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(38, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",38, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(21, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",21, false, simulationScalingValue);
 
             default:
                 return null;
@@ -50,16 +50,16 @@ public class PracticeContract2022 extends CompetitionContract {
 
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(30, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",30, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(29, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",29, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(39, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",39, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(20, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",20, false, simulationScalingValue);
 
             default:
                 return null;
@@ -89,6 +89,11 @@ public class PracticeContract2022 extends CompetitionContract {
 
     @Override
     public boolean isLowerArmReady() {
+        return false;
+    }
+
+    @Override
+    public boolean isForwardAprilCamReady() {
         return false;
     }
 }

@@ -68,7 +68,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
     private void setupStatusFrames() {
         if (this.contract.isDriveReady()) {
             // We need to re-set frame intervals after a device reset.
-            if (this.motorController.getStickyFault(FaultID.kHasReset) && this.motorController.getLastError() != REVLibError.kHALError) {
+            if (this.motorController.getStickyFaultHasReset() && this.motorController.getLastError() != REVLibError.kHALError) {
                 log.info("Setting status frame periods.");
 
                 // See https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
@@ -173,6 +173,12 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
             currentVelocity.set(this.getCurrentValue());
             setupStatusFrames();
             this.motorController.periodic();
+        }
+    }
+
+    public void refreshDataFrame() {
+        if (contract.isDriveReady()) {
+            motorController.refreshDataFrame();
         }
     }
 }

@@ -1,5 +1,6 @@
 package competition.subsystems.vision;
 
+import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.pose.XbotPhotonPoseEstimator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -34,7 +35,7 @@ public class VisionSubsystem extends BaseSubsystem {
     public static final String TARGET_POSE = "TemporaryCam/targetPose";
     public static final String LATENCY_MILLIS = "TemporaryCam/latencyMillis";
 
-    final PhotonCamera forwardAprilCamera;
+    PhotonCamera forwardAprilCamera;
 
     final RobotAssertionManager assertionManager;
     final BooleanProperty isInverted;
@@ -48,7 +49,7 @@ public class VisionSubsystem extends BaseSubsystem {
 
 
     @Inject
-    public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager) {
+    public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager, ElectricalContract contract) {
         this.assertionManager = assertionManager;
         visionTable = NetworkTableInstance.getDefault().getTable(VISION_TABLE);
 
@@ -63,24 +64,26 @@ public class VisionSubsystem extends BaseSubsystem {
         // of errors. Some sort of VisionReady in the ElectricalContract may also make sense. Similarly,
         // we need to handle cases like not having the AprilTag data loaded.
 
-        forwardAprilCamera = new PhotonCamera("forwardAprilCamera");
+        if (contract.isForwardAprilCamReady()) {
+            forwardAprilCamera = new PhotonCamera("forwardAprilCamera");
 
-        try {
-            aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-            visionWorking = true;
-            log.info("Successfully loaded AprilTagFieldLayout");
-        } catch (IOException e) {
-            log.error("Could not load AprilTagFieldLayout!", e);
+            try {
+                aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+                visionWorking = true;
+                log.info("Successfully loaded AprilTagFieldLayout");
+            } catch (IOException e) {
+                log.error("Could not load AprilTagFieldLayout!", e);
+            }
+
+            //Cam mounted half a meter forward of center, half a meter up from center, and facing forward.
+            Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+            photonPoseEstimator = new XbotPhotonPoseEstimator(
+                    aprilTagFieldLayout,
+                    XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+                    forwardAprilCamera,
+                    robotToCam);
+            photonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
         }
-
-        //Cam mounted half a meter forward of center, half a meter up from center, and facing forward.
-        Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
-        photonPoseEstimator = new XbotPhotonPoseEstimator(
-            aprilTagFieldLayout, 
-            XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-            forwardAprilCamera, 
-            robotToCam);
-        photonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
     }
 
     public double getBearingToHub() {

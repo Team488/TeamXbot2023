@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.logic.Latch;
@@ -37,6 +38,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
     private final Latch useVisionToUpdateGyroLatch;
+
 
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
@@ -128,6 +130,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
         totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
         fieldForDisplay.setRobotPose(estimatedPosition);
+        Logger.getInstance().recordOutput("RobotEstimatedPose", estimatedPosition);
     }
 
     private void improveOdometryUsingSimpleAprilTag() {
@@ -149,11 +152,12 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
             // Check for the distance delta between the old and new poses. If it's too large, reset
             // the healthy pose validator.
-            double distance = recentPosition.getTranslation().getDistance(recentPosition.getTranslation());
+            double distance = recentPosition.getTranslation().getDistance(
+                    camPose.estimatedPose.getTranslation().toTranslation2d());
             boolean isSurprisingDistance = (distance > suprisingVisionUpdateDistanceInMetersProp.get());
-            isPoseHealthyProp.set(healthyPoseValidator.checkStable(isSurprisingDistance));
+            isPoseHealthyProp.set(healthyPoseValidator.checkStable(!isSurprisingDistance));
 
-            // If the distance is really, really small, we're extremely confident in the vision data, and
+            // If the distance delta is tiny, we're extremely confident in the vision data, and
             // could consider using it to update the gyro.
             boolean isExtremelyConfident = (distance < extremelyConfidentVisionDistanceUpdateInMetersProp.get());
             isVisionPoseExtremelyConfidentProp.set(extremelyConfidentVisionValidator.checkStable(isExtremelyConfident));

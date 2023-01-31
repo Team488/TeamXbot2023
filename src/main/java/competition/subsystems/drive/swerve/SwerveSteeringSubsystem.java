@@ -82,7 +82,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
             // Since the CANCoders start with absolute knowledge from the start, that means this system
             // is always calibrated.
             calibrated = true;
-
+            // As a special case, we have to perform the first refresh in order to have any useful data.
+            encoder.pullDataFrame();
             if (this.encoder.getHealth() == DeviceHealth.Unhealthy) {
                 canCoderUnavailable = true;
             }
@@ -96,7 +97,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     private void setupStatusFrames() {
         if (this.contract.isDriveReady()) {
             // We need to re-set frame intervals after a device reset.
-            if (this.motorController.getStickyFault(FaultID.kHasReset) && this.motorController.getLastError() != REVLibError.kHALError) {
+            if (this.motorController.getStickyFaultHasReset() && this.motorController.getLastError() != REVLibError.kHALError) {
                 log.info("Setting status frame periods.");
 
                 // See https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
@@ -342,5 +343,11 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
         }
 
         currentModuleHeading.set(getCurrentValue());
+    }
+
+    public void refreshDataFrame() {
+        if (contract.isDriveReady()) {
+            motorController.refreshDataFrame();
+        }
     }
 }

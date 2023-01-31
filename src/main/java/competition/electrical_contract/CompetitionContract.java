@@ -28,16 +28,16 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getDriveNeo(SwerveInstance swerveInstance) {
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(31, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",31, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(29, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",29, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(38, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",38, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(21, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Drive",21, false, simulationScalingValue);
 
             default:
                 return null;
@@ -50,16 +50,16 @@ public class CompetitionContract extends ElectricalContract {
 
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(30, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",30, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(28, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",28, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(39, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",39, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(20, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel()+"Steering",20, false, simulationScalingValue);
 
             default:
                 return null;
@@ -72,16 +72,16 @@ public class CompetitionContract extends ElectricalContract {
 
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(51, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel(),51, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(52, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel(),52, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(53, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel(),53, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(54, false, simulationScalingValue);
+                return new DeviceInfo(swerveInstance.getLabel(),54, false, simulationScalingValue);
 
             default:
                 return null;
@@ -105,22 +105,27 @@ public class CompetitionContract extends ElectricalContract {
     }
 
     @Override
+    public boolean isForwardAprilCamReady() {
+        return true;
+    }
+
+    @Override
     public DeviceInfo getLowerArmLeftMotor() {
-        return new DeviceInfo(37,true);
+        return new DeviceInfo("LowerArmLeft",37,true);
     }
 
     @Override
     public DeviceInfo getLowerArmRightMotor() {
-        return new DeviceInfo(22,false);
+        return new DeviceInfo("LowerArmRight",22,false);
     }
 
     public DeviceInfo getUpperArmLeftMotor(){
-        return new DeviceInfo(35,false);
+        return new DeviceInfo("UpperArmLeft",35,false);
     }
 
     @Override
     public DeviceInfo getUpperArmRightMotor() {
-        return new DeviceInfo(24,false);
+        return new DeviceInfo("UpperArmRight",24,false);
     }
 
     public boolean isLowerArmReady() { return true;}

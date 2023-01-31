@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
 <log4j:configuration>
+
+   <appender name="consoleAppender"
+             class="org.apache.log4j.ConsoleAppender">
+      <param name="Threshold" value="INFO" />
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%5p | %d | %L | %-40c{1} | %m%n" />
+      </layout>
+   </appender>
    
    <appender name="stationAppender"
       class="xbot.common.logging.DriverStationAppender">
@@ -33,6 +41,7 @@
 <root>
     <priority value="INFO"></priority>
     <appender-ref ref="asyncAppender"/>
+    <appender-ref ref="consoleAppender"/>
     <appender-ref ref="stationAppender"/>
 </root>
 

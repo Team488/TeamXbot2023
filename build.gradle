@@ -6,6 +6,7 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'org.hidetake.ssh' version "2.9.0"
+    id "com.peterabeles.gversion" version "1.10"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -103,6 +104,8 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.44.2'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.44.2'
     testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.44.2'
+
+    annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:2.1.1"
 }
 
 wpi.sim.addGui().defaultEnabled = true
@@ -193,3 +196,13 @@ jacocoTestReport {
 
 // always generate the coverage report after the tests run
 test.finalizedBy { jacocoTestReport }
+
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "PST" // Use preferred time zone
+    indent       = "  "
+}

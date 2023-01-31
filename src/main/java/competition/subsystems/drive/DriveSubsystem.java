@@ -3,6 +3,7 @@ package competition.subsystems.drive;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
@@ -16,6 +17,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import xbot.common.advantage.DataFrameRefreshable;
+import xbot.common.controls.sensors.XGyro;
 import xbot.common.math.MathUtils;
 import xbot.common.math.PIDManager;
 import xbot.common.math.XYPair;
@@ -28,7 +31,7 @@ import xbot.common.subsystems.drive.BaseDriveSubsystem;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
 @Singleton
-public class DriveSubsystem extends BaseDriveSubsystem {
+public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefreshable {
     private static Logger log = Logger.getLogger(DriveSubsystem.class);
     
     private final SwerveModuleSubsystem frontLeftSwerveModuleSubsystem;
@@ -71,10 +74,12 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
     private SwerveModuleLocation activeModule = SwerveModuleLocation.FRONT_LEFT;
 
+    private XGyro gyro;
+
     @Inject
     public DriveSubsystem(PIDManagerFactory pidFactory, XPropertyManager propManager, ElectricalContract contract, PropertyFactory pf,
-            @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
-            @RearLeftDrive SwerveComponent rearLeftSwerve, @RearRightDrive SwerveComponent rearRightSwerve) {
+                          @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
+                          @RearLeftDrive SwerveComponent rearLeftSwerve, @RearRightDrive SwerveComponent rearRightSwerve) {
         log.info("Creating DriveSubsystem");
         pf.setPrefix(this);
 
@@ -284,6 +289,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         this.getRearLeftSwerveModuleSubsystem().setTargetState(moduleStates[2]);
         this.getRearRightSwerveModuleSubsystem().setTargetState(moduleStates[3]);
 
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput("SwerveStates", moduleStates);
+
         // If we were asked to move in a direction, remember that direction.
         if (translate.getMagnitude() > 0.02 || Math.abs(rotate) > 0.02) {
             lastCommandedDirection = translate;
@@ -336,7 +343,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     /**
-     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(SwerveModuleLocation)}. 
+     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(double, double)}
      * Has no effect when the robot is in normal, "Maintainer" operation.
      * @param activeModule Which module to set as the active module.
      */
@@ -346,7 +353,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     /**
-     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(SwerveModuleLocation)}. 
+     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(double, double)}
      * Has no effect when the robot is in normal, "Maintainer" operation.
      * Moves the active module to the next module, according to the pattern FrontLeft, FrontRight, RearLeft, RearRight.
      */
@@ -400,5 +407,22 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     public void controlOnlyActiveSwerveModuleSubsystem(double drivePower, double steeringPower) {
         this.getActiveSwerveModuleSubsystem().setPowers(drivePower, steeringPower);
         stopInactiveModules();
+    }
+
+    private SwerveModulePosition[] getSwerveModulePositions() {
+        return new SwerveModulePosition[] {
+                getFrontLeftSwerveModuleSubsystem().getcurrentPosition(),
+                getFrontRightSwerveModuleSubsystem().getcurrentPosition(),
+                getRearLeftSwerveModuleSubsystem().getcurrentPosition(),
+                getRearRightSwerveModuleSubsystem().getcurrentPosition()
+        };
+    }
+
+    public void refreshDataFrame() {
+        gyro.refreshDataFrame();
+        frontLeftSwerveModuleSubsystem.refreshDataFrame();
+        frontRightSwerveModuleSubsystem.refreshDataFrame();
+        rearLeftSwerveModuleSubsystem.refreshDataFrame();
+        rearRightSwerveModuleSubsystem.refreshDataFrame();
     }
 }
