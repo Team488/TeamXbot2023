@@ -347,6 +347,9 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     public void refreshDataFrame() {
         if (contract.isDriveReady()) {
             motorController.refreshDataFrame();
+
+        }
+        if (contract.areCanCodersReady()) {
             encoder.refreshDataFrame();
         }
     }
