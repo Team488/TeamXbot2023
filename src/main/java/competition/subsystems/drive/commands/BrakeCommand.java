@@ -16,6 +16,7 @@ public class BrakeCommand extends BaseCommand {
     @Inject
     public BrakeCommand(DriveSubsystem drive) {
         this.drive = drive;
+        addRequirements(drive);
     }
 
     @Override

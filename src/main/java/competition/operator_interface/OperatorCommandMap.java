@@ -3,6 +3,7 @@ package competition.operator_interface;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
+import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
@@ -40,6 +41,7 @@ public class OperatorCommandMap {
             SetRobotHeadingCommand resetHeading,
             DriveSubsystem drive,
             PoseSubsystem pose,
+            BrakeCommand brake,
             DebuggingSwerveWithJoysticksCommand debugSwerve,
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
@@ -68,6 +70,8 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+
+        oi.driverGamepad.getifAvailable(XboxButton.RightStick).whileTrue(brake);
     }
 
     @Inject

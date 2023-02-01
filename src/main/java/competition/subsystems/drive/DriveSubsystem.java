@@ -293,11 +293,11 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     public void setWheelsToXMode() {
-        SwerveModuleState frontLeft = new SwerveModuleState(0, new Rotation2d(-45));
-        SwerveModuleState frontRight = new SwerveModuleState(0, new Rotation2d(45));
+        SwerveModuleState frontLeft = new SwerveModuleState(0, new Rotation2d(+45));
+        SwerveModuleState frontRight = new SwerveModuleState(0, new Rotation2d(-45));
         this.getFrontLeftSwerveModuleSubsystem().setTargetState(frontLeft);
         this.getFrontRightSwerveModuleSubsystem().setTargetState(frontRight);
-        this.getRearRightSwerveModuleSubsystem().setTargetState(frontLeft);
+        this.getRearLeftSwerveModuleSubsystem().setTargetState(frontRight);
         this.getRearRightSwerveModuleSubsystem().setTargetState(frontLeft);
 
     }
