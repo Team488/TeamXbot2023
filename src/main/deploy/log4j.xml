@@ -40,9 +40,9 @@
 
 <root>
     <priority value="INFO"></priority>
-    <appender-ref ref="asyncAppender"/>
-    <appender-ref ref="consoleAppender"/>
-    <appender-ref ref="stationAppender"/>
+   <!--<appender-ref ref="asyncAppender"/>
+   <appender-ref ref="consoleAppender"/>
+   <appender-ref ref="stationAppender"/> -->
 </root>
 
 </log4j:configuration>

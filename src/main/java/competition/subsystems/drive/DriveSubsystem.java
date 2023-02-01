@@ -74,8 +74,6 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
     private SwerveModuleLocation activeModule = SwerveModuleLocation.FRONT_LEFT;
 
-    private XGyro gyro;
-
     @Inject
     public DriveSubsystem(PIDManagerFactory pidFactory, XPropertyManager propManager, ElectricalContract contract, PropertyFactory pf,
                           @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
@@ -419,7 +417,6 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     }
 
     public void refreshDataFrame() {
-        gyro.refreshDataFrame();
         frontLeftSwerveModuleSubsystem.refreshDataFrame();
         frontRightSwerveModuleSubsystem.refreshDataFrame();
         rearLeftSwerveModuleSubsystem.refreshDataFrame();

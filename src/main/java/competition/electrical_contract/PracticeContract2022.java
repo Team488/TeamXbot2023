@@ -16,12 +16,12 @@ public class PracticeContract2022 extends CompetitionContract {
 
     @Override
     public boolean isDriveReady() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean areCanCodersReady() {
-        return false;
+        return true;
     }
 
     @Override
