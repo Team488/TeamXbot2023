@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 
@@ -83,7 +82,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
             // is always calibrated.
             calibrated = true;
             // As a special case, we have to perform the first refresh in order to have any useful data.
-            encoder.pullDataFrame();
+            encoder.refreshDataFrame();
             if (this.encoder.getHealth() == DeviceHealth.Unhealthy) {
                 canCoderUnavailable = true;
             }
@@ -348,6 +347,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     public void refreshDataFrame() {
         if (contract.isDriveReady()) {
             motorController.refreshDataFrame();
+            encoder.refreshDataFrame();
         }
     }
 }
