@@ -32,14 +32,17 @@ public class SwerveSteeringMaintainerCommand extends BaseMaintainerCommand {
             this.subsystem.setPower(this.subsystem.calculatePower());
         }
 
-        if (enableAutoCalibrate.get() && isMaintainerAtGoal()) {
+        // Only re-calibrate if it's enabled, we're at the goal, and we're not moving.
+        if (enableAutoCalibrate.get() && isMaintainerAtGoal() && !(Math.abs(this.subsystem.getVelocity()) > 0)) {
             this.subsystem.calibrateMotorControllerPositionFromCanCoder();
         }
     }
 
     @Override
     protected double getHumanInput() {
-        // never hooked direclty to human input, human input handled by drive
+        // never hooked directly to human input, human input handled by drive.
+        // Might not even need the maintainer architecture here; could probably just have the SwerveSteeringSubsystem
+        // go ahead and immediately apply targets from the DriveSubsystem straight into the motor controller.
         return 0;
     }
 

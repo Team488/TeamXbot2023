@@ -113,18 +113,18 @@ public class SwerveSteeringSubsystemTest extends BaseCompetitionTest {
     @Test
     public void testCalibrateMotorControllerEncoderFromCanCoder() {
         assertEquals("CanCoder should default to 0 position", 0, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should default to 0 position", 0, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
+        assertEquals("Neo encoder should default to 0 position", 0, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
 
         absoluteEncoder.setAbsolutePosition(50);
         absoluteEncoder.refreshDataFrame();
         
         assertEquals("CanCoder position should be updated", 50, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should still be at 0 position", 0, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
+        assertEquals("Neo encoder should still be at 0 position", 0, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
 
         subsystem.calibrateMotorControllerPositionFromCanCoder();
 
         assertEquals("CanCoder position should be 50", 50, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should match CanCoder", 50, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
+        assertEquals("Neo encoder should match CanCoder", 50, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
 
         absoluteEncoder.setAbsolutePosition(10);
         motorController.setVelocity(10);
@@ -132,7 +132,7 @@ public class SwerveSteeringSubsystemTest extends BaseCompetitionTest {
         subsystem.calibrateMotorControllerPositionFromCanCoder();
 
         assertEquals("CanCoder position should be 10", 10, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should not be updated since robot is in motion", 50, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
+        assertEquals("Neo encoder should not be updated since robot is in motion", 50, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
     }
 
 }
