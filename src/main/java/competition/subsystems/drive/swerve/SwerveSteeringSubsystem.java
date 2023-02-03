@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 
 import org.apache.log4j.Logger;
@@ -37,7 +36,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
 
     private final DoubleProperty powerScale;
     private double targetRotation;
-    private final DoubleProperty currentModuleHeading;
     private final DoubleProperty degreesPerMotorRotation;
     private final BooleanProperty useMotorControllerPid;
     private final DoubleProperty maxMotorEncoderDrift;
@@ -63,10 +61,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
         this.useMotorControllerPid = pf.createPersistentProperty("UseMotorControllerPID", true);
         this.maxMotorEncoderDrift = pf.createPersistentProperty("MaxEncoderDriftDegrees", 1.0);
 
-        // Create properties that are unique to each instance
-        pf.setPrefix(this);
-        this.currentModuleHeading = pf.createEphemeralProperty("CurrentModuleHeading", 0.0);
-
         if (electricalContract.isDriveReady()) {
             this.motorController = sparkMaxFactory.createWithoutProperties(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
             setMotorControllerPositionPidParameters();
@@ -82,28 +76,15 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
                 canCoderUnavailable = true;
             }
         }
-        setupStatusFramesIfControllerHasRecentRecently();
+        setupStatusFramesAsNeeded();
     }
 
     /**
      * Set up status frame intervals to reduce unnecessary CAN activity.
      */
-    private void setupStatusFramesIfControllerHasRecentRecently() {
+    private void setupStatusFramesAsNeeded() {
         if (this.contract.isDriveReady()) {
-            // We need to re-set frame intervals after a device reset.
-            if (this.motorController.getStickyFaultHasReset() && this.motorController.getLastError() != REVLibError.kHALError) {
-                log.info("Setting status frame periods.");
-
-                // See https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces#periodic-status-frames
-                // for description of the different status frames. kStatus2 is the only frame with data needed for software PID.
-
-                this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus0, 500 /* default 10 */);
-                this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500 /* default 20 */);
-                this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20 /* default 20 */);
-                this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500 /* default 50 */);
-                
-                this.motorController.clearFaults();
-            }
+            this.motorController.setupStatusFramesIfControllerHasRecentRecently(500, 500, 20, 500);
         }
 
         if (this.contract.areCanCodersReady() && this.encoder.hasResetOccurred()) {
@@ -133,7 +114,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      */
     @Override
     public double getTargetValue() {
-        return this.targetRotation.get();
+        return targetRotation;
     }
 
     /**
@@ -141,7 +122,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      */
     @Override
     public void setTargetValue(double value) {
-        this.targetRotation.set(value);
+        targetRotation = value;
     }
 
     /**
@@ -332,7 +313,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     @Override
     public void periodic() {
         if (contract.isDriveReady()) {
-            setupStatusFramesIfControllerHasRecentRecently();
+            setupStatusFramesAsNeeded();
         }
 
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
