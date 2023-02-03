@@ -342,6 +342,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
         }
 
         currentModuleHeading.set(getCurrentValue());
+
+        motorController.periodic();
     }
 
     public void refreshDataFrame() {

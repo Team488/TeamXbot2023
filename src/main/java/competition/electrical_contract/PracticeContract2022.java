@@ -94,6 +94,6 @@ public class PracticeContract2022 extends CompetitionContract {
 
     @Override
     public boolean isForwardAprilCamReady() {
-        return false;
+        return true;
     }
 }

@@ -230,6 +230,9 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
      */
     public void move(XYPair translate, double rotate, XYPair centerOfRotationInches) {
 
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput("TranslationIntentX", translate.x);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput("TranslationIntentY", translate.y);
+
         // First, we need to check if we've been asked to move at all. If not, we should look at the last time we were given a commanded direction
         // and keep the wheels pointed that way. That prevents the wheels from returning to "0" degrees when the driver has gone back to 
         // neutral joystick position.
@@ -407,12 +410,12 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         stopInactiveModules();
     }
 
-    private SwerveModulePosition[] getSwerveModulePositions() {
-        return new SwerveModulePosition[] {
-                getFrontLeftSwerveModuleSubsystem().getcurrentPosition(),
-                getFrontRightSwerveModuleSubsystem().getcurrentPosition(),
-                getRearLeftSwerveModuleSubsystem().getcurrentPosition(),
-                getRearRightSwerveModuleSubsystem().getcurrentPosition()
+    private SwerveModuleState[] getSwerveModuleStates() {
+        return new SwerveModuleState[] {
+                getFrontLeftSwerveModuleSubsystem().getCurrentState(),
+                getFrontRightSwerveModuleSubsystem().getCurrentState(),
+                getRearLeftSwerveModuleSubsystem().getCurrentState(),
+                getRearRightSwerveModuleSubsystem().getCurrentState()
         };
     }
 
@@ -421,5 +424,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         frontRightSwerveModuleSubsystem.refreshDataFrame();
         rearLeftSwerveModuleSubsystem.refreshDataFrame();
         rearRightSwerveModuleSubsystem.refreshDataFrame();
+
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput("CurrentSwerveState", getSwerveModuleStates());
     }
 }

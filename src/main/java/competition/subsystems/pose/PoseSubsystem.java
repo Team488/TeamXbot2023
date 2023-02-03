@@ -107,6 +107,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // while still presenting inches externally to dashboards.
 
         // Update the basic odometry (gyro, encoders)
+
         Pose2d updatedPosition = swerveOdometry.update(
                 this.getCurrentHeading(),
                 getSwerveModulePositions()
