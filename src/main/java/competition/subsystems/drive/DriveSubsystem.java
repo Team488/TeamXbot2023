@@ -1,11 +1,5 @@
 package competition.subsystems.drive;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import org.apache.log4j.Logger;
-
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.FrontLeftDrive;
 import competition.injection.swerve.FrontRightDrive;
@@ -17,22 +11,24 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import org.apache.log4j.Logger;
 import xbot.common.advantage.DataFrameRefreshable;
-import xbot.common.controls.sensors.XGyro;
 import xbot.common.math.MathUtils;
 import xbot.common.math.PIDManager;
-import xbot.common.math.XYPair;
 import xbot.common.math.PIDManager.PIDManagerFactory;
+import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
-import xbot.common.properties.StringProperty;
 import xbot.common.properties.XPropertyManager;
 import xbot.common.subsystems.drive.BaseDriveSubsystem;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 @Singleton
 public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefreshable {
-    private static Logger log = Logger.getLogger(DriveSubsystem.class);
+    private static final Logger log = Logger.getLogger(DriveSubsystem.class);
     
     private final SwerveModuleSubsystem frontLeftSwerveModuleSubsystem;
     private final SwerveModuleSubsystem frontRightSwerveModuleSubsystem;
@@ -43,12 +39,6 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     private final DoubleProperty maxTargetTurnRate;
 
     private final SwerveDriveKinematics swerveDriveKinematics;
-    private final StringProperty activeModuleProp;
-    
-    private final DoubleProperty translationXTargetMPS;
-    private final DoubleProperty translationYTargetMPS;
-    private final DoubleProperty rotationTargetRadians;
-
     private final DoubleProperty minTranslateSpeed;
     private final DoubleProperty minRotationalSpeed;
 
@@ -58,7 +48,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     private XYPair lastCommandedDirection;
     private double lastCommandedRotation;
 
-    private final DoubleProperty desiredHeading;
+    private double desiredHeading;
 
     public enum SwerveModuleLocation {
         FRONT_LEFT,
@@ -66,7 +56,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         REAR_LEFT,
         REAR_RIGHT;
 
-        private static SwerveModuleLocation[] values = values();
+        private static final SwerveModuleLocation[] values = values();
         public SwerveModuleLocation next() {
             return values[(this.ordinal() + 1) % values.length];
         }
@@ -75,7 +65,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     private SwerveModuleLocation activeModule = SwerveModuleLocation.FRONT_LEFT;
 
     @Inject
-    public DriveSubsystem(PIDManagerFactory pidFactory, XPropertyManager propManager, ElectricalContract contract, PropertyFactory pf,
+    public DriveSubsystem(PIDManagerFactory pidFactory, ElectricalContract contract, PropertyFactory pf,
                           @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
                           @RearLeftDrive SwerveComponent rearLeftSwerve, @RearRightDrive SwerveComponent rearRightSwerve) {
         log.info("Creating DriveSubsystem");
@@ -95,11 +85,6 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
         this.maxTargetSpeed = pf.createPersistentProperty("MaxTargetSpeedInchesPerSecond", 120.0);
         this.maxTargetTurnRate = pf.createPersistentProperty("MaxTargetTurnRate", MathUtils.Tau);
-        this.activeModuleProp = pf.createEphemeralProperty("ActiveModule", activeModule.toString());
-        this.translationXTargetMPS = pf.createEphemeralProperty("TranslationXMetersPerSecond", 0.0);
-        this.translationYTargetMPS = pf.createEphemeralProperty("TranslationYMetersPerSecond", 0.0);
-        this.rotationTargetRadians = pf.createEphemeralProperty("RotationTargetRadians", 0.0);
-        this.desiredHeading = pf.createEphemeralProperty("Desired heading", 0);
 
         // These can be tuned to reduce twitchy wheels
         this.minTranslateSpeed = pf.createPersistentProperty("Minimum translate speed", 0.02);
@@ -251,9 +236,12 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         double targetYmetersPerSecond = translate.y * maxTargetSpeed.get() / BasePoseSubsystem.INCHES_IN_A_METER;
         double targetRotationRadiansPerSecond = rotate * maxTargetTurnRate.get();
 
-        translationXTargetMPS.set(targetXmetersPerSecond);
-        translationYTargetMPS.set(targetYmetersPerSecond);
-        rotationTargetRadians.set(targetRotationRadiansPerSecond);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "TranslationTargetX-mps", targetXmetersPerSecond);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "TranslationTargetY-mps", targetYmetersPerSecond);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "RotationTargetRadPerSec", targetRotationRadiansPerSecond);
 
         // This handy library from WPILib will take our robot's overall desired translation & rotation and figure out
         // what each swerve module should be doing in order to achieve that.
@@ -350,7 +338,8 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
      */
     public void setActiveModule(SwerveModuleLocation activeModule) {
         this.activeModule = activeModule;
-        activeModuleProp.set(activeModule.toString());
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "ActiveModule", activeModule.toString());
     }
 
     /**
@@ -392,11 +381,12 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     }
 
     public void setDesiredHeading(double heading) {
-        this.desiredHeading.set(heading);
+        desiredHeading = heading;
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix()+"DesiredHeading", getDesiredHeading());
     }
 
     public double getDesiredHeading() {
-        return this.desiredHeading.get();
+        return desiredHeading;
     }
 
     /**
@@ -425,6 +415,6 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         rearLeftSwerveModuleSubsystem.refreshDataFrame();
         rearRightSwerveModuleSubsystem.refreshDataFrame();
 
-        org.littletonrobotics.junction.Logger.getInstance().recordOutput("CurrentSwerveState", getSwerveModuleStates());
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix()+"CurrentSwerveState", getSwerveModuleStates());
     }
 }
