@@ -151,7 +151,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         fieldForDisplay.setRobotPose(estimatedPosition);
         this.velocityX.set((totalDistanceX.get() - prevTotalDistanceX));
         this.velocityY.set((totalDistanceY.get() - prevTotalDistanceY));
-        this.totalVelocity.set(Math.sqrt(Math.pow(velocityX.get(), 2.0) + Math.pow(velocityY.get(), 2.0));
+        this.totalVelocity.set(Math.sqrt(Math.pow(velocityX.get(), 2.0) + Math.pow(velocityY.get(), 2.0)));
     }
 
     private void improveOdometryUsingSimpleAprilTag() {

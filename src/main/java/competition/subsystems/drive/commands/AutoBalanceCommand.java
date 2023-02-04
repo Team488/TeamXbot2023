@@ -17,7 +17,6 @@ public class AutoBalanceCommand extends BaseCommand {
 
     @Inject
     public AutoBalanceCommand(DriveSubsystem drive, PoseSubsystem pose, PIDManagerFactory pidFactory) {
-        this.addRequirements(drive);
         this.drive = drive;
         this.pose = pose;
         this.pidManager = pidFactory.create(this.getPrefix(), 0.1, 0, 0);
@@ -37,8 +36,8 @@ public class AutoBalanceCommand extends BaseCommand {
             currentAngle = 0;
         }
 
-        double power = pidManager.calculate(0, currentAngle);
+        double velocity = pidManager.calculate(0, currentAngle);
 
-        drive.move(new XYPair(power,0), 0);
+        drive.setVelocityMaintainerXTarget(velocity);
     }
 }
