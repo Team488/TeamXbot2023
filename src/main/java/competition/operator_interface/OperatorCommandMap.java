@@ -12,6 +12,7 @@ import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParamete
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
+import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
@@ -52,7 +53,8 @@ public class OperatorCommandMap {
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision,
-            VelocityMaintainerCommand velocityMaintainer) {
+            VelocityMaintainerCommand velocityMaintainer,
+            VelocityDriveWithJoysticksCommand velocityDrive) {
         resetHeading.setHeadingToApply(0);
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
@@ -79,6 +81,7 @@ public class OperatorCommandMap {
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
         velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+        velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
     }
 
     @Inject
