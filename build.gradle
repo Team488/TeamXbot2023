@@ -9,8 +9,8 @@ plugins {
     id "com.peterabeles.gversion" version "1.10"
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 def ROBOT_MAIN_CLASS = "competition.Main"
 
@@ -197,6 +197,7 @@ jacocoTestReport {
 // always generate the coverage report after the tests run
 test.finalizedBy { jacocoTestReport }
 
+/*
 project.compileJava.dependsOn(createVersionFile)
 gversion {
     srcDir       = "src/main/java/"
@@ -206,3 +207,4 @@ gversion {
     timeZone     = "PST" // Use preferred time zone
     indent       = "  "
 }
+*/

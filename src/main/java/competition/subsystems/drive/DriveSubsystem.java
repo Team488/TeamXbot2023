@@ -7,7 +7,10 @@ import competition.injection.swerve.RearLeftDrive;
 import competition.injection.swerve.RearRightDrive;
 import competition.injection.swerve.SwerveComponent;
 import competition.subsystems.drive.swerve.SwerveModuleSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -243,15 +246,38 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
                 this.getPrefix() + "RotationTargetRadPerSec", targetRotationRadiansPerSecond);
 
-        // This handy library from WPILib will take our robot's overall desired translation & rotation and figure out
-        // what each swerve module should be doing in order to achieve that.
-        ChassisSpeeds targetMotion = new ChassisSpeeds(targetXmetersPerSecond, targetYmetersPerSecond, targetRotationRadiansPerSecond);
+        // The WPI Swerve kinematics library has a fundamental issue (see https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/22)
+        // for more details) where adding rotation to a translation will "drift" translation in the direction of the rotation.
+        // The CheesyPoofs have an interesting solution: project your desired position "ahead" of you by multiplying your commanded velocities
+        // by a timestep (~20ms in our case) to see where you want to be. Then, use the Pose2d.log() method to return a Twist2d.
+        // That Twist contains updated velocities (for rotation and translation) that should more or less achieve your goal.
+
+        // This timestep is more of a "fudge" parameter at the moment. Should probably change it to a tunable number.
+        double timestep = 0.15;
+        Pose2d projectedRobotPosition = new Pose2d(
+                targetXmetersPerSecond * timestep,
+                targetYmetersPerSecond * timestep,
+                Rotation2d.fromRadians(targetRotationRadiansPerSecond * timestep));
+        Pose2d zeroes = new Pose2d();
+        Twist2d twistVelocities = zeroes.log(projectedRobotPosition);
+
+        ChassisSpeeds twistedChassisSpeeds = new ChassisSpeeds(
+                twistVelocities.dx / timestep,
+                twistVelocities.dy / timestep,
+                twistVelocities.dtheta / timestep);
+
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "TwistedX-mps", twistedChassisSpeeds.vxMetersPerSecond);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "TwistedY-mps", twistedChassisSpeeds.vyMetersPerSecond);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                this.getPrefix() + "TwistedRot", twistedChassisSpeeds.omegaRadiansPerSecond);
 
         // One optional step - we can choose to rotate around a specific point, rather than the center of the robot.
         Translation2d centerOfRotationTranslationMeters = new Translation2d(
             centerOfRotationInches.x / BasePoseSubsystem.INCHES_IN_A_METER,
             centerOfRotationInches.y / BasePoseSubsystem.INCHES_IN_A_METER);
-        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(targetMotion, centerOfRotationTranslationMeters);
+        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(twistedChassisSpeeds, centerOfRotationTranslationMeters);
 
         // Another potentially optional step - it's possible that in the calculations above, one or more swerve modules could be asked to
         // move at higer than its maximum speed. At this point, we have a choice. Either:

@@ -126,8 +126,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
         var estimatedPosition = swerveOdometry.getEstimatedPosition();
 
         // Convert back to inches
-        totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
-        totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
+        totalDistanceX = estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER;
+        totalDistanceY = estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER;
         fieldForDisplay.setRobotPose(estimatedPosition);
         Logger.getInstance().recordOutput("RobotEstimatedPose", estimatedPosition);
     }
