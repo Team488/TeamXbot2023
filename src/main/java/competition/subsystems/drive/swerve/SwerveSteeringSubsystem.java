@@ -8,7 +8,8 @@ import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.SwerveInstance;
@@ -30,7 +31,7 @@ import xbot.common.resiliency.DeviceHealth;
 
 @SwerveSingleton
 public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
-    private static Logger log = Logger.getLogger(SwerveSteeringSubsystem.class);
+    private static Logger log = LogManager.getLogger(SwerveSteeringSubsystem.class);
 
     private final String label;
     private final PIDManager pid;

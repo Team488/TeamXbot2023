@@ -6,11 +6,12 @@ import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import com.revrobotics.REVLibError;
-import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.SwerveInstance;
 import competition.injection.swerve.SwerveSingleton;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
@@ -21,7 +22,7 @@ import xbot.common.properties.PropertyFactory;
 
 @SwerveSingleton
 public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
-    private static Logger log = Logger.getLogger(SwerveDriveSubsystem.class);
+    private static Logger log = LogManager.getLogger(SwerveDriveSubsystem.class);
 
     private final String label;
     private final PIDManager pid;

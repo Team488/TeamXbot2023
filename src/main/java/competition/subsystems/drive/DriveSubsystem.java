@@ -3,8 +3,6 @@ package competition.subsystems.drive;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
-
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.FrontLeftDrive;
 import competition.injection.swerve.FrontRightDrive;
@@ -16,6 +14,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xbot.common.math.MathUtils;
 import xbot.common.math.PIDManager;
 import xbot.common.math.XYPair;
@@ -29,8 +29,8 @@ import xbot.common.subsystems.pose.BasePoseSubsystem;
 
 @Singleton
 public class DriveSubsystem extends BaseDriveSubsystem {
-    private static Logger log = Logger.getLogger(DriveSubsystem.class);
-    
+    private static Logger log = LogManager.getLogger(DriveSubsystem.class);
+
     private final SwerveModuleSubsystem frontLeftSwerveModuleSubsystem;
     private final SwerveModuleSubsystem frontRightSwerveModuleSubsystem;
     private final SwerveModuleSubsystem rearLeftSwerveModuleSubsystem;
@@ -336,7 +336,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     /**
-     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(SwerveModuleLocation)}. 
+     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(double, double)} )}.
      * Has no effect when the robot is in normal, "Maintainer" operation.
      * @param activeModule Which module to set as the active module.
      */
@@ -346,7 +346,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     /**
-     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(SwerveModuleLocation)}. 
+     * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(double, double)} )}. 
      * Has no effect when the robot is in normal, "Maintainer" operation.
      * Moves the active module to the next module, according to the pattern FrontLeft, FrontRight, RearLeft, RearRight.
      */

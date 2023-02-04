@@ -2,7 +2,11 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Scheduler": "Scheduler"
+      "/SmartDashboard/AutoPrograms/SetBlueButtomScoring": "Command",
+      "/SmartDashboard/Commit steering pid values": "Command",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/Swerve To Point Debug": "Command"
     }
   }
 }
