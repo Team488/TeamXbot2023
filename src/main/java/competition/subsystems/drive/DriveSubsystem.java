@@ -52,6 +52,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     private final PIDManager positionalPidManager;
     private final PIDManager headingPidManager;
 
+    private final DoubleProperty velocityMaintainerXTarget;
+
     private XYPair lastCommandedDirection;
     private double lastCommandedRotation;
 
@@ -97,6 +99,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         this.translationYTargetMPS = pf.createEphemeralProperty("TranslationYMetersPerSecond", 0.0);
         this.rotationTargetRadians = pf.createEphemeralProperty("RotationTargetRadians", 0.0);
         this.desiredHeading = pf.createEphemeralProperty("Desired heading", 0);
+        this.velocityMaintainerXTarget = pf.createPersistentProperty("VelocityMaintainerXTarget", 0);
 
         // These can be tuned to reduce twitchy wheels
         this.minTranslateSpeed = pf.createPersistentProperty("Minimum translate speed", 0.02);
@@ -400,5 +403,13 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     public void controlOnlyActiveSwerveModuleSubsystem(double drivePower, double steeringPower) {
         this.getActiveSwerveModuleSubsystem().setPowers(drivePower, steeringPower);
         stopInactiveModules();
+    }
+
+    public double getVelocityMaintainerXTarget() {
+        return this.velocityMaintainerXTarget.get();
+    }
+
+    public void setVelocityMaintainerXTarget(double velocityMaintainerXTarget) {
+        this.velocityMaintainerXTarget.set(velocityMaintainerXTarget);
     }
 }
