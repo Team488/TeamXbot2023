@@ -12,6 +12,7 @@ import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParamete
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
+import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -44,13 +45,14 @@ public class OperatorCommandMap {
 
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
-                                   SetRobotHeadingCommand resetHeading,
-                                   DriveSubsystem drive,
-                                   PoseSubsystem pose,
-                                   DebuggingSwerveWithJoysticksCommand debugSwerve,
-                                   GoToNextActiveSwerveModuleCommand nextModule,
-                                   SwerveDriveWithJoysticksCommand regularSwerve,
-                                   VisionSubsystem vision) {
+            SetRobotHeadingCommand resetHeading,
+            DriveSubsystem drive,
+            PoseSubsystem pose,
+            DebuggingSwerveWithJoysticksCommand debugSwerve,
+            GoToNextActiveSwerveModuleCommand nextModule,
+            SwerveDriveWithJoysticksCommand regularSwerve,
+            VisionSubsystem vision,
+            VelocityMaintainerCommand velocityMaintainer) {
         resetHeading.setHeadingToApply(0);
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
@@ -75,6 +77,8 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+
+        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject

@@ -17,6 +17,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
     @Inject
     public AutoBalanceCommand(DriveSubsystem drive, PoseSubsystem pose, PIDManagerFactory pidFactory) {
+        this.addRequirements(drive);
         this.drive = drive;
         this.pose = pose;
         this.pidManager = pidFactory.create(this.getPrefix(), 0.1, 0, 0);

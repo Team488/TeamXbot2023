@@ -4,11 +4,12 @@ import javax.inject.Inject;
 
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
+import xbot.common.command.BaseCommand;
 import xbot.common.math.PIDManager;
 import xbot.common.math.XYPair;
 import xbot.common.math.PIDManager.PIDManagerFactory;
 
-public class VelocityMaintainerCommand {
+public class VelocityMaintainerCommand extends BaseCommand {
 
     private final DriveSubsystem drive;
     private final PoseSubsystem pose;
@@ -20,6 +21,7 @@ public class VelocityMaintainerCommand {
     
     @Inject
     public VelocityMaintainerCommand(DriveSubsystem drive, PoseSubsystem pose, PIDManagerFactory pidFactory) {
+        this.addRequirements(drive);
         this.drive = drive;
         this.pose = pose;
         this.xPIDManager = pidFactory.create("DriveVelocity", 0, 0, 0);
