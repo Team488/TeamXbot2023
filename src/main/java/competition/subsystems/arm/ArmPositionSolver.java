@@ -66,4 +66,13 @@ public class ArmPositionSolver {
                     (Math.pow(adjacent1Length, 2) + Math.pow(adjacent2length, 2) - Math.pow(oppositeLength, 2))
                             / (2 * adjacent1Length * adjacent2length)));
     }
+
+    public XYPair getPositionFromAngles(double lowerArmAngleRadians, double upperArmAngleRadians) {
+        return new XYPair(
+                Math.cos(lowerArmAngleRadians)*configuration.getLowerArmLength()
+                +Math.cos(lowerArmAngleRadians + upperArmAngleRadians)*configuration.getUpperArmLength(),
+                Math.sin(lowerArmAngleRadians)*configuration.getLowerArmLength()
+                + Math.sin(lowerArmAngleRadians + upperArmAngleRadians)*configuration.getUpperArmLength()
+        );
+    }
 }

@@ -22,7 +22,7 @@ public class SwerveDriveMaintainerCommandTest extends BaseCompetitionTest {
 
     @Test
     public void testMaintain() {
-        subsystem.setTargetValue(1);
+        subsystem.setTargetValue(1.0);
         
         command.initialize();
         command.execute();

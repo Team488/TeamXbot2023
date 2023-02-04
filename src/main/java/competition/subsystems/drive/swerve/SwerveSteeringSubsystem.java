@@ -29,7 +29,7 @@ import xbot.common.properties.PropertyFactory;
 import xbot.common.resiliency.DeviceHealth;
 
 @SwerveSingleton
-public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
+public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
     private static Logger log = Logger.getLogger(SwerveSteeringSubsystem.class);
 
     private final String label;
@@ -129,7 +129,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Gets current angle in degrees
      */
     @Override
-    public double getCurrentValue() {
+    public Double getCurrentValue() {
         return getBestEncoderPositionInDegrees();
     }
 
@@ -137,7 +137,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Gets target angle in degrees
      */
     @Override
-    public double getTargetValue() {
+    public Double getTargetValue() {
         return this.targetRotation.get();
     }
 
@@ -145,7 +145,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Sets target angle in degrees
      */
     @Override
-    public void setTargetValue(double value) {
+    public void setTargetValue(Double value) {
         this.targetRotation.set(value);
     }
 
@@ -154,7 +154,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * @param power The power value, between -1 and 1.
      */
     @Override
-    public void setPower(double power) {
+    public void setPower(Double power) {
         if (this.contract.isDriveReady()) {
             this.motorController.set(power);
         }
@@ -191,7 +191,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
                     log.warn("Motor controller encoder drift is too high, recalibrating!");
 
                     // Force motors to manual control before resetting position
-                    this.setPower(0);
+                    this.setPower(0.0);
                     REVLibError error = this.motorController.setPosition(currentCanCoderPosition / this.degreesPerMotorRotation.get());
                     if (error != REVLibError.kOk) {
                         log.error("Failed to set position of motor controller: " + error.name());
