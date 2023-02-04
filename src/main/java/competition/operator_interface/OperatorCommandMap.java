@@ -9,6 +9,7 @@ import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import xbot.common.command.NamedInstantCommand;
@@ -44,6 +45,19 @@ public class OperatorCommandMap {
                 () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(3).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(4).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(5).onTrue(resetPose);
+
+        oi.vjoyKeyboard.getifAvailable(19).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(20).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(21).onTrue(resetPose);
+
+        oi.vjoyKeyboard.getifAvailable(54).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(55).onTrue(resetPose);
+        oi.vjoyKeyboard.getifAvailable(56).onTrue(resetPose);
+
+
         //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
     }
 

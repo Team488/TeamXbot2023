@@ -3,6 +3,7 @@ package competition.operator_interface;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import xbot.common.controls.sensors.XJoystick;
 import xbot.common.controls.sensors.XXboxController;
 import xbot.common.controls.sensors.XXboxController.XXboxControllerFactory;
 import xbot.common.logging.RobotAssertionManager;
@@ -17,12 +18,15 @@ import xbot.common.properties.PropertyFactory;
 public class OperatorInterface {
     public XXboxController driverGamepad;
     public XXboxController operatorGamepad;
+
+    public XJoystick vjoyKeyboard;
     
     final DoubleProperty driverDeadband;
     final DoubleProperty operatorDeadband;
 
     @Inject
-    public OperatorInterface(XXboxControllerFactory controllerFactory, RobotAssertionManager assertionManager, PropertyFactory pf) {
+    public OperatorInterface(XXboxControllerFactory controllerFactory, RobotAssertionManager assertionManager,
+                             PropertyFactory pf, XJoystick.XJoystickFactory joystickFactory) {
         driverGamepad = controllerFactory.create(0);
         driverGamepad.setLeftInversion(false, true);
         driverGamepad.setRightInversion(true, true);
@@ -30,6 +34,10 @@ public class OperatorInterface {
         operatorGamepad = controllerFactory.create(1);
         operatorGamepad.setLeftInversion(false, true);
         operatorGamepad.setRightInversion(true, true);
+
+
+
+        vjoyKeyboard = joystickFactory.create(2, 64);
 
         pf.setPrefix("OperatorInterface");
         driverDeadband = pf.createPersistentProperty("Driver Deadband", 0.12);

@@ -4,12 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e7077616-e099-40d5-9236-cb5fc462d78b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="6304e22b-2299-4e84-b137-23a83ad334f8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/competition/subsystems/ClawArm/ClawSubsystem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/competition/subsystems/ClawArm/CloseClawCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/competition/subsystems/ClawArm/OpenClawCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/competition/subsystems/arm/claw/ClawArmCommandsTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/TeamXbot2023-1.SeriouslyCommonLib.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/SeriouslyCommonLib/TeamXbot2023-1.SeriouslyCommonLib.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/TeamXbot2023-1.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/TeamXbot2023-1.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SeriouslyCommonLib" beforeDir="false" afterPath="$PROJECT_DIR$/SeriouslyCommonLib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SeriouslyCommonLib/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/SeriouslyCommonLib/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simgui-ds.json" beforeDir="false" afterPath="$PROJECT_DIR$/simgui-ds.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simgui-window.json" beforeDir="false" afterPath="$PROJECT_DIR$/simgui-window.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simgui.json" beforeDir="false" afterPath="$PROJECT_DIR$/simgui.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/competition/electrical_contract/CompetitionContract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/competition/electrical_contract/CompetitionContract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/competition/subsystems/ClawArm/clawArmSkeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/competition/subsystems/ClawArm/clawArmSkeleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/competition/electrical_contract/ElectricalContract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/competition/electrical_contract/ElectricalContract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/competition/operator_interface/OperatorCommandMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/competition/operator_interface/OperatorCommandMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/competition/operator_interface/OperatorInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/competition/operator_interface/OperatorInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/competition/subsystems/ClawArm/clawArmSkeleton.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/competition/injection/components/CompetitionTestComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/competition/injection/components/CompetitionTestComponent.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,12 +40,20 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="TeamXbot2023-1" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="TeamXbot2023-1" type="f1a62948:ProjectNode" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
               </path>
             </expand>
             <select />
@@ -56,19 +80,109 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "last_opened_file_path": "C:/Users/Adem/Documents/GitHub/TeamXbot2023-1",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "project.structure.side.proportion": "0.3678161",
+    "settings.editor.selected.configurable": "editor.preferences.completion"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="competition.subsystems.ClawArm" />
+    </key>
+  </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="build.gradle.simulation" />
       <command value="simulation" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.Build Robot">
+  <component name="RunManager" selected="Gradle.ClawArmCommandsTest">
+    <configuration name="ClawArmCommandsTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;competition.subsystems.arm.claw.ClawArmCommandsTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="ClawArmCommandsTest.OpenCLawTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;competition.subsystems.arm.claw.ClawArmCommandsTest.OpenCLawTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="ClawArmCommandsTest.openCLawTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;competition.subsystems.arm.claw.ClawArmCommandsTest.openCLawTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="ClawArmCommandsTest.OpenCLawTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="TeamXbot2023-1.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="competition.subsystems.arm.claw.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="competition.subsystems.arm.claw" />
+      <option name="MAIN_CLASS_NAME" value="competition.subsystems.arm.claw.ClawArmCommandsTest" />
+      <option name="METHOD_NAME" value="OpenCLawTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Gradle.Build &amp; Deploy Robot" />
       <item itemvalue="Gradle.Build &amp; Deploy Robot for Debugging" />
@@ -77,19 +191,35 @@
       <item itemvalue="Gradle.Clean Build &amp; Deploy Robot" />
       <item itemvalue="Gradle.Clean Build &amp; Deploy Robot for Debugging" />
       <item itemvalue="Gradle.Clean Build Robot" />
+      <item itemvalue="Gradle.ClawArmCommandsTest" />
+      <item itemvalue="Gradle.ClawArmCommandsTest.OpenCLawTest" />
+      <item itemvalue="Gradle.ClawArmCommandsTest.openCLawTest" />
+      <item itemvalue="JUnit.ClawArmCommandsTest.OpenCLawTest" />
       <item itemvalue="Remote JVM Debug.Debug Robot via IP" />
       <item itemvalue="Remote JVM Debug.Debug Robot via USB" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.ClawArmCommandsTest" />
+        <item itemvalue="Gradle.ClawArmCommandsTest.openCLawTest" />
+        <item itemvalue="Gradle.ClawArmCommandsTest.OpenCLawTest" />
+        <item itemvalue="JUnit.ClawArmCommandsTest.OpenCLawTest" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e7077616-e099-40d5-9236-cb5fc462d78b" name="Changes" comment="" />
+      <changelist id="6304e22b-2299-4e84-b137-23a83ad334f8" name="Changes" comment="" />
       <created>1674326486401</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1674326486401</updated>
     </task>
     <servers />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
