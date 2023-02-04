@@ -28,16 +28,16 @@ public class PracticeContract2022 extends CompetitionContract {
     public DeviceInfo getDriveNeo(SwerveInstance swerveInstance) {
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Drive",31, false, simulationScalingValue);
+                return new DeviceInfo(getDriveControllerName(swerveInstance),31, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Drive",28, false, simulationScalingValue);
+                return new DeviceInfo(getDriveControllerName(swerveInstance),28, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Drive",38, false, simulationScalingValue);
+                return new DeviceInfo(getDriveControllerName(swerveInstance),38, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Drive",21, false, simulationScalingValue);
+                return new DeviceInfo(getDriveControllerName(swerveInstance),21, false, simulationScalingValue);
 
             default:
                 return null;
@@ -50,16 +50,16 @@ public class PracticeContract2022 extends CompetitionContract {
 
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Steering",30, false, simulationScalingValue);
+                return new DeviceInfo(getSteeringControllerName(swerveInstance),30, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Steering",29, false, simulationScalingValue);
+                return new DeviceInfo(getSteeringControllerName(swerveInstance),29, false, simulationScalingValue);
 
             case "RearLeftDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Steering",39, false, simulationScalingValue);
+                return new DeviceInfo(getSteeringControllerName(swerveInstance),39, false, simulationScalingValue);
 
             case "RearRightDrive":
-                return new DeviceInfo(swerveInstance.getLabel()+"Steering",20, false, simulationScalingValue);
+                return new DeviceInfo(getSteeringControllerName(swerveInstance),20, false, simulationScalingValue);
 
             default:
                 return null;
