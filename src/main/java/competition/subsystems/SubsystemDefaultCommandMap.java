@@ -59,4 +59,5 @@ public class SubsystemDefaultCommandMap {
     public void setupSimpleSubsystem(SimpleSubsystem simpleSubsystem, SimpleSetPowerCommand command) {
         simpleSubsystem.setDefaultCommand(command);
     }
+
 }
