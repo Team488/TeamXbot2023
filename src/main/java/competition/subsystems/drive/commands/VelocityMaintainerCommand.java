@@ -28,6 +28,7 @@ public class VelocityMaintainerCommand extends BaseCommand {
     }
 
     public void initialize() {
+        drive.setVelocityMaintainerXTarget(0);
         this.xPIDManager.reset();
         this.xThrottle = 0;
     }

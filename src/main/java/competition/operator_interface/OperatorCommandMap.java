@@ -8,6 +8,8 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
@@ -54,6 +56,8 @@ public class OperatorCommandMap {
             SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision,
             VelocityMaintainerCommand velocityMaintainer,
+            PositionMaintainerCommand positionMaintainer,
+            PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
         resetHeading.setHeadingToApply(0);
 
@@ -80,8 +84,11 @@ public class OperatorCommandMap {
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
+        
         velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+        positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
+        positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
     }
 
     @Inject

@@ -9,18 +9,18 @@ import xbot.common.math.MathUtils;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
-public class VelocityDriveWithJoysticksCommand extends BaseCommand {
+public class PositionDriveWithJoysticksCommand extends BaseCommand {
 
     private final DriveSubsystem drive;
     private final OperatorInterface oi;
-    private final DoubleProperty maxVelocity;
+    private final DoubleProperty maxPositionalChange;
 
     @Inject
-    public VelocityDriveWithJoysticksCommand(DriveSubsystem drive, OperatorInterface oi, PropertyFactory pf) {
+    public PositionDriveWithJoysticksCommand(DriveSubsystem drive, OperatorInterface oi, PropertyFactory pf) {
         this.drive = drive;
         this.oi = oi;
         pf.setPrefix(this.getName());
-        this.maxVelocity = pf.createPersistentProperty("Max Velocity", 0.5);
+        this.maxPositionalChange = pf.createPersistentProperty("Max Positional Change", 0.1);
     }
 
     @Override
@@ -32,7 +32,8 @@ public class VelocityDriveWithJoysticksCommand extends BaseCommand {
     public void execute() {
         double input = MathUtils.deadband(oi.driverGamepad.getLeftStickY(), oi.getDriverGamepadTypicalDeadband(),
                 (a) -> a);
-        drive.setVelocityMaintainerXTarget(input * maxVelocity.get());
+        double delta = input * maxPositionalChange.get();
+        drive.setPositionMaintainerXTarget(drive.getPositionMaintainerXTarget() + delta);
     }
     
 }

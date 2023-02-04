@@ -40,4 +40,9 @@ public class AutoBalanceCommand extends BaseCommand {
 
         drive.setVelocityMaintainerXTarget(velocity);
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        drive.setVelocityMaintainerXTarget(0);
+    }
 }
