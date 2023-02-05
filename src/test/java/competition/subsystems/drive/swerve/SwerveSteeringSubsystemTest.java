@@ -74,17 +74,17 @@ public class SwerveSteeringSubsystemTest extends BaseCompetitionTest {
         assertEquals("Motor controller PID should be in position mode", ControlType.kPosition, motorController.getControlType());
         assertEquals("Motor controller target should be zero", 0, motorController.getReference(), 0.001);
 
-        subsystem.setTargetValue(360);
+        subsystem.setTargetValue(360.0);
         subsystem.setMotorControllerPidTarget();
         
         assertEquals("Motor controller target should still be zero", 0, motorController.getReference(), 0.001);
 
-        subsystem.setTargetValue(90);
+        subsystem.setTargetValue(90.0);
         subsystem.setMotorControllerPidTarget();
         
         assertEquals("Motor controller target should still be positive", 3.197, motorController.getReference(), 0.001);
 
-        subsystem.setTargetValue(90);
+        subsystem.setTargetValue(90.0);
         subsystem.setMotorControllerPidTarget();
         
         assertEquals("Motor controller target should still be positive", 3.197, motorController.getReference(), 0.001);

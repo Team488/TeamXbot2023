@@ -22,7 +22,7 @@ public class SwerveSteeringMaintainerCommandTest extends BaseCompetitionTest {
 
     @Test
     public void testMaintain() {
-        subsystem.setTargetValue(45);
+        subsystem.setTargetValue(45.0);
         
         command.initialize();
         command.execute();

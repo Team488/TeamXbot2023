@@ -8,7 +8,7 @@ import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineDeciderFactory;
 import xbot.common.properties.PropertyFactory;
 
-public class SwerveDriveMaintainerCommand extends BaseMaintainerCommand {
+public class SwerveDriveMaintainerCommand extends BaseMaintainerCommand<Double> {
 
     private final SwerveDriveSubsystem subsystem;
     private final DriveSubsystem drive;
@@ -22,26 +22,41 @@ public class SwerveDriveMaintainerCommand extends BaseMaintainerCommand {
     }
 
     @Override
+    protected void coastAction() {
+        this.subsystem.setPower(0.0);
+    }
+
+    @Override
     protected void calibratedMachineControlAction() {
         // The drive subsystem is setting velocity goals, but we're starting simple.
         // Just set % power by dividing by the max allowable velocity.
         if (drive.getMaxTargetSpeedInchesPerSecond() > 0) {
             this.subsystem.setPower(this.subsystem.getTargetValue() / drive.getMaxTargetSpeedInchesPerSecond());
         } else {
-            this.subsystem.setPower(0);
+            this.subsystem.setPower(0.0);
         }
     }
 
     @Override
-    protected double getHumanInput() {
-        // never hooked direclty to human input, human input handled by drive
-        return 0;
+    protected double getErrorMagnitude() {
+        return Math.abs((this.subsystem.getTargetValue() - this.subsystem.getCurrentValue()));
+    }
+
+    @Override
+    protected Double getHumanInput() {
+        // never hooked directly to human input, human input handled by drive
+        return 0.0;
+    }
+
+    @Override
+    protected double getHumanInputMagnitude() {
+        return getHumanInput();
     }
 
     @Override
     public void initialize() {
-        this.subsystem.setTargetValue(0);
-        this.subsystem.setPower(0);
+        this.subsystem.setTargetValue(0.0);
+        this.subsystem.setPower(0.0);
         this.subsystem.resetPid();
     }
 
