@@ -324,7 +324,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
             setupStatusFramesAsNeeded();
         }
 
-<<<<<<< HEAD
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
                 this.getName()+"BestEncoderPositionDegrees",
                 getBestEncoderPositionInDegrees());
@@ -338,6 +337,17 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         if (contract.areCanCodersReady()) {
             encoder.refreshDataFrame();
         }
+
+        // TODO: Once we've moved to an architecture where we control the order periodic() is called in
+        // (so we can guarantee that child components, like this SwerveSteeringElement, are called before
+        // the the parent component, like the DriveSubsystem), this will be moved to periodic.
+        // The long term goal is to have the robot perform these steps:
+        // 1) RefreshDataFrame across the entire machine
+        // 2) Periodic() is called to transform or merge that data into higher-order concepts (new poses,
+        //    new trajectories, arm positions, etc.) Notably, children will be called ahead of parents so that
+        //    the parents can fuse data from mulitple systems.
+        // 3) CommandScheduler invokes individual commands, which use all this information to make decisions.
         double positionInDegrees = getBestEncoderPositionInDegrees();
+        currentModuleHeadingRotation2d = Rotation2d.fromDegrees(positionInDegrees);
     }
 }

@@ -145,13 +145,13 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public DeviceInfo getLowerArmEncoder() {
-        return new DeviceInfo(0, false);
+        return new DeviceInfo("UnifiedArmSubsystem/LowerArm",0, false);
     }
 
     @Override
     public DeviceInfo getUpperArmEncoder() {
-        return new DeviceInfo(1, false);
+        return new DeviceInfo("UnifiedArmSubsystem/UpperArm",0, false);
     }
 
-    public DeviceInfo getClawSolenoid() {return new DeviceInfo(5, false);}
+    public DeviceInfo getClawSolenoid() {return new DeviceInfo("ClawSubsystem",5, false);}
 }
