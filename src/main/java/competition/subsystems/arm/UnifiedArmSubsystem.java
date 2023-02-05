@@ -1,5 +1,6 @@
 package competition.subsystems.arm;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.logic.HumanVsMachineDecider;
@@ -30,6 +31,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair lowerGoalPosition = new XYPair(1*12, 0);
     public static XYPair midGoalPosition = new XYPair(3*12, 2*12);
     public static XYPair highGoalPosition = new XYPair(4*12, 3*12);
+
+    double testRangeRadians = 0.17453292519943295; // 10 degrees
 
     @Inject
     public UnifiedArmSubsystem(
@@ -110,5 +113,72 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     @Override
     public boolean isCalibrated() {
         return false;
+    }
+
+    public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {
+        lowerArm.calibrateThisPositionAs(lowerArmAngleInDegrees);
+        upperArm.calibrateThisPositionAs(upperArmAngleInDegrees);
+    }
+
+    /**
+     * Guessing at what the easiest position to calibrate at is.
+     * Assuming lower arm straight up, upper arm straight down?
+     */
+    public void typicalCalibrate() {
+        calibrateAt(90, -90);
+    }
+
+    public boolean isGivenPositionIllegal(XYPair position) {
+        // If the end effector is too high, it's illegal.
+        if (position.y > 0) {
+            return true;
+        }
+        // If we are more than 48 inches forward or backward, it's illegal.
+        // TODO: Update with end effector length in the calculation
+        if (Math.abs(position.x) > 48) {
+            return true;
+        }
+        return false;
+    }
+
+    public enum ArmRiskState {
+        IncreaseAngleRisk,
+        DecreaseAngleRisk,
+        NoRisk
+    }
+
+    /**
+     * Tests moving the lower and upper arm by 10 degrees to see if we're about to be in trouble.
+     * This information should be used to temporarily restrict the arm's movement.
+     * @return LowerArm risk, UpperArm risk
+     */
+    public Pair<ArmRiskState, ArmRiskState> checkArmRisk() {
+        var lowerArmAngle = lowerArm.getArmPositionInRadians();
+        var upperArmAngle = upperArm.getArmPositionInRadians();
+
+        var lowerArmIncreaseAngleTestValue = lowerArmAngle + testRangeRadians;
+        var lowerArmDecreaseAngleTestValue = lowerArmAngle - testRangeRadians;
+
+        var upperArmIncreaseAngleTestValue = upperArmAngle + testRangeRadians;
+        var upperArmDecreaseAngleTestValue = upperArmAngle - testRangeRadians;
+
+        ArmRiskState lowerArmRiskState = ArmRiskState.NoRisk;
+        ArmRiskState upperArmRiskState = ArmRiskState.NoRisk;
+
+        if (isGivenPositionIllegal(solver.getPositionFromRadians(lowerArmIncreaseAngleTestValue, upperArmAngle))) {
+            lowerArmRiskState = ArmRiskState.IncreaseAngleRisk;
+        }
+        if (isGivenPositionIllegal(solver.getPositionFromRadians(lowerArmDecreaseAngleTestValue, upperArmAngle))) {
+            lowerArmRiskState = ArmRiskState.DecreaseAngleRisk;
+        }
+
+        if (isGivenPositionIllegal(solver.getPositionFromRadians(lowerArmAngle, upperArmIncreaseAngleTestValue))) {
+            upperArmRiskState = ArmRiskState.IncreaseAngleRisk;
+        }
+        if (isGivenPositionIllegal(solver.getPositionFromRadians(lowerArmAngle, upperArmDecreaseAngleTestValue))) {
+            upperArmRiskState = ArmRiskState.DecreaseAngleRisk;
+        }
+
+        return new Pair<>(lowerArmRiskState, upperArmRiskState);
     }
 }

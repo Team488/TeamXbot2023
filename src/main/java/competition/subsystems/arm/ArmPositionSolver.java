@@ -70,9 +70,9 @@ public class ArmPositionSolver {
     public XYPair getPositionFromRadians(double lowerArmAngleRadians, double upperArmAngleRadians) {
         return new XYPair(
                 Math.cos(lowerArmAngleRadians)*configuration.getLowerArmLength()
-                +Math.cos(lowerArmAngleRadians + upperArmAngleRadians)*configuration.getUpperArmLength(),
+                +Math.cos(upperArmAngleRadians)*configuration.getUpperArmLength(),
                 Math.sin(lowerArmAngleRadians)*configuration.getLowerArmLength()
-                + Math.sin(lowerArmAngleRadians + upperArmAngleRadians)*configuration.getUpperArmLength()
+                + Math.sin(upperArmAngleRadians)*configuration.getUpperArmLength()
         );
     }
 }
