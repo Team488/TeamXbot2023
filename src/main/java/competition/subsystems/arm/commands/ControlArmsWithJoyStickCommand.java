@@ -18,7 +18,7 @@ public class ControlArmsWithJoyStickCommand extends BaseCommand {
     public ControlArmsWithJoyStickCommand(OperatorInterface oi, UnifiedArmSubsystem arms){
         this.oi = oi;
         this.arms = arms;
-
+        this.addRequirements(arms);
     }
 
     public void initialize(){
@@ -35,6 +35,5 @@ public class ControlArmsWithJoyStickCommand extends BaseCommand {
         upperArmPower = MathUtils.deadband(upperArmPower, oi.getOperatorGamepadTypicalDeadband());
 
         arms.setArmPowers(lowerArmPower, upperArmPower);
-
     }
 }

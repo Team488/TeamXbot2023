@@ -46,13 +46,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         upperArm.setPower(upperPower);
     }
 
-    /**
-     * Sets the desired ** (X,Z) ** position of the arm. This is the position of the end effector.
-     * @param targetPosition desired (X,Z) position of the end effector.
-     */
-    public void goToTargetPosition(XYPair targetPosition) {
-        this.targetPosition = targetPosition;
-    }
+
 
     @Override
     public XYPair getCurrentValue() {
@@ -81,8 +75,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         upperArm.setPower(power.y);
     }
 
-    public void setArmsToAngles() {
-
+    public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
+        //lowerArm.setArmAngle(lowerArmAngle);
+        //upperArm.setArmAngle(upperArmAngle);
     }
 
     @Override

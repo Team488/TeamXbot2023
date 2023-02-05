@@ -37,7 +37,10 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     @Override
     protected void calibratedMachineControlAction() {
         XYPair target = unifiedArm.getTargetValue();
+        // Find out what angles the arms need to be at in order to achieve the goal.
         var desiredArmAngles = unifiedArm.solver.solveArmJointPositions(target.x, target.y);
+        // Ask the subsystem to move the arms to those angles.
+        unifiedArm.setArmsToAngles(desiredArmAngles.getLowerJointRotation(), desiredArmAngles.getUpperJointRotation());
     }
 
     @Override

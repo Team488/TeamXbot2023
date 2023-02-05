@@ -1,6 +1,7 @@
 package competition.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
 import xbot.common.properties.BooleanProperty;
@@ -94,5 +95,23 @@ public abstract class ArmSegment {
     private void configSoftLimit(double upper, double lower){
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,(float)upper);
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
+    }
+
+    public void setArmToAngle(Rotation2d angle) {
+        // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
+        // controller will be using its internal encoder, so we need to translate from one to the other.
+        // Our approach is:
+        // 1) Determine the difference between the goal and our absolute position
+        // 2) Translate that difference, the "delta", into motor rotations
+        // 3) Read the current motor position in rotations
+        // 4) Add the delta to the current position to get a goal position in units the motor controller understands
+
+        if (isAbsoluteEncoderReady() ) {
+            double delta = angle.getDegrees() - getArmPositionFromAbsoluteEncoder();
+            double motorRotations = delta / degreesPerMotorRotationProp.get();
+            double motorPosition = getLeaderMotor().getPosition();
+            double goalPosition = motorPosition + motorRotations;
+            getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
+        }
     }
 }
