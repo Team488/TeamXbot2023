@@ -8,7 +8,7 @@ import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineDeciderFactory;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.PropertyFactory;
 
-public class SwerveSteeringMaintainerCommand extends BaseMaintainerCommand {
+public class SwerveSteeringMaintainerCommand extends BaseMaintainerCommand<Double> {
 
     private final SwerveSteeringSubsystem subsystem;
 
@@ -20,18 +20,17 @@ public class SwerveSteeringMaintainerCommand extends BaseMaintainerCommand {
         pf.setPrefix(this);
 
         this.subsystem = subsystemToMaintain;
-        
         this.enableAutoCalibrate = pf.createPersistentProperty("EnableAutomaticMotorControllerCalibration", true);
     }
 
     @Override
-    protected void calibratedMachineControlAction() {
-        if (this.subsystem.isUsingMotorControllerPid()) {
-            this.subsystem.setMotorControllerPidTarget();
-        } else {
-            this.subsystem.setPower(this.subsystem.calculatePower());
-        }
+    protected void coastAction() {
+        this.subsystem.setPower(0.0);
+    }
 
+    @Override
+    protected void calibratedMachineControlAction() {
+        this.subsystem.setMotorControllerPidTarget();
         // Only re-calibrate if it's enabled, we're at the goal, and we're not moving.
         if (enableAutoCalibrate.get() && isMaintainerAtGoal() && !(Math.abs(this.subsystem.getVelocity()) > 0)) {
             this.subsystem.calibrateMotorControllerPositionFromCanCoder();
@@ -39,17 +38,26 @@ public class SwerveSteeringMaintainerCommand extends BaseMaintainerCommand {
     }
 
     @Override
-    protected double getHumanInput() {
-        // never hooked directly to human input, human input handled by drive.
-        // Might not even need the maintainer architecture here; could probably just have the SwerveSteeringSubsystem
-        // go ahead and immediately apply targets from the DriveSubsystem straight into the motor controller.
-        return 0;
+    protected double getErrorMagnitude() {
+        return Math.abs((this.subsystem.getTargetValue() - this.subsystem.getCurrentValue()));
+    }
+
+    @Override
+    protected Double getHumanInput() {
+        // never hooked directly to human input, human input handled by drive
+        return 0.0;
+    }
+
+    @Override
+    protected double getHumanInputMagnitude() {
+        // never hooked directly to human input, human input handled by drive
+        return 0.0;
     }
 
     @Override
     public void initialize() {
         this.subsystem.setTargetValue(this.subsystem.getCurrentValue());
-        this.subsystem.setPower(0);
+        this.subsystem.setPower(0.0);
         this.subsystem.resetPid();
         
         if (enableAutoCalibrate.get()) {

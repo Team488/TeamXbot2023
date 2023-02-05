@@ -1,8 +1,9 @@
 package competition.subsystems.arm.commands;
 
 import competition.operator_interface.OperatorInterface;
-import competition.subsystems.arm.LowerArmSubsystem;
-import competition.subsystems.arm.UpperArmSubsystem;
+import competition.subsystems.arm.LowerArmSegment;
+import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.UpperArmSegment;
 import xbot.common.command.BaseCommand;
 import xbot.common.math.MathUtils;
 
@@ -12,14 +13,12 @@ import javax.inject.Singleton;
 @Singleton
 public class ControlArmsWithJoyStickCommand extends BaseCommand {
     private final OperatorInterface oi;
-    private final LowerArmSubsystem lowerArmSubsystem;
-    private final UpperArmSubsystem upperArmSubsystem;
+    private final UnifiedArmSubsystem arms;
     @Inject
-    public ControlArmsWithJoyStickCommand(OperatorInterface oi, LowerArmSubsystem lowerArmSubsystem, UpperArmSubsystem upperArmSubsystem ){
+    public ControlArmsWithJoyStickCommand(OperatorInterface oi, UnifiedArmSubsystem arms){
         this.oi = oi;
-        this.lowerArmSubsystem = lowerArmSubsystem;
-        this.upperArmSubsystem = upperArmSubsystem;
-
+        this.arms = arms;
+        this.addRequirements(arms);
     }
 
     public void initialize(){
@@ -35,8 +34,6 @@ public class ControlArmsWithJoyStickCommand extends BaseCommand {
         lowerArmPower = MathUtils.deadband(lowerArmPower, oi.getOperatorGamepadTypicalDeadband());
         upperArmPower = MathUtils.deadband(upperArmPower, oi.getOperatorGamepadTypicalDeadband());
 
-        lowerArmSubsystem.setMotorPower(lowerArmPower);
-        upperArmSubsystem.setMotorPower(upperArmPower);
-
+        arms.setArmPowers(lowerArmPower, upperArmPower);
     }
 }

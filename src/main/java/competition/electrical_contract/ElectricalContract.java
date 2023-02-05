@@ -22,9 +22,15 @@ public abstract class ElectricalContract {
     public abstract  DeviceInfo getUpperArmRightMotor();
     public abstract  boolean isLowerArmReady();
     public  abstract  boolean isUpperArmReady();
+    public abstract boolean isLowerArmEncoderReady();
+    public abstract boolean isUpperArmEncoderReady();
+    public abstract DeviceInfo getLowerArmEncoder();
+    public abstract DeviceInfo getUpperArmEncoder();
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
     public abstract boolean isForwardAprilCamReady();
+    public abstract DeviceInfo getClawSolenoid();
 
+    // ----------------- Helper methods -----------------
     protected String getDriveControllerName(SwerveInstance swerveInstance) {
         return "DriveSubsystem/"+swerveInstance.getLabel()+"/Drive";
     }
@@ -38,4 +44,5 @@ public abstract class ElectricalContract {
     protected String getSteeringEncoderName(SwerveInstance swerveInstance) {
         return "DriveSubsystem/"+swerveInstance.getLabel();
     }
+
 }

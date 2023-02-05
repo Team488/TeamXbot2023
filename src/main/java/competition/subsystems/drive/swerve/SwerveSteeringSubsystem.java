@@ -8,6 +8,7 @@ import com.revrobotics.REVLibError;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.SwerveInstance;
@@ -28,9 +29,8 @@ import xbot.common.properties.PropertyFactory;
 import xbot.common.resiliency.DeviceHealth;
 
 @SwerveSingleton
-public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
+public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
     private static Logger log = LogManager.getLogger(SwerveSteeringSubsystem.class);
-
     private final String label;
     private final PIDManager pid;
     private final ElectricalContract contract;
@@ -41,6 +41,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     private final BooleanProperty useMotorControllerPid;
     private final DoubleProperty maxMotorEncoderDrift;
 
+    private Rotation2d currentModuleHeadingRotation2d;
     private XCANSparkMax motorController;
     private XCANCoder encoder;
 
@@ -64,7 +65,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
 
         if (electricalContract.isDriveReady()) {
             this.motorController = sparkMaxFactory.createWithoutProperties(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
-            setMotorControllerPositionPidParameters();
         }
         if (electricalContract.areCanCodersReady()) {
             this.encoder = canCoderFactory.create(electricalContract.getSteeringEncoder(swerveInstance), this.getPrefix());
@@ -106,15 +106,22 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Gets current angle in degrees
      */
     @Override
-    public double getCurrentValue() {
+    public Double getCurrentValue() {
         return getBestEncoderPositionInDegrees();
+    }
+
+    /**
+     * Gets current angle as a Rotation2d
+     */
+    public Rotation2d getCurrentRotation() {
+        return this.currentModuleHeadingRotation2d;
     }
 
     /**
      * Gets target angle in degrees
      */
     @Override
-    public double getTargetValue() {
+    public Double getTargetValue() {
         return targetRotation;
     }
 
@@ -122,7 +129,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Sets target angle in degrees
      */
     @Override
-    public void setTargetValue(double value) {
+    public void setTargetValue(Double value) {
         targetRotation = value;
     }
 
@@ -131,7 +138,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * @param power The power value, between -1 and 1.
      */
     @Override
-    public void setPower(double power) {
+    public void setPower(Double power) {
         if (this.contract.isDriveReady()) {
             this.motorController.set(power);
         }
@@ -168,7 +175,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
                     log.warn("Motor controller encoder drift is too high, recalibrating!");
 
                     // Force motors to manual control before resetting position
-                    this.setPower(0);
+                    this.setPower(0.0);
                     REVLibError error = this.motorController.setPosition(currentCanCoderPosition / this.degreesPerMotorRotation.get());
                     if (error != REVLibError.kOk) {
                         log.error("Failed to set position of motor controller: " + error.name());
@@ -317,6 +324,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
             setupStatusFramesAsNeeded();
         }
 
+<<<<<<< HEAD
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
                 this.getName()+"BestEncoderPositionDegrees",
                 getBestEncoderPositionInDegrees());
@@ -330,5 +338,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
         if (contract.areCanCodersReady()) {
             encoder.refreshDataFrame();
         }
+        double positionInDegrees = getBestEncoderPositionInDegrees();
     }
 }
