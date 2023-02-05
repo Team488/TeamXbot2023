@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 
 import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
+import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.math.PIDManager;
@@ -16,7 +17,7 @@ import xbot.common.properties.StringProperty;
 import xbot.common.command.BaseSubsystem;
 
 @Singleton
-public class LowerArmSubsystem extends BaseSubsystem{
+public class LowerArmSubsystem extends BaseSetpointSubsystem {
     public XCANSparkMax lowerArmLeftMotor;
     public XCANSparkMax lowerArmRightMotor;
     public ElectricalContract contract;
@@ -24,7 +25,25 @@ public class LowerArmSubsystem extends BaseSubsystem{
 
     public  DoubleProperty extendLimit;
     public  DoubleProperty retractLimit;
+    public final DoubleProperty positionLowerGoalProperty;
+    public final DoubleProperty positionMidGoalProperty;
+    public final DoubleProperty positionHighGoalProperty;
+    public final DoubleProperty positionFullyRetractedProperty;
+    private  double goal;
 
+    private enum PidSlot{
+        Position(0),
+        Velocity(1);
+        private final int slot;
+
+        private PidSlot(int slot){
+            this.slot = slot;
+        }
+
+        public  int getSlot(){
+            return slot;
+        }
+    }
     @Inject
     public LowerArmSubsystem(XCANSparkMaxFactory sparkMaxFactory, ElectricalContract eContract, PropertyFactory propFactory){
         this.contract = eContract;
@@ -37,6 +56,11 @@ public class LowerArmSubsystem extends BaseSubsystem{
         extendLimit = propFactory.createPersistentProperty("extendLimit",0);
         retractLimit = propFactory.createPersistentProperty("retractLimit",0);
         setSoftLimit(false);
+
+        positionLowerGoalProperty = propFactory.createPersistentProperty("LowerGoalPositionInches",0);
+        positionMidGoalProperty = propFactory.createPersistentProperty("MidGoalPositionInches",0);
+        positionHighGoalProperty = propFactory.createPersistentProperty("HighGoalPositionInches",0);
+        positionFullyRetractedProperty = propFactory.createPersistentProperty("FullRetractedPositionInches",0);
     }
 
     public void setMotorPower(double power){
@@ -76,5 +100,30 @@ public class LowerArmSubsystem extends BaseSubsystem{
 
     public void goBack(){
         setMotorPower(-powerProp.get());
+    }
+
+    @Override
+    public double getCurrentValue() {
+        return 0;
+    }
+
+    @Override
+    public double getTargetValue() {
+        return goal;
+    }
+
+    @Override
+    public void setTargetValue(double value) {
+        goal = value;
+    }
+
+    @Override
+    public void setPower(double power) {
+
+    }
+
+    @Override
+    public boolean isCalibrated() {
+        return false;
     }
 }

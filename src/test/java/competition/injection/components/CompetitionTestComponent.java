@@ -39,5 +39,6 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract UpperArmSubsystem upperArmSubsystem();
 
     public  abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
+    public abstract MotorArmLowerGoalCommand motorArmLowerGoalCommand();
 
 }

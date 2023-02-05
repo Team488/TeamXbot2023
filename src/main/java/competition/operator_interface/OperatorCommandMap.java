@@ -3,6 +3,7 @@ package competition.operator_interface;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import competition.subsystems.arm.commands.SetArmsToPositionCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
@@ -86,5 +87,23 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
         //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+    }
+
+    @Inject
+    public void setupArmCommands(
+            OperatorInterface oi,
+            SetArmsToPositionCommand setHigh,
+            SetArmsToPositionCommand setMid,
+            SetArmsToPositionCommand setLow,
+            SetArmsToPositionCommand setRetract){
+        setLow.setTargetPosition(SetArmsToPositionCommand.TargetPosition.lowerGoal);
+        setMid.setTargetPosition(SetArmsToPositionCommand.TargetPosition.midGoal);
+        setHigh.setTargetPosition(SetArmsToPositionCommand.TargetPosition.highGoal);
+        setRetract.setTargetPosition(SetArmsToPositionCommand.TargetPosition.fullyRetracted);
+
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
     }
 }
