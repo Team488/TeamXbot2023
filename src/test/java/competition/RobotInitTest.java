@@ -7,5 +7,7 @@ public class RobotInitTest extends BaseCompetitionTest {
     public void testDefaultSystem() {
         getInjectorComponent().subsystemDefaultCommandMap();
         getInjectorComponent().operatorCommandMap();
+        getInjectorComponent().driveSubsystem();
+        getInjectorComponent().visionSubsystem();
     }
 }

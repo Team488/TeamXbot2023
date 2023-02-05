@@ -239,9 +239,9 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         suggestedRotatePower *= turnPowerFactor.get();
 
         // Check if we need a different center of rotation
-        XYPair centerOfRotation = new XYPair(0,0);
+        XYPair centerOfRotationInches = new XYPair(0,0);
         if (drive.isCollectorRotationActive()) {
-            centerOfRotation = new XYPair(0, 36);
+            centerOfRotationInches = new XYPair(36, 0);
         }
 
         // Rumble based on camera state
@@ -264,7 +264,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         if (drive.isRobotOrientedDriveActive()) {
             drive.move(translationIntent, suggestedRotatePower);
         } else {
-            drive.fieldOrientedDrive(translationIntent, suggestedRotatePower, pose.getCurrentHeading().getDegrees(), centerOfRotation);
+            drive.fieldOrientedDrive(translationIntent, suggestedRotatePower, pose.getCurrentHeading().getDegrees(), centerOfRotationInches);
         }
     }
 

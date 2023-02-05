@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import xbot.common.controls.sensors.XJoystick;
 import xbot.common.controls.sensors.XXboxController;
 import xbot.common.controls.sensors.XXboxController.XXboxControllerFactory;
+import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.logging.RobotAssertionManager;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -51,4 +52,5 @@ public class OperatorInterface {
     public double getOperatorGamepadTypicalDeadband() {
         return operatorDeadband.get();
     }
+
 }
