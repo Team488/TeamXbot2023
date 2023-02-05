@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
@@ -44,6 +45,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
     private final BooleanProperty useMotorControllerPid;
     private final DoubleProperty maxMotorEncoderDrift;
 
+    private Rotation2d currentModuleHeadingRotation2d;
     private XCANSparkMax motorController;
     private XCANCoder encoder;
 
@@ -72,6 +74,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         pf.setPrefix(this);
         this.targetRotation = pf.createEphemeralProperty("TargetRotation", 0.0);
         this.currentModuleHeading = pf.createEphemeralProperty("CurrentModuleHeading", 0.0);
+        this.currentModuleHeadingRotation2d = new Rotation2d(0);
 
         if (electricalContract.isDriveReady()) {
             this.motorController = sparkMaxFactory.create(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
@@ -131,6 +134,13 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
     @Override
     public Double getCurrentValue() {
         return getBestEncoderPositionInDegrees();
+    }
+
+    /**
+     * Gets current angle as a Rotation2d
+     */
+    public Rotation2d getCurrentRotation() {
+        return this.currentModuleHeadingRotation2d;
     }
 
     /**
@@ -341,6 +351,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
             //motorEncoderPosition.set(getMotorControllerEncoderPosiitonInDegrees());
         }
 
-        currentModuleHeading.set(getCurrentValue());
+        double positionInDegrees = getBestEncoderPositionInDegrees();
+        currentModuleHeading.set(positionInDegrees);
+        currentModuleHeadingRotation2d = Rotation2d.fromDegrees(positionInDegrees);
     }
 }

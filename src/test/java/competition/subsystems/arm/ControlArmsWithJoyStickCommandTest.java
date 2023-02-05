@@ -17,8 +17,8 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
     @Override
     public void setUp() {
         super.setUp();
-        lowerArm = getInjectorComponent().lowerArmSubsystem();
-        upperArm = getInjectorComponent().upperArmSubsystem();
+        lowerArm = getInjectorComponent().lowerArmSegment();
+        upperArm = getInjectorComponent().upperArmSegment();
         controlArmsWithJoyStickCommand = getInjectorComponent().controlArmsWithJoyStickCommand();
         oi = getInjectorComponent().operatorInterface();
     }

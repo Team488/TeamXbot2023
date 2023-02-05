@@ -147,4 +147,5 @@ public class CompetitionContract extends ElectricalContract {
         return new DeviceInfo(1, false);
     }
 
+    public DeviceInfo getClawSolenoid() {return new DeviceInfo(5, false);}
 }

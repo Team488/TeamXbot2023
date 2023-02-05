@@ -6,6 +6,9 @@ import competition.injection.modules.CompetitionTestModule;
 import competition.subsystems.arm.LowerArmSegment;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UpperArmSegment;
+import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.CloseClawCommand;
+import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.arm.commands.ControlArmsWithJoyStickCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
@@ -35,12 +38,17 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
 
     public abstract SwerveSteeringMotorPidSubsystem swerveSteeringMotorPidSubsystem();
 
-    public abstract LowerArmSegment lowerArmSubsystem();
+    public abstract LowerArmSegment lowerArmSegment();
 
-    public abstract UpperArmSegment upperArmSubsystem();
+    public abstract UpperArmSegment upperArmSegment();
 
     public  abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
 
     public abstract UnifiedArmSubsystem unifiedArmSubsystem();
 
+    public abstract ClawSubsystem clawSubsystem();
+
+    public abstract OpenClawCommand openClawCommand();
+
+    public abstract CloseClawCommand closeClawCommand();
 }
