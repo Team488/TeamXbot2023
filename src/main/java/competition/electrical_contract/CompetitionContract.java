@@ -31,7 +31,7 @@ public class CompetitionContract extends ElectricalContract {
                 return new DeviceInfo(31, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(28, false, simulationScalingValue);
+                return new DeviceInfo(29, false, simulationScalingValue);
 
             case "RearLeftDrive":
                 return new DeviceInfo(38, false, simulationScalingValue);
@@ -53,7 +53,7 @@ public class CompetitionContract extends ElectricalContract {
                 return new DeviceInfo(30, false, simulationScalingValue);
 
             case "FrontRightDrive":
-                return new DeviceInfo(29, false, simulationScalingValue);
+                return new DeviceInfo(28, false, simulationScalingValue);
 
             case "RearLeftDrive":
                 return new DeviceInfo(39, false, simulationScalingValue);
@@ -92,16 +92,42 @@ public class CompetitionContract extends ElectricalContract {
     public XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance) {
         switch (swerveInstance.getLabel()) {
             case "FrontLeftDrive":
-                return new XYPair(-15, 15);
-            case "FrontRightDrive":
                 return new XYPair(15, 15);
-            case "RearLeftDrive":
-                return new XYPair(-15, -15);
-            case "RearRightDrive":
+            case "FrontRightDrive":
                 return new XYPair(15, -15);
+            case "RearLeftDrive":
+                return new XYPair(-15, 15);
+            case "RearRightDrive":
+                return new XYPair(-15, -15);
             default:
                 return new XYPair(0, 0);
         }
     }
+
+    @Override
+    public DeviceInfo getLowerArmLeftMotor() {
+        return new DeviceInfo(37,true);
+    }
+
+    @Override
+    public DeviceInfo getLowerArmRightMotor() {
+        return new DeviceInfo(22,false);
+    }
+
+    public DeviceInfo getUpperArmLeftMotor(){
+        return new DeviceInfo(35,false);
+    }
+
+    @Override
+    public DeviceInfo getUpperArmRightMotor() {
+        return new DeviceInfo(24,false);
+    }
+
+    public boolean isLowerArmReady() { return true;}
+
+    public boolean isUpperArmReady() { return true;}
+
+    @Override
+    public DeviceInfo getClawSolenoid() {return new DeviceInfo(5, false);}
 
 }
