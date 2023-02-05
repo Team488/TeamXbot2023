@@ -5,6 +5,9 @@ import javax.inject.Singleton;
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.modules.CommonModule;
 import competition.injection.modules.CompetitionTestModule;
+import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.CloseClawCommand;
+import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.arm.LowerArmSubsystem;
 import competition.subsystems.arm.UpperArmSubsystem;
 import competition.subsystems.arm.commands.ControlArmsWithJoyStickCommand;
@@ -40,4 +43,9 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
 
     public  abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
 
+    public abstract ClawSubsystem clawSubsystem();
+
+    public abstract OpenClawCommand openClawCommand();
+
+    public abstract CloseClawCommand closeClawCommand();
 }

@@ -127,4 +127,6 @@ public class CompetitionContract extends ElectricalContract {
 
     public boolean isUpperArmReady() { return true;}
 
+    @Override
+    public DeviceInfo getClawSolenoid() {return new DeviceInfo(5, false);}
 }
