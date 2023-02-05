@@ -25,15 +25,16 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     }
 
     @Test
-    public void openClawTest(){
+    public void openClawTest() {
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
         checkClawState(true);
 
     }
+
     @Test
-    public void closeClawTest(){
+    public void closeClawTest() {
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
@@ -41,7 +42,7 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     }
 
     @Test
-    public void openClawTwiceTest(){
+    public void openClawTwiceTest() {
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
@@ -49,8 +50,9 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         checkClawState(true);
 
     }
+
     @Test
-    public void cLoseClawTwiceTest(){
+    public void cLoseClawTwiceTest() {
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
@@ -59,7 +61,7 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     }
 
     @Test
-    public void openToCloseTest(){
+    public void openToCloseTest() {
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
@@ -68,8 +70,9 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         checkClawState(false);
 
     }
+
     @Test
-    public void closeToOpenTest(){
+    public void closeToOpenTest() {
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
@@ -78,23 +81,18 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         checkClawState(true);
     }
 
-
-
-    private void checkClawState(boolean clawState){
+    private void checkClawState(boolean clawState) {
         Assert.assertEquals(clawState, clawSubsystem.GetClawState());
-
-        Assert.assertEquals(clawState, ((MockSolenoid)clawSubsystem.ClawSolenoid).getAdjusted());
-
+        Assert.assertEquals(clawState, ((MockSolenoid) clawSubsystem.ClawSolenoid).getAdjusted());
     }
 
-    private void setOpenClaw(){
+    private void setOpenClaw() {
         clawSubsystem.Open();
-        ((MockSolenoid)clawSubsystem.ClawSolenoid).set(true);
-
+        ((MockSolenoid) clawSubsystem.ClawSolenoid).set(true);
     }
 
-    private void setCloseClaw(){
+    private void setCloseClaw() {
         clawSubsystem.Close();
-        ((MockSolenoid)clawSubsystem.ClawSolenoid).set(false);
+        ((MockSolenoid) clawSubsystem.ClawSolenoid).set(false);
     }
 }

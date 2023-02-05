@@ -36,10 +36,7 @@ public class ClawSubsystem extends BaseSubsystem {
             //close claw
             ClawSolenoid.setOn(false);
         }
-
-
     }
-
 
     public boolean GetClawState() {
         return ClawSolenoid.getAdjusted();
@@ -52,5 +49,4 @@ public class ClawSubsystem extends BaseSubsystem {
     public void Close() {
         ChangeClaw(ClawState.CloseCLaw);
     }
-
 }
