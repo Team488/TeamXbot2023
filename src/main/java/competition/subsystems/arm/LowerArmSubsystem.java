@@ -79,4 +79,8 @@ public class LowerArmSubsystem extends BaseSubsystem{
     public void goBack(){
         setMotorPower(-powerProp.get());
     }
+
+    public double getAngle(){
+        return 0;
+    }
 }

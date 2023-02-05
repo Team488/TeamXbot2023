@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
+import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.math.PIDManager;
@@ -76,4 +77,12 @@ public class UpperArmSubsystem extends BaseSubsystem {
     public void backwardRotation(){
         setMotorPower(powerProp.get());
     }
+
+    public double getAngle(){
+        return 0;
+    }
+
+    public void setArmToAngle(Rotation2d angle) {
+    }
+
 }

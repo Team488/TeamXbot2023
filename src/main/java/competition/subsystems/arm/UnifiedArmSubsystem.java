@@ -17,18 +17,16 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     UpperArmSubsystem upperArm;
 
     private XYPair targetPosition;
-    private ArmPositionSolver solver;
+    public final ArmPositionSolver solver;
 
     private HumanVsMachineDecider humanVsMachineDecider;
 
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSubsystem lowerArm,
-            UpperArmSubsystem upperArm,
-            HumanVsMachineDecider.HumanVsMachineDeciderFactory hvmFactory) {
+            UpperArmSubsystem upperArm) {
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
-        this.humanVsMachineDecider = hvmFactory.create(this.getPrefix());
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             38.0,
             32.0,
@@ -37,7 +35,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             Rotation2d.fromDegrees(-175),
             Rotation2d.fromDegrees(-5.0)
         );
-        ArmPositionSolver solver = new ArmPositionSolver(armConfig);
+        solver = new ArmPositionSolver(armConfig);
     }
 
     /**
@@ -58,32 +56,36 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         this.targetPosition = targetPosition;
     }
 
-    public XYPair getCurrentPosition() {
-        return new XYPair();
-        //return solver.getPositionFromAngles(
-        //    lowerArm.getCurrentAngle(),
-        //    upperArm.getCurrentAngle()
-        //);
-    }
-
     @Override
     public XYPair getCurrentValue() {
-        return null;
+        return solver.getPositionFromAngles(
+            lowerArm.getAngle(),
+            upperArm.getAngle()
+        );
     }
 
     @Override
     public XYPair getTargetValue() {
-        return null;
+        return targetPosition;
     }
 
     @Override
     public void setTargetValue(XYPair value) {
-
+        this.targetPosition = value;
     }
 
+    /**
+     * Sets the power of the arm motors directly, mapping X to lower arm and Y to upper arm.
+     * @param power X - lower arm power. Y - upper arm power.
+     */
     @Override
     public void setPower(XYPair power) {
+        lowerArm.setMotorPower(power.x);
+        upperArm.setMotorPower(power.y);
+    }
 
+    public void setArmsToAngles() {
+        upperArm.set
     }
 
     @Override
