@@ -2,20 +2,26 @@ package competition.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax;
+import xbot.common.controls.sensors.XDutyCycleEncoder;
+import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 public abstract class ArmSegment {
 
     XCANSparkMax leaderMotor;
+    XDutyCycleEncoder absoluteEncoder;
 
     private DoubleProperty upperLimitInDegrees;
     private DoubleProperty lowerLimitInDegrees;
     private DoubleProperty degreesPerMotorRotationProp;
-    private double calibrationOffset;
+    private BooleanProperty
+    private double motorEncoderOffset;
+    private double absoluteEncoderOffset;
 
-    public ArmSegment(XCANSparkMax leaderMotor, String prefix, PropertyFactory propFactory) {
+    public ArmSegment(XCANSparkMax leaderMotor, XDutyCycleEncoder absoluteEncoder, String prefix, PropertyFactory propFactory) {
         this.leaderMotor = leaderMotor;
+        this.absoluteEncoder = absoluteEncoder;
         propFactory.setPrefix(prefix);
         upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
         lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
@@ -30,7 +36,21 @@ public abstract class ArmSegment {
         }
     }
 
-    private
+    private double getArmPositionFromAbsoluteEncoder() {
+        if (isAbsoluteEncoderReady()) {
+            return absoluteEncoder.getAbsolutePosition().getDegrees() - absoluteEncoderOffset;
+        }
+        return 0;
+    }
+
+    public void calibrateThisPositionAs(double degrees) {
+        if (isAbsoluteEncoderReady()) {
+            absoluteEncoderOffset = absoluteEncoder.getAbsolutePosition().getDegrees() - degrees;
+        }
+        if (isMotorReady()) {
+            motorEncoderOffset = leaderMotor.getPosition() * degreesPerMotorRotationProp.get() - degrees;
+        }
+    }
 
     private double getArmPositionInDegrees() {
         if (isAbsoluteEncoderReady()) {
