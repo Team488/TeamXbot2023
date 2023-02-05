@@ -119,8 +119,12 @@ public abstract class ArmSegment implements DataFrameRefreshable {
 
     @Override
     public void refreshDataFrame() {
-        getLeaderMotor().refreshDataFrame();
-        getFollowerMotor().refreshDataFrame();
-        getAbsoluteEncoder().refreshDataFrame();
+        if (isMotorReady()) {
+            getLeaderMotor().refreshDataFrame();
+            getFollowerMotor().refreshDataFrame();
+        }
+        if (isAbsoluteEncoderReady()) {
+            getAbsoluteEncoder().refreshDataFrame();
+        }
     }
 }

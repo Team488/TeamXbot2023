@@ -15,6 +15,4 @@ import xbot.common.injection.modules.RobotModule;
 @Component(modules = { RobotModule.class, RealDevicesModule.class, RealControlsModule.class, CompetitionModule.class, CommonModule.class })
 public abstract class RobotComponent extends BaseRobotComponent {
     public abstract SwerveComponentHolder swerveComponents();
-
-    public abstract UnifiedArmSubsystem unifiedArmSubsystem();
 }

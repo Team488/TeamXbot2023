@@ -38,8 +38,8 @@ public class Robot extends BaseRobot {
         }
     }
 
-    public RobotComponent getInjectorComponent() {
-        return (RobotComponent)super.getInjectorComponent();
+    public BaseRobotComponent getInjectorComponent() {
+        return (BaseRobotComponent)super.getInjectorComponent();
     }
 
     @Override
