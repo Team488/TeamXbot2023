@@ -29,12 +29,12 @@ public class UpperArmSegment extends ArmSegment {
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
-            this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"RightMotor");
+            this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor");
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
         }
         if (contract.isLowerArmEncoderReady()) {
-            this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getUpperArmEncoder(), prefix);
+            this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getUpperArmEncoder());
         }
 
         setSoftLimit(false);

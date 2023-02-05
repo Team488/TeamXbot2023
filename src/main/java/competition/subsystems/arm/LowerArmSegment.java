@@ -34,7 +34,7 @@ public class LowerArmSegment extends ArmSegment {
             leftMotor.follow(rightMotor, contract.getLowerArmLeftMotor().inverted);
         }
         if (contract.isLowerArmEncoderReady()) {
-            this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getLowerArmEncoder(), prefix);
+            this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getLowerArmEncoder());
         }
 
         setSoftLimit(false);

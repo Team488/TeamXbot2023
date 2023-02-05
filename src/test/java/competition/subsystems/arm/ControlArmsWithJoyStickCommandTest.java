@@ -49,11 +49,8 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
         checkArmPowers(-1,-1);
     }
     private void checkArmPowers(double lowerArmPower,double upperArmPower){
-
-        assertEquals(upperArmPower,upperArm.upperArmLeftMotor.get(), 0.001);
-        assertEquals(upperArmPower,upperArm.upperArmRightMotor.get(), 0.001);
-
-        assertEquals(lowerArmPower,lowerArm.leftMotor.get(), 0.001);
+        // Only check the right motors, as they are the "leaders".
+        assertEquals(upperArmPower,upperArm.rightMotor.get(), 0.001);
         assertEquals(lowerArmPower,lowerArm.rightMotor.get(), 0.001);
     }
 }
