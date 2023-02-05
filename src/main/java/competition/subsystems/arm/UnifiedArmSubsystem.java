@@ -2,9 +2,7 @@ package competition.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.command.BaseSetpointSubsystem;
-import xbot.common.command.BaseSubsystem;
 import xbot.common.logic.HumanVsMachineDecider;
-import xbot.common.logic.HumanVsMachineDecider_Factory;
 import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
@@ -13,8 +11,8 @@ import javax.inject.Singleton;
 @Singleton
 public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
-    LowerArmSubsystem lowerArm;
-    UpperArmSubsystem upperArm;
+    LowerArmSegment lowerArm;
+    UpperArmSegment upperArm;
 
     private XYPair targetPosition;
     public final ArmPositionSolver solver;
@@ -23,8 +21,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     @Inject
     public UnifiedArmSubsystem(
-            LowerArmSubsystem lowerArm,
-            UpperArmSubsystem upperArm) {
+            LowerArmSegment lowerArm,
+            UpperArmSegment upperArm) {
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
@@ -44,8 +42,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
      * @param upperPower power of the upper arm motor
      */
     public void setArmPowers(double lowerPower, double upperPower) {
-        lowerArm.setMotorPower(lowerPower);
-        upperArm.setMotorPower(upperPower);
+        lowerArm.setPower(lowerPower);
+        upperArm.setPower(upperPower);
     }
 
     /**
@@ -58,10 +56,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     @Override
     public XYPair getCurrentValue() {
-        return solver.getPositionFromAngles(
-            lowerArm.getAngle(),
-            upperArm.getAngle()
-        );
+        return solver.getPositionFromRadians(
+            lowerArm.getArmPositionInRadians(),
+            upperArm.getArmPositionInRadians());
     }
 
     @Override
@@ -80,12 +77,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
      */
     @Override
     public void setPower(XYPair power) {
-        lowerArm.setMotorPower(power.x);
-        upperArm.setMotorPower(power.y);
+        lowerArm.setPower(power.x);
+        upperArm.setPower(power.y);
     }
 
     public void setArmsToAngles() {
-        upperArm.set
+
     }
 
     @Override

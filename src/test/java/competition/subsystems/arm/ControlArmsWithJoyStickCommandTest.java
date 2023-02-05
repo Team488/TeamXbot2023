@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.MockXboxControllerAdapter;
 import org.junit.Test;
 
 public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
-    LowerArmSubsystem lowerArm;
-    UpperArmSubsystem upperArm;
+    LowerArmSegment lowerArm;
+    UpperArmSegment upperArm;
     OperatorInterface oi;
     ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand;
 
@@ -53,7 +53,7 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
         assertEquals(upperArmPower,upperArm.upperArmLeftMotor.get(), 0.001);
         assertEquals(upperArmPower,upperArm.upperArmRightMotor.get(), 0.001);
 
-        assertEquals(lowerArmPower,lowerArm.lowerArmLeftMotor.get(), 0.001);
-        assertEquals(lowerArmPower,lowerArm.lowerArmRightMotor.get(), 0.001);
+        assertEquals(lowerArmPower,lowerArm.leftMotor.get(), 0.001);
+        assertEquals(lowerArmPower,lowerArm.rightMotor.get(), 0.001);
     }
 }

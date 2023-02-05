@@ -9,74 +9,90 @@ import xbot.common.properties.PropertyFactory;
 
 public abstract class ArmSegment {
 
-    XCANSparkMax leaderMotor;
-    XDutyCycleEncoder absoluteEncoder;
+    private final DoubleProperty upperLimitInDegrees;
+    private final DoubleProperty lowerLimitInDegrees;
+    private final DoubleProperty degreesPerMotorRotationProp;
+    private final BooleanProperty useAbsoluteEncoderProp;
+    private double motorEncoderOffsetInDegrees;
+    private double absoluteEncoderOffsetInDegrees;
 
-    private DoubleProperty upperLimitInDegrees;
-    private DoubleProperty lowerLimitInDegrees;
-    private DoubleProperty degreesPerMotorRotationProp;
-    private BooleanProperty
-    private double motorEncoderOffset;
-    private double absoluteEncoderOffset;
-
-    public ArmSegment(XCANSparkMax leaderMotor, XDutyCycleEncoder absoluteEncoder, String prefix, PropertyFactory propFactory) {
-        this.leaderMotor = leaderMotor;
-        this.absoluteEncoder = absoluteEncoder;
+    public ArmSegment(String prefix, PropertyFactory propFactory) {
         propFactory.setPrefix(prefix);
         upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
         lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
+        degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 360);
+        useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", false);
     }
+
+    protected abstract XCANSparkMax getLeaderMotor();
+    protected abstract XDutyCycleEncoder getAbsoluteEncoder();
 
     public abstract boolean isMotorReady();
     public abstract boolean isAbsoluteEncoderReady();
 
     public void setPower(double power) {
         if (isMotorReady()) {
-            leaderMotor.set(power);
+            getLeaderMotor().set(power);
         }
     }
 
     private double getArmPositionFromAbsoluteEncoder() {
         if (isAbsoluteEncoderReady()) {
-            return absoluteEncoder.getAbsolutePosition().getDegrees() - absoluteEncoderOffset;
+            return getAbsoluteEncoder().getAbsolutePosition().getDegrees() - absoluteEncoderOffsetInDegrees;
+        }
+        return 0;
+    }
+
+    private double getArmPositionFromMotorEncoder() {
+        if (isMotorReady()) {
+            return getLeaderMotor().getPosition() * degreesPerMotorRotationProp.get() - motorEncoderOffsetInDegrees;
         }
         return 0;
     }
 
     public void calibrateThisPositionAs(double degrees) {
         if (isAbsoluteEncoderReady()) {
-            absoluteEncoderOffset = absoluteEncoder.getAbsolutePosition().getDegrees() - degrees;
+            absoluteEncoderOffsetInDegrees = getAbsoluteEncoder().getAbsolutePosition().getDegrees() - degrees;
         }
         if (isMotorReady()) {
-            motorEncoderOffset = leaderMotor.getPosition() * degreesPerMotorRotationProp.get() - degrees;
+            motorEncoderOffsetInDegrees = getLeaderMotor().getPosition() * degreesPerMotorRotationProp.get() - degrees;
         }
     }
 
-    private double getArmPositionInDegrees() {
-        if (isAbsoluteEncoderReady()) {
-            return leaderMotor.getPosition() * degreesPerMotorRotationProp.get() - calibrationOffset;
+    public double getArmPositionInDegrees() {
+        if (useAbsoluteEncoderProp.get()) {
+            return getArmPositionFromAbsoluteEncoder();
+        } else {
+            return getArmPositionFromMotorEncoder();
         }
-        return 0;
     }
 
-    private void setSoftLimit(boolean enabled) {
+    public double getArmPositionInRadians() {
+        return Math.toRadians(getArmPositionInDegrees());
+    }
+
+    public void setSoftLimit(boolean enabled) {
         if (isMotorReady()) {
             if (enabled) {
                 enableSoftLimit(true);
-                configSoftLimit(upperLimit.get(), lowerLimit.get());
-
+                // When setting the soft limits, remember that the underlying motor wants units of rotation, and that
+                // we are potentially offset. So we need to figure out our actual degree target, then divide by
+                // degrees per motor rotation to get something the SparkMAX can understand.
+                configSoftLimit(
+                        (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / degreesPerMotorRotationProp.get(),
+                        (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / degreesPerMotorRotationProp.get());
             }
             enableSoftLimit(false);
         }
     }
 
     private void enableSoftLimit(boolean on){
-        leaderMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,on);
-        leaderMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,on);
+        getLeaderMotor().enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward,on);
+        getLeaderMotor().enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,on);
     }
 
     private void configSoftLimit(double upper, double lower){
-        leaderMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,(float)upper);
-        leaderMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
+        getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,(float)upper);
+        getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
     }
 }

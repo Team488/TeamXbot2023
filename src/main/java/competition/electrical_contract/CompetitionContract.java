@@ -127,4 +127,24 @@ public class CompetitionContract extends ElectricalContract {
 
     public boolean isUpperArmReady() { return true;}
 
+    @Override
+    public boolean isLowerArmEncoderReady() {
+        return false;
+    }
+
+    @Override
+    public boolean isUpperArmEncoderReady() {
+        return false;
+    }
+
+    @Override
+    public DeviceInfo getLowerArmEncoder() {
+        return new DeviceInfo(0, false);
+    }
+
+    @Override
+    public DeviceInfo getUpperArmEncoder() {
+        return new DeviceInfo(1, false);
+    }
+
 }
