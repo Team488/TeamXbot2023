@@ -5,6 +5,7 @@ import competition.injection.components.BaseRobotComponent;
 import competition.injection.components.DaggerPracticeComponent;
 import competition.injection.components.DaggerRobotComponent;
 import competition.injection.components.DaggerSimulationComponent;
+import competition.injection.components.RobotComponent;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
@@ -22,6 +23,7 @@ public class Robot extends BaseRobot {
 
         dataFrameRefreshables.add((DriveSubsystem)getInjectorComponent().driveSubsystem());
         dataFrameRefreshables.add(getInjectorComponent().poseSubsystem());
+        dataFrameRefreshables.add(getInjectorComponent().unifiedArmSubsystem());
     }
 
     protected BaseRobotComponent createDaggerComponent() {
@@ -36,8 +38,8 @@ public class Robot extends BaseRobot {
         }
     }
 
-    public BaseRobotComponent getInjectorComponent() {
-        return (BaseRobotComponent)super.getInjectorComponent();
+    public RobotComponent getInjectorComponent() {
+        return (RobotComponent)super.getInjectorComponent();
     }
 
     @Override
