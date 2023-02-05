@@ -29,6 +29,7 @@ public class SwerveToPointCommand extends BaseCommand {
     private boolean robotRelativeMotion = false;
 
     double maxPower = 1.0;
+    double maxTurningPower = 1.0;
 
     @Inject
     public SwerveToPointCommand(DriveSubsystem drive, PoseSubsystem pose, PropertyFactory pf, HeadingModuleFactory headingModuleFactory) {
@@ -54,12 +55,12 @@ public class SwerveToPointCommand extends BaseCommand {
             // "go backwards 60 inches" from the robot's perspective.
             // If the robot was pointed at field 0 degrees (right) this would mean setting
             // a field-relative target of -60, 0 (move the robot left 60 inches).
-            targetPosition.rotate(pose.getCurrentHeading().getDegrees() - PoseSubsystem.FACING_AWAY_FROM_DRIVERS);
+            targetPosition.rotate(pose.getCurrentHeading().getDegrees());
             
             targetPosition = pose.getCurrentFieldPose().getPoint().clone().add(targetPosition);
 
             // Then, move the target heading itself. 
-            targetHeading = pose.getCurrentHeading().getDegrees() - 90 + targetHeading;
+            targetHeading = pose.getCurrentHeading().getDegrees() + targetHeading;
         }
 
         log.info(String.format("Swerve to point targets: (%f, %f), %f", targetPosition.x, targetPosition.y, targetHeading));
@@ -95,6 +96,9 @@ public class SwerveToPointCommand extends BaseCommand {
         this.maxPower = maxPower;
     }
 
+    public void setMaxTurningPower(double maxTurningPower) {
+        this.maxTurningPower = maxTurningPower;
+    }
     @Override
     public void execute() {
         // Get the difference between where we are, and where we want to be.
@@ -115,6 +119,11 @@ public class SwerveToPointCommand extends BaseCommand {
 
         if (intent.getMagnitude() > maxPower && maxPower > 0 && intent.getMagnitude() > 0) {
             intent = intent.scale(maxPower / intent.getMagnitude());
+        }
+
+        if (maxTurningPower > 0)
+        {
+            headingPower = headingPower * maxTurningPower;
         }
 
         drive.fieldOrientedDrive(intent, headingPower, pose.getCurrentHeading().getDegrees(), false);

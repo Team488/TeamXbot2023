@@ -116,7 +116,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
                 (a) -> MathUtils.exponentAndRetainSign(a, (int) input_exponent.get()));
 
         // create new vector with the scaled magnitude and angle
-        XYPair translationIntent = XYPair.fromPolar(rawAngle, updatedMagnitude);
+        XYPair translationIntent = XYPair.fromPolar(rawAngle-90, updatedMagnitude);
 
         // --------------------------------------------------
         // Rotation
@@ -159,6 +159,10 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // is a "negative" rotation, so the X axis is usually inverted to take that into account). 
             // By doing this inversion, the vector will better map onto a typical cartesian coordinate system.
             XYPair headingVector = new XYPair(-oi.driverGamepad.getRightStickX(), oi.driverGamepad.getRightStickY());
+
+            // The next step is to rotate the vector. The FRC frame assumes "forward" is 0 degrees, but the typical cartesian setup
+            // of a joystick would have "forward" as 90 degrees.
+            headingVector = headingVector.rotate(-90);
 
             double desiredHeading = 0;
             
@@ -235,9 +239,9 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         suggestedRotatePower *= turnPowerFactor.get();
 
         // Check if we need a different center of rotation
-        XYPair centerOfRotation = new XYPair(0,0);
+        XYPair centerOfRotationInches = new XYPair(0,0);
         if (drive.isCollectorRotationActive()) {
-            centerOfRotation = new XYPair(0, 36);
+            centerOfRotationInches = new XYPair(36, 0);
         }
 
         // Rumble based on camera state
@@ -260,7 +264,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         if (drive.isRobotOrientedDriveActive()) {
             drive.move(translationIntent, suggestedRotatePower);
         } else {
-            drive.fieldOrientedDrive(translationIntent, suggestedRotatePower, pose.getCurrentHeading().getDegrees(), centerOfRotation);
+            drive.fieldOrientedDrive(translationIntent, suggestedRotatePower, pose.getCurrentHeading().getDegrees(), centerOfRotationInches);
         }
     }
 

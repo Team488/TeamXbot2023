@@ -15,7 +15,6 @@ public class CloseClawCommand extends BaseCommand{
         this.clawSubsystem = clawSubsystem;
     }
 
-
     @Override
     public void initialize() {
         log.info("Initializing");

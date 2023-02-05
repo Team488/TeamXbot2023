@@ -48,6 +48,4 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract OpenClawCommand openClawCommand();
 
     public abstract CloseClawCommand closeClawCommand();
-
-
 }

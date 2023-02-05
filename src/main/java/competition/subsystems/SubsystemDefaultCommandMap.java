@@ -10,6 +10,8 @@ import competition.injection.swerve.RearRightDrive;
 import competition.injection.swerve.SwerveComponent;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.simple.SimpleSetPowerCommand;
+import competition.subsystems.simple.SimpleSubsystem;
 
 /**
  * For setting the default commands on subsystems
@@ -51,5 +53,10 @@ public class SubsystemDefaultCommandMap {
             @RearRightDrive SwerveComponent swerveComponent) {
         swerveComponent.swerveDriveSubsystem().setDefaultCommand(swerveComponent.swerveDriveMaintainerCommand());
         swerveComponent.swerveSteeringSubsystem().setDefaultCommand(swerveComponent.swerveSteeringMaintainerCommand());
+    }
+
+    @Inject
+    public void setupSimpleSubsystem(SimpleSubsystem simpleSubsystem, SimpleSetPowerCommand command) {
+        simpleSubsystem.setDefaultCommand(command);
     }
 }

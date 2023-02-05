@@ -148,15 +148,15 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         XYPair translation, 
         double rotation, 
         double currentHeading,
-        XYPair centerOfRotation) {
+        XYPair centerOfRotationInches) {
         // rotate the translation vector into the robot coordinate frame
         XYPair fieldRelativeVector = translation.clone();
         
         // 90 degrees is the defined "forward" direction for a driver
-        fieldRelativeVector.rotate(90 - currentHeading);
+        fieldRelativeVector.rotate(-currentHeading);
         
         // send the rotated vector to be driven
-        move(fieldRelativeVector, rotation, centerOfRotation);
+        move(fieldRelativeVector, rotation, centerOfRotationInches);
     }
 
     boolean collectorOrientedRotationActive;
@@ -223,9 +223,9 @@ public class DriveSubsystem extends BaseDriveSubsystem {
      * Set the target movement speed and rotation, with an arbitrary center of rotation.
      * @param translate The translation velocity.
      * @param rotate The rotation velocity.
-     * @param centerOfRotation The center of rotation.
+     * @param centerOfRotationInches The center of rotation.
      */
-    public void move(XYPair translate, double rotate, XYPair centerOfRotation) {
+    public void move(XYPair translate, double rotate, XYPair centerOfRotationInches) {
 
         // First, we need to check if we've been asked to move at all. If not, we should look at the last time we were given a commanded direction
         // and keep the wheels pointed that way. That prevents the wheels from returning to "0" degrees when the driver has gone back to 
@@ -254,10 +254,10 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         ChassisSpeeds targetMotion = new ChassisSpeeds(targetXmetersPerSecond, targetYmetersPerSecond, targetRotationRadiansPerSecond);
 
         // One optional step - we can choose to rotate around a specific point, rather than the center of the robot.
-        Translation2d centerOfRotationTranslation = new Translation2d(
-            centerOfRotation.x / BasePoseSubsystem.INCHES_IN_A_METER,
-            centerOfRotation.y / BasePoseSubsystem.INCHES_IN_A_METER);
-        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(targetMotion, centerOfRotationTranslation);
+        Translation2d centerOfRotationTranslationMeters = new Translation2d(
+            centerOfRotationInches.x / BasePoseSubsystem.INCHES_IN_A_METER,
+            centerOfRotationInches.y / BasePoseSubsystem.INCHES_IN_A_METER);
+        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(targetMotion, centerOfRotationTranslationMeters);
 
         // Another potentially optional step - it's possible that in the calculations above, one or more swerve modules could be asked to
         // move at higer than its maximum speed. At this point, we have a choice. Either:

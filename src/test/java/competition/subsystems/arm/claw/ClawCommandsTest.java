@@ -9,13 +9,11 @@ import edu.wpi.first.wpilibj.MockSolenoid;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ClawArmCommandsTest extends BaseCompetitionTest {
+public class ClawCommandsTest extends BaseCompetitionTest {
 
     ClawSubsystem clawSubsystem;
     OperatorInterface oi;
-
     CloseClawCommand closeClaw;
-
     OpenClawCommand openClaw;
 
     @Override
@@ -27,37 +25,37 @@ public class ClawArmCommandsTest extends BaseCompetitionTest {
     }
 
     @Test
-    public void openCLawTest(){
+    public void openClawTest(){
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
-        checkCLawState(true);
+        checkClawState(true);
 
     }
     @Test
-    public void cLoseCLawTest(){
+    public void closeClawTest(){
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
-        checkCLawState(false);
+        checkClawState(false);
     }
 
     @Test
-    public void openCLawTwiceTest(){
+    public void openClawTwiceTest(){
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
         openClaw.execute();
-        checkCLawState(true);
+        checkClawState(true);
 
     }
     @Test
-    public void cLoseCLawTwiceTest(){
+    public void cLoseClawTwiceTest(){
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
         closeClaw.execute();
-        checkCLawState(false);
+        checkClawState(false);
     }
 
     @Test
@@ -67,22 +65,22 @@ public class ClawArmCommandsTest extends BaseCompetitionTest {
         openClaw.execute();
         closeClaw.initialize();
         closeClaw.execute();
-        checkCLawState(false);
+        checkClawState(false);
 
     }
     @Test
-    public void cLoseToOpenTest(){
+    public void closeToOpenTest(){
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
         openClaw.initialize();
         openClaw.execute();
-        checkCLawState(true);
+        checkClawState(true);
     }
 
 
 
-    private void checkCLawState(boolean clawState){
+    private void checkClawState(boolean clawState){
         Assert.assertEquals(clawState, clawSubsystem.GetClawState());
 
         Assert.assertEquals(clawState, ((MockSolenoid)clawSubsystem.ClawSolenoid).getAdjusted());
