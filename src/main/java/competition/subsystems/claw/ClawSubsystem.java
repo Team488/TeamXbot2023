@@ -1,4 +1,4 @@
-package competition.subsystems.ClawArm;
+package competition.subsystems.claw;
 
 import competition.electrical_contract.ElectricalContract;
 import xbot.common.command.BaseSubsystem;
@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class ClawSubsystem extends BaseSubsystem {
-    public XSolenoid ClawSolenoid;
+    public XSolenoid clawSolenoid;
 
     public enum ClawState {
         CloseCLaw,
@@ -19,34 +19,34 @@ public class ClawSubsystem extends BaseSubsystem {
 
     @Inject
     public ClawSubsystem(XSolenoid.XSolenoidFactory solenoidFactory, ElectricalContract eContract, PropertyFactory propFactory) {
-        this.ClawSolenoid = solenoidFactory.create(eContract.getClawSolenoid().channel);
-        ClawSolenoid.setInverted(eContract.getClawSolenoid().inverted);
+        this.clawSolenoid = solenoidFactory.create(eContract.getClawSolenoid().channel);
+        clawSolenoid.setInverted(eContract.getClawSolenoid().inverted);
     }
 
     /**
      * Changes the state of the claw. True is considered "open".
      * @param state True opens the clow, false closes the claw
      */
-    private void ChangeClaw(ClawState state) {
+    private void changeClaw(ClawState state) {
         if (state == ClawState.OpenClaw) {
             //open claw
-            ClawSolenoid.setOn(true);
+            clawSolenoid.setOn(true);
 
         } else if (state == ClawState.CloseCLaw) {
             //close claw
-            ClawSolenoid.setOn(false);
+            clawSolenoid.setOn(false);
         }
     }
 
-    public boolean GetClawState() {
-        return ClawSolenoid.getAdjusted();
+    public boolean getClawState() {
+        return clawSolenoid.getAdjusted();
     }
 
-    public void Open() {
-        ChangeClaw(ClawState.OpenClaw);
+    public void open() {
+        changeClaw(ClawState.OpenClaw);
     }
 
-    public void Close() {
-        ChangeClaw(ClawState.CloseCLaw);
+    public void close() {
+        changeClaw(ClawState.CloseCLaw);
     }
 }

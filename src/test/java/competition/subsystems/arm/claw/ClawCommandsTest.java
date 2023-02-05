@@ -2,9 +2,9 @@ package competition.subsystems.arm.claw;
 
 import competition.BaseCompetitionTest;
 import competition.operator_interface.OperatorInterface;
-import competition.subsystems.ClawArm.ClawSubsystem;
-import competition.subsystems.ClawArm.CloseClawCommand;
-import competition.subsystems.ClawArm.OpenClawCommand;
+import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.CloseClawCommand;
+import competition.subsystems.claw.OpenClawCommand;
 import edu.wpi.first.wpilibj.MockSolenoid;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,7 +52,7 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     }
 
     @Test
-    public void cLoseClawTwiceTest() {
+    public void closeClawTwiceTest() {
         setOpenClaw();
         closeClaw.initialize();
         closeClaw.execute();
@@ -82,17 +82,17 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     }
 
     private void checkClawState(boolean clawState) {
-        Assert.assertEquals(clawState, clawSubsystem.GetClawState());
-        Assert.assertEquals(clawState, ((MockSolenoid) clawSubsystem.ClawSolenoid).getAdjusted());
+        Assert.assertEquals(clawState, clawSubsystem.getClawState());
+        Assert.assertEquals(clawState, ((MockSolenoid) clawSubsystem.clawSolenoid).getAdjusted());
     }
 
     private void setOpenClaw() {
-        clawSubsystem.Open();
-        ((MockSolenoid) clawSubsystem.ClawSolenoid).set(true);
+        clawSubsystem.open();
+        ((MockSolenoid) clawSubsystem.clawSolenoid).set(true);
     }
 
     private void setCloseClaw() {
-        clawSubsystem.Close();
-        ((MockSolenoid) clawSubsystem.ClawSolenoid).set(false);
+        clawSubsystem.close();
+        ((MockSolenoid) clawSubsystem.clawSolenoid).set(false);
     }
 }

@@ -1,17 +1,16 @@
-package competition.subsystems.ClawArm;
+package competition.subsystems.claw;
 
 import competition.operator_interface.OperatorInterface;
 import xbot.common.command.BaseCommand;
 
 import javax.inject.Inject;
 
-public class OpenClawCommand extends BaseCommand{
+public class CloseClawCommand extends BaseCommand{
 
     OperatorInterface oi;
     ClawSubsystem clawSubsystem;
-
     @Inject
-    public OpenClawCommand(OperatorInterface oi, ClawSubsystem clawSubsystem){
+    public CloseClawCommand(OperatorInterface oi, ClawSubsystem clawSubsystem){
         this.oi = oi;
         this.clawSubsystem = clawSubsystem;
     }
@@ -23,6 +22,6 @@ public class OpenClawCommand extends BaseCommand{
 
     @Override
     public void execute() {
-        clawSubsystem.Open();
+        clawSubsystem.close();
     }
 }
