@@ -1,6 +1,8 @@
 package competition.operator_interface;
 
 import competition.auto_programs.BlueBottomScoringPath;
+import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
+import competition.subsystems.arm.commands.SetArmsToPositionCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
@@ -10,7 +12,6 @@ import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.pose.PoseSubsystem;
-import competition.subsystems.simple.SimpleSetPowerCommand;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -123,5 +124,22 @@ public class OperatorCommandMap {
                                         BlueBottomScoringPath bluebottom) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueButtomScoring");
+    }
+
+    public void setupArmCommands(
+            OperatorInterface oi,
+            SetArmsToPositionCommand setHigh,
+            SetArmsToPositionCommand setMid,
+            SetArmsToPositionCommand setLow,
+            SetArmsToPositionCommand setRetract){
+        setLow.setTargetPosition(KeyArmPosition.lowerGoal);
+        setMid.setTargetPosition(KeyArmPosition.midGoal);
+        setHigh.setTargetPosition(KeyArmPosition.highGoal);
+        setRetract.setTargetPosition(KeyArmPosition.fullyRetracted);
+
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
     }
 }

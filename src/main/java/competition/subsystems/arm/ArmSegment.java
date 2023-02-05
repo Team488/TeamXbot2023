@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
+import xbot.common.math.WrappedRotation2d;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -37,14 +38,14 @@ public abstract class ArmSegment {
         }
     }
 
-    private double getArmPositionFromAbsoluteEncoder() {
+    private double getArmPositionFromAbsoluteEncoderInDegrees() {
         if (isAbsoluteEncoderReady()) {
             return getAbsoluteEncoder().getAbsolutePosition().getDegrees() - absoluteEncoderOffsetInDegrees;
         }
         return 0;
     }
 
-    private double getArmPositionFromMotorEncoder() {
+    private double getArmPositionFromMotorEncoderInDegrees() {
         if (isMotorReady()) {
             return getLeaderMotor().getPosition() * degreesPerMotorRotationProp.get() - motorEncoderOffsetInDegrees;
         }
@@ -62,9 +63,9 @@ public abstract class ArmSegment {
 
     public double getArmPositionInDegrees() {
         if (useAbsoluteEncoderProp.get()) {
-            return getArmPositionFromAbsoluteEncoder();
+            return getArmPositionFromAbsoluteEncoderInDegrees();
         } else {
-            return getArmPositionFromMotorEncoder();
+            return getArmPositionFromMotorEncoderInDegrees();
         }
     }
 
@@ -106,11 +107,10 @@ public abstract class ArmSegment {
         // 3) Read the current motor position in rotations
         // 4) Add the delta to the current position to get a goal position in units the motor controller understands
 
-        if (isAbsoluteEncoderReady() ) {
-            double delta = angle.getDegrees() - getArmPositionFromAbsoluteEncoder();
-            double motorRotations = delta / degreesPerMotorRotationProp.get();
-            double motorPosition = getLeaderMotor().getPosition();
-            double goalPosition = motorPosition + motorRotations;
+        if (isAbsoluteEncoderReady() && isMotorReady()) {
+            double delta = WrappedRotation2d.fromDegrees(angle.getDegrees() - getArmPositionFromAbsoluteEncoderInDegrees()).getDegrees();
+            double deltaInMotorRotations = delta / degreesPerMotorRotationProp.get();
+            double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();;
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
         }
     }

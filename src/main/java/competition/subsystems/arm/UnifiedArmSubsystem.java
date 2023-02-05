@@ -19,6 +19,18 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     private HumanVsMachineDecider humanVsMachineDecider;
 
+    public enum KeyArmPosition {
+        lowerGoal,
+        midGoal,
+        highGoal,
+        fullyRetracted
+    }
+
+    public static XYPair fullyRetractedPosition = new XYPair(0, 0);
+    public static XYPair lowerGoalPosition = new XYPair(1*12, 0);
+    public static XYPair midGoalPosition = new XYPair(3*12, 2*12);
+    public static XYPair highGoalPosition = new XYPair(4*12, 3*12);
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -34,6 +46,21 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             Rotation2d.fromDegrees(-5.0)
         );
         solver = new ArmPositionSolver(armConfig);
+    }
+
+    public XYPair getKeyArmPosition(KeyArmPosition keyArmPosition){
+        switch (keyArmPosition){
+            case lowerGoal:
+                return lowerGoalPosition;
+            case midGoal:
+                return midGoalPosition;
+            case highGoal:
+                return highGoalPosition;
+            case fullyRetracted:
+                return fullyRetractedPosition;
+            default:
+                return new XYPair(0,0);
+        }
     }
 
     /**
@@ -76,8 +103,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        //lowerArm.setArmAngle(lowerArmAngle);
-        //upperArm.setArmAngle(upperArmAngle);
+        lowerArm.setArmToAngle(lowerArmAngle);
+        upperArm.setArmToAngle(upperArmAngle);
     }
 
     @Override
