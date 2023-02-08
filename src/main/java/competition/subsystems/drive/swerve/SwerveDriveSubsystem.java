@@ -2,11 +2,6 @@ package competition.subsystems.drive.swerve;
 
 import javax.inject.Inject;
 
-import com.revrobotics.CANSparkMax.FaultID;
-import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
-
-import com.revrobotics.REVLibError;
-
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.SwerveInstance;
 import competition.injection.swerve.SwerveSingleton;
@@ -61,7 +56,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
      */
     private void setupStatusFramesAsNeeded() {
         if (this.contract.isDriveReady()) {
-            this.motorController.setupStatusFramesIfControllerHasRecentRecently(500, 20, 20, 500);
+            this.motorController.setupStatusFramesIfReset(500, 20, 20, 500);
         }
     }
 

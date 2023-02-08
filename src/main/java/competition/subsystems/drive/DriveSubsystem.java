@@ -1,8 +1,5 @@
 package competition.subsystems.drive;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.FrontLeftDrive;
 import competition.injection.swerve.FrontRightDrive;
@@ -17,17 +14,15 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
-import xbot.common.advantage.DataFrameRefreshable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import xbot.common.advantage.DataFrameRefreshable;
 import xbot.common.math.MathUtils;
 import xbot.common.math.PIDManager;
 import xbot.common.math.PIDManager.PIDManagerFactory;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
-import xbot.common.properties.XPropertyManager;
 import xbot.common.subsystems.drive.BaseDriveSubsystem;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 

@@ -85,7 +85,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
      */
     private void setupStatusFramesAsNeeded() {
         if (this.contract.isDriveReady()) {
-            this.motorController.setupStatusFramesIfControllerHasRecentRecently(500, 500, 20, 500);
+            this.motorController.setupStatusFramesIfReset(500, 500, 20, 500);
         }
 
         if (this.contract.areCanCodersReady() && this.encoder.hasResetOccurred()) {
