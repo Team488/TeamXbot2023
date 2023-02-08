@@ -47,11 +47,6 @@ public class LowerArmSegment extends ArmSegment {
     }
 
     @Override
-    protected XCANSparkMax getFollowerMotor() {
-        return leftMotor;
-    }
-
-    @Override
     protected XDutyCycleEncoder getAbsoluteEncoder() {
         return absoluteEncoder;
     }

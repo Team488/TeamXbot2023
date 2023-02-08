@@ -3,7 +3,6 @@ package competition.subsystems.drive.swerve.commands;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import competition.BaseCompetitionTest;
@@ -27,7 +26,6 @@ public class SetSteeringMotorControllerPidParametersCommandTest extends BaseComp
     }
 
     @Test
-    @Ignore
     public void testCommand() {
 
         this.configSubsystem.setAllProperties(1, 2, 3, 4, 5, 6, 7, 8);

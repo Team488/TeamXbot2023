@@ -2,7 +2,6 @@ package competition.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Rotation2d;
-import xbot.common.advantage.DataFrameRefreshable;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
 import xbot.common.math.WrappedRotation2d;
@@ -10,7 +9,7 @@ import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
-public abstract class ArmSegment implements DataFrameRefreshable {
+public abstract class ArmSegment {
 
     private final DoubleProperty upperLimitInDegrees;
     private final DoubleProperty lowerLimitInDegrees;
@@ -28,7 +27,6 @@ public abstract class ArmSegment implements DataFrameRefreshable {
     }
 
     protected abstract XCANSparkMax getLeaderMotor();
-    protected abstract XCANSparkMax getFollowerMotor();
     protected abstract XDutyCycleEncoder getAbsoluteEncoder();
 
     public abstract boolean isMotorReady();
@@ -114,17 +112,6 @@ public abstract class ArmSegment implements DataFrameRefreshable {
             double deltaInMotorRotations = delta / degreesPerMotorRotationProp.get();
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();;
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
-        }
-    }
-
-    @Override
-    public void refreshDataFrame() {
-        if (isMotorReady()) {
-            getLeaderMotor().refreshDataFrame();
-            getFollowerMotor().refreshDataFrame();
-        }
-        if (isAbsoluteEncoderReady()) {
-            getAbsoluteEncoder().refreshDataFrame();
         }
     }
 }
