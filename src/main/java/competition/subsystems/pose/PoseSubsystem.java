@@ -8,6 +8,7 @@ import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.Logger;
@@ -30,6 +31,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     final SwerveDrivePoseEstimator swerveOdometry;
     private final VisionSubsystem vision;
     private final Field2d fieldForDisplay;
+    private DriverStation.Alliance cachedAlliance = DriverStation.Alliance.Invalid;
 
     private boolean isPoseHealthy;
     private TimeStableValidator healthyPoseValidator = new TimeStableValidator(1);
@@ -79,6 +81,13 @@ public class PoseSubsystem extends BasePoseSubsystem {
         });
     }
 
+    /**
+     * Gets the robot's alliance color
+     * @return The robot alliance color
+     */
+    public DriverStation.Alliance getAlliance() {
+        return DriverStation.getAlliance();
+    }
 
     /**
      * This is a legacy method for tank drive robots, and does not apply to swerve. We should look at
