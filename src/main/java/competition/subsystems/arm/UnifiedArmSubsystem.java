@@ -188,4 +188,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
         upperArm.refreshDataFrame();
         lowerArm.refreshDataFrame();
     }
+
+    public void setSoftLimits(boolean on){
+        lowerArm.setSoftLimit(on);
+        upperArm.setSoftLimit(on);
+    }
 }
