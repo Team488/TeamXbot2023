@@ -8,7 +8,6 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.MockPoseSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import dagger.Binds;
-import dagger.BindsInstance;
 import dagger.Module;
 import xbot.common.subsystems.drive.BaseDriveSubsystem;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
