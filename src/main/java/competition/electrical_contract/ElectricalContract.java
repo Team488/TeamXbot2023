@@ -27,5 +27,22 @@ public abstract class ElectricalContract {
     public abstract DeviceInfo getLowerArmEncoder();
     public abstract DeviceInfo getUpperArmEncoder();
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
+    public abstract boolean isForwardAprilCamReady();
     public abstract DeviceInfo getClawSolenoid();
+
+    // ----------------- Helper methods -----------------
+    protected String getDriveControllerName(SwerveInstance swerveInstance) {
+        return "DriveSubsystem/"+swerveInstance.getLabel()+"/Drive";
+    }
+
+    protected String getSteeringControllerName(SwerveInstance swerveInstance) {
+        return "DriveSubsystem/"+swerveInstance.getLabel()+"/Steering";
+    }
+
+    // No extra qualifier needed for now, as "AbsoluteEncoder/CANCoder" will automatically be appended.
+    // Since each module only uses one of these, we don't need to further separate.
+    protected String getSteeringEncoderName(SwerveInstance swerveInstance) {
+        return "DriveSubsystem/"+swerveInstance.getLabel();
+    }
+
 }

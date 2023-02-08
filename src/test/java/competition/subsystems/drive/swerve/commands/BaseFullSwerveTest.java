@@ -28,6 +28,7 @@ public abstract class BaseFullSwerveTest extends BaseCompetitionTest{
         
         pose.setCurrentHeading(BasePoseSubsystem.FACING_AWAY_FROM_DRIVERS);
         setAllSteeringModuleAngles(0);
+        drive.refreshDataFrame();
     }
 
     protected void setAllSteeringModuleAngles(double angle) {

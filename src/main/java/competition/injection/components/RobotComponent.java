@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import competition.injection.modules.CommonModule;
 import competition.injection.modules.CompetitionModule;
 import competition.injection.swerve.SwerveComponentHolder;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import dagger.Component;
 import xbot.common.injection.modules.RealControlsModule;
 import xbot.common.injection.modules.RealDevicesModule;
