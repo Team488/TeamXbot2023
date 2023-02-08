@@ -2,8 +2,6 @@ package competition.subsystems.drive.commands;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
-
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
@@ -15,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xbot.common.command.DelayViaSupplierCommand;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -24,7 +24,7 @@ import xbot.common.subsystems.drive.control_logic.HeadingModule.HeadingModuleFac
 
 public class RotateToVisionTargetCommand extends SequentialCommandGroup {
 
-    private final Logger log = Logger.getLogger(this.getName());
+    private final Logger log = LogManager.getLogger(this.getName());
 
     private final PoseSubsystem pose;
     private final DriveSubsystem drive;

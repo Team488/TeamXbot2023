@@ -2,6 +2,7 @@ package competition.subsystems.arm;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import xbot.common.advantage.DataFrameRefreshable;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.math.XYPair;
@@ -10,7 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
+public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implements DataFrameRefreshable {
 
     LowerArmSegment lowerArm;
     UpperArmSegment upperArm;
@@ -180,5 +181,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         }
 
         return new Pair<>(lowerArmRiskState, upperArmRiskState);
+    }
+
+    @Override
+    public void refreshDataFrame() {
+        upperArm.refreshDataFrame();
+        lowerArm.refreshDataFrame();
     }
 }

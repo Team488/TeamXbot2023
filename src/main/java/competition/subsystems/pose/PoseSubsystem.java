@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.logic.Latch;
@@ -30,13 +31,14 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final VisionSubsystem vision;
     private final Field2d fieldForDisplay;
 
+    private boolean isPoseHealthy;
     private TimeStableValidator healthyPoseValidator = new TimeStableValidator(1);
     private final DoubleProperty suprisingVisionUpdateDistanceInMetersProp;
-    private final BooleanProperty isPoseHealthyProp;
     private TimeStableValidator extremelyConfidentVisionValidator = new TimeStableValidator(10);
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
-    private final BooleanProperty isVisionPoseExtremelyConfidentProp;
+    private boolean isVisionPoseExtremelyConfident;
     private final Latch useVisionToUpdateGyroLatch;
+
 
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
@@ -45,9 +47,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         this.vision = vision;
 
         suprisingVisionUpdateDistanceInMetersProp = propManager.createPersistentProperty("SuprisingVisionUpdateDistanceInMeters", 0.5);
-        isPoseHealthyProp = propManager.createEphemeralProperty("IsPoseHealthy", false);
         extremelyConfidentVisionDistanceUpdateInMetersProp = propManager.createPersistentProperty("ExtremelyConfidentVisionDistanceUpdateInMeters", 0.01);
-        isVisionPoseExtremelyConfidentProp = propManager.createEphemeralProperty("IsVisionPoseExtremelyConfident", false);
 
         // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
         // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
@@ -105,6 +105,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // while still presenting inches externally to dashboards.
 
         // Update the basic odometry (gyro, encoders)
+
         Pose2d updatedPosition = swerveOdometry.update(
                 this.getCurrentHeading(),
                 getSwerveModulePositions()
@@ -125,9 +126,10 @@ public class PoseSubsystem extends BasePoseSubsystem {
         var estimatedPosition = swerveOdometry.getEstimatedPosition();
 
         // Convert back to inches
-        totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
-        totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
+        totalDistanceX = estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER;
+        totalDistanceY = estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER;
         fieldForDisplay.setRobotPose(estimatedPosition);
+        Logger.getInstance().recordOutput("RobotEstimatedPose", estimatedPosition);
     }
 
     private void improveOdometryUsingSimpleAprilTag() {
@@ -149,31 +151,36 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
             // Check for the distance delta between the old and new poses. If it's too large, reset
             // the healthy pose validator.
-            double distance = recentPosition.getTranslation().getDistance(recentPosition.getTranslation());
+            double distance = recentPosition.getTranslation().getDistance(
+                    camPose.estimatedPose.getTranslation().toTranslation2d());
             boolean isSurprisingDistance = (distance > suprisingVisionUpdateDistanceInMetersProp.get());
-            isPoseHealthyProp.set(healthyPoseValidator.checkStable(isSurprisingDistance));
+            isPoseHealthy = healthyPoseValidator.checkStable(!isSurprisingDistance);
 
-            // If the distance is really, really small, we're extremely confident in the vision data, and
+            // If the distance delta is tiny, we're extremely confident in the vision data, and
             // could consider using it to update the gyro.
             boolean isExtremelyConfident = (distance < extremelyConfidentVisionDistanceUpdateInMetersProp.get());
-            isVisionPoseExtremelyConfidentProp.set(extremelyConfidentVisionValidator.checkStable(isExtremelyConfident));
+            isVisionPoseExtremelyConfident = extremelyConfidentVisionValidator.checkStable(isExtremelyConfident);
 
             // In any case, update the odometry with the new pose from the camera.
             swerveOdometry.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
-        } {
+        } else
+        {
             // Since we didn't get any vision updates, we assume the current pose is healthy.
-            isPoseHealthyProp.set(healthyPoseValidator.checkStable(true));
+            isPoseHealthy = healthyPoseValidator.checkStable(true);
             // But since we didn't get any vision updates, we can't be super-confident!
-            isVisionPoseExtremelyConfidentProp.set(extremelyConfidentVisionValidator.checkStable(false));
+            isVisionPoseExtremelyConfident = extremelyConfidentVisionValidator.checkStable(false);
         }
+
+        Logger.getInstance().recordOutput(this.getPrefix()+ "VisionPoseHealthy", isPoseHealthy);
+        Logger.getInstance().recordOutput(this.getPrefix()+ "VisionPoseExtremelyConfident", isVisionPoseExtremelyConfident);
     }
 
     public boolean getIsPoseHealthy() {
-        return isPoseHealthyProp.get();
+        return isPoseHealthy;
     }
 
     public boolean getIsVisionPoseExtremelyConfident() {
-        return isVisionPoseExtremelyConfidentProp.get();
+        return isVisionPoseExtremelyConfident;
     }
 
     public Pose2d getVisionAssistedPositionInMeters() {
