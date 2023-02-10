@@ -2,6 +2,11 @@ package competition.subsystems.arm;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
 import xbot.common.advantage.DataFrameRefreshable;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.logic.HumanVsMachineDecider;
@@ -12,6 +17,10 @@ import javax.inject.Singleton;
 
 @Singleton
 public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implements DataFrameRefreshable {
+
+    Mechanism2d armVisualizer;
+    MechanismLigament2d lowerArmMechanism;
+    MechanismLigament2d upperArmMechanism;
 
     LowerArmSegment lowerArm;
     UpperArmSegment upperArm;
@@ -50,6 +59,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
             Rotation2d.fromDegrees(-5.0)
         );
         solver = new ArmPositionSolver(armConfig);
+
+        armVisualizer = new Mechanism2d(150, 150);
+        MechanismRoot2d root = armVisualizer.getRoot("ChassisJoint", 75,75);
+        lowerArmMechanism = root.append(new MechanismLigament2d("lowerArm", 38, 90));
+        upperArmMechanism = lowerArmMechanism.append(new MechanismLigament2d("upperArm", 32, -45));
+        SmartDashboard.putData("ArmViz", armVisualizer);
     }
 
     public XYPair getKeyArmPosition(KeyArmPosition keyArmPosition){
@@ -187,5 +202,25 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
     public void refreshDataFrame() {
         upperArm.refreshDataFrame();
         lowerArm.refreshDataFrame();
+    }
+
+    public void setSoftLimits(boolean on) {
+        upperArm.setSoftLimit(on);
+        lowerArm.setSoftLimit(on);
+    }
+
+
+    double lowerArmFakeAngle = 0;
+    double upperArmFakeAngle = 90;
+    @Override
+    public void periodic() {
+        /*
+        lowerArmFakeAngle += 0.4;
+        //upperArmFakeAngle += 0.6;
+
+        lowerArmMechanism.setAngle(lowerArmFakeAngle);
+        upperArmMechanism.setAngle(upperArmFakeAngle);
+        Logger.getInstance().recordOutput("ArmMechanism", armVisualizer);
+        */
     }
 }
