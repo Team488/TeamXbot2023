@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import competition.electrical_contract.ElectricalContract;
+import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
@@ -20,12 +21,17 @@ public class LowerArmSegment extends ArmSegment {
 
     public  DoubleProperty extendLimit;
     public  DoubleProperty retractLimit;
+    private final DoubleProperty degreesPerMotorRotationProp;
 
     @Inject
     public LowerArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory){
         super("UnifiedArmSubsystem/LowerArm", propFactory);
         String prefix = "UnifiedArmSubsystem/LowerArm";
+
+        propFactory.setPrefix(prefix);
+        degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
+
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(), prefix,"LeftMotor");
@@ -40,6 +46,11 @@ public class LowerArmSegment extends ArmSegment {
         setSoftLimit(false);
     }
 
+
+    @Override
+    protected double getDegreesPerMotorRotation() {
+        return degreesPerMotorRotationProp.get();
+    }
 
     @Override
     protected XCANSparkMax getLeaderMotor() {
