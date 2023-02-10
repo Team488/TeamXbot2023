@@ -13,7 +13,7 @@ public abstract class ArmSegment {
 
     private final DoubleProperty upperLimitInDegrees;
     private final DoubleProperty lowerLimitInDegrees;
-    private final DoubleProperty degreesPerMotorRotationProp;
+    protected abstract double getDegreesPerMotorRotation();
     private final BooleanProperty useAbsoluteEncoderProp;
     private double motorEncoderOffsetInDegrees;
     private double absoluteEncoderOffsetInDegrees;
@@ -22,7 +22,6 @@ public abstract class ArmSegment {
         propFactory.setPrefix(prefix);
         upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
         lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
-        degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 360);
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", false);
     }
 
@@ -47,7 +46,7 @@ public abstract class ArmSegment {
 
     private double getArmPositionFromMotorEncoderInDegrees() {
         if (isMotorReady()) {
-            return getLeaderMotor().getPosition() * degreesPerMotorRotationProp.get() - motorEncoderOffsetInDegrees;
+            return getLeaderMotor().getPosition() * getDegreesPerMotorRotation() - motorEncoderOffsetInDegrees;
         }
         return 0;
     }
@@ -57,7 +56,7 @@ public abstract class ArmSegment {
             absoluteEncoderOffsetInDegrees = getAbsoluteEncoder().getAbsolutePosition().getDegrees() - degrees;
         }
         if (isMotorReady()) {
-            motorEncoderOffsetInDegrees = getLeaderMotor().getPosition() * degreesPerMotorRotationProp.get() - degrees;
+            motorEncoderOffsetInDegrees = getLeaderMotor().getPosition() * getDegreesPerMotorRotation() - degrees;
         }
     }
 
@@ -81,8 +80,8 @@ public abstract class ArmSegment {
                 // we are potentially offset. So we need to figure out our actual degree target, then divide by
                 // degrees per motor rotation to get something the SparkMAX can understand.
                 configSoftLimit(
-                        (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / degreesPerMotorRotationProp.get(),
-                        (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / degreesPerMotorRotationProp.get());
+                        (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation(),
+                        (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation());
             }
             enableSoftLimit(false);
         }
@@ -109,7 +108,7 @@ public abstract class ArmSegment {
 
         if (isAbsoluteEncoderReady() && isMotorReady()) {
             double delta = WrappedRotation2d.fromDegrees(angle.getDegrees() - getArmPositionFromAbsoluteEncoderInDegrees()).getDegrees();
-            double deltaInMotorRotations = delta / degreesPerMotorRotationProp.get();
+            double deltaInMotorRotations = delta / getDegreesPerMotorRotation();
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();;
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
         }
