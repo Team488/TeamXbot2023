@@ -27,6 +27,7 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
 
     @Test
     public void simpleTest() {
+        pose.setAlliance(DriverStation.Alliance.Blue);
         assertEquals(DriverStation.Alliance.Blue, pose.getAlliance());
 
         ((MockXboxControllerAdapter)oi.driverGamepad).setLeftStick(new XYPair(0, 1));
@@ -47,6 +48,7 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
 
     @Test
     public void testAbsoluteHeading() {
+        pose.setAlliance(DriverStation.Alliance.Blue);
         assertEquals(DriverStation.Alliance.Blue, pose.getAlliance());
 
         ((MockXboxControllerAdapter)oi.driverGamepad).setLeftStick(new XYPair(0, 0));

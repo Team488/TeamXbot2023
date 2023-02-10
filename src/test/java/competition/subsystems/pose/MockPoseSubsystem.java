@@ -10,19 +10,12 @@ import javax.inject.Inject;
 
 public class MockPoseSubsystem extends PoseSubsystem {
 
-    private DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
-
     @Inject
     public MockPoseSubsystem(XGyro.XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
         super(gyroFactory, propManager, drive, vision);
     }
 
-    @Override
-    public DriverStation.Alliance getAlliance() {
-        return alliance;
-    }
-
     public void setAlliance(DriverStation.Alliance alliance) {
-        this.alliance = alliance;
+        cachedAlliance = alliance;
     }
 }

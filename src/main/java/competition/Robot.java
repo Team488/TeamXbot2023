@@ -43,8 +43,27 @@ public class Robot extends BaseRobot {
     }
 
     @Override
+    public void disabledInit() {
+        super.disabledInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
+    public void autonomousInit() {
+        super.autonomousInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
+    public void teleopInit() {
+        super.teleopInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
     public void simulationInit() {
         super.simulationInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
         // Automatically enables the robot; remove this line of code if you want the robot
         // to start in a disabled state (as it would on the field). However, this does save you the 
         // hassle of navigating to the DS window and re-enabling the simulated robot.

@@ -31,7 +31,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     final SwerveDrivePoseEstimator swerveOdometry;
     private final VisionSubsystem vision;
     private final Field2d fieldForDisplay;
-    private DriverStation.Alliance cachedAlliance = DriverStation.Alliance.Invalid;
+    protected DriverStation.Alliance cachedAlliance = DriverStation.Alliance.Invalid;
 
     private boolean isPoseHealthy;
     private TimeStableValidator healthyPoseValidator = new TimeStableValidator(1);
@@ -82,11 +82,16 @@ public class PoseSubsystem extends BasePoseSubsystem {
     }
 
     /**
+     * Update alliance from driver station, typically done during init
+     */
+    public void updateAllianceFromDriverStation() { this.cachedAlliance = DriverStation.getAlliance();}
+
+    /**
      * Gets the robot's alliance color
      * @return The robot alliance color
      */
     public DriverStation.Alliance getAlliance() {
-        return DriverStation.getAlliance();
+        return this.cachedAlliance;
     }
 
     /**
