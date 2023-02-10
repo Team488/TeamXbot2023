@@ -20,12 +20,17 @@ public class UpperArmSegment extends ArmSegment {
 
     public  DoubleProperty extendLimit;
     public  DoubleProperty retractLimit;
+    private final DoubleProperty degreesPerMotorRotationProp;
 
     @Inject
     public UpperArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory){
         super("UnifiedArmSubsystem/UpperArm", propFactory);
         String prefix = "UnifiedArmSubsystem/UpperArm";
+
+        propFactory.setPrefix(prefix);
+        degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
+
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
@@ -40,6 +45,11 @@ public class UpperArmSegment extends ArmSegment {
         setSoftLimit(false);
     }
 
+
+    @Override
+    protected double getDegreesPerMotorRotation() {
+        return degreesPerMotorRotationProp.get();
+    }
 
     @Override
     protected XCANSparkMax getLeaderMotor() {
