@@ -145,7 +145,8 @@ public class VisionSubsystem extends BaseSubsystem {
     public Optional<EstimatedRobotPose> getPhotonVisionEstimatedPose(Pose2d previousEstimatedRobotPose) {
         if (visionWorking) {
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
-            return photonPoseEstimator.update();
+            //return photonPoseEstimator.update();
+            return Optional.empty();
         } else {
             return Optional.empty();
         }
