@@ -1,6 +1,7 @@
 package competition.operator_interface;
 
 import competition.auto_programs.BlueBottomScoringPath;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.commands.SetArmsToPositionCommand;
 import competition.subsystems.drive.DriveSubsystem;
@@ -13,6 +14,7 @@ import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import xbot.common.command.NamedInstantCommand;
@@ -128,6 +130,7 @@ public class OperatorCommandMap {
 
     public void setupArmCommands(
             OperatorInterface oi,
+            UnifiedArmSubsystem arm,
             SetArmsToPositionCommand setHigh,
             SetArmsToPositionCommand setMid,
             SetArmsToPositionCommand setLow,
@@ -141,5 +144,16 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
+
+        //turn on soft limits
+        InstantCommand setSoftLimits = new InstantCommand(()-> arm.setSoftLimits(true));
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSoftLimits);
+
+
+        //turn off soft limits
+        InstantCommand disableSoftLimits = new InstantCommand(()-> arm.setSoftLimits(false));
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
+
+
     }
 }
