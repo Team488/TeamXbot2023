@@ -115,7 +115,7 @@ public class CompetitionContract extends ElectricalContract {
     }
 
     public DeviceInfo getUpperArmLeftMotor(){
-        return new DeviceInfo(35,false);
+        return new DeviceInfo(35,true);
     }
 
     @Override
@@ -129,12 +129,12 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public boolean isLowerArmEncoderReady() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isUpperArmEncoderReady() {
-        return false;
+        return true;
     }
 
     @Override
