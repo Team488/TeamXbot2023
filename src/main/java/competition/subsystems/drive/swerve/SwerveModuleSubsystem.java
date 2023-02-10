@@ -1,7 +1,7 @@
 package competition.subsystems.drive.swerve;
 import javax.inject.Inject;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.SwerveInstance;
@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import org.apache.logging.log4j.LogManager;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.math.XYPair;
@@ -20,7 +19,7 @@ import xbot.common.subsystems.pose.BasePoseSubsystem;
 
 @SwerveSingleton
 public class SwerveModuleSubsystem extends BaseSubsystem {
-    private static Logger log = LogManager.getLogger(SwerveModuleSubsystem.class);
+    private static Logger log = Logger.getLogger(SwerveModuleSubsystem.class);
     
     private final String label;
 
@@ -114,10 +113,5 @@ public class SwerveModuleSubsystem extends BaseSubsystem {
     public void setPowers(double drivePower, double steeringPower) {
         getDriveSubsystem().setPower(drivePower);
         getSteeringSubsystem().setPower(steeringPower);
-    }
-
-    public void refreshDataFrame() {
-        getDriveSubsystem().refreshDataFrame();
-        getSteeringSubsystem().refreshDataFrame();
     }
 }

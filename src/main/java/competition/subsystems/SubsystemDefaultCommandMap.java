@@ -61,6 +61,7 @@ public class SubsystemDefaultCommandMap {
     public void setupSimpleSubsystem(SimpleSubsystem simpleSubsystem, SimpleSetPowerCommand command) {
         simpleSubsystem.setDefaultCommand(command);
     }
+
     @Inject
     public void setupArmSubsystem(UnifiedArmSubsystem arms, UnifiedArmMaintainer maintainer) {
         arms.setDefaultCommand(maintainer);

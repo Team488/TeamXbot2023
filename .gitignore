@@ -162,7 +162,5 @@ imgui.ini
 .idea
 .run
 
-# # Build/branch constants from plugin
-src/main/java/frc/robot/BuildConstants.java
 
 # End of https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,visualstudiocode

@@ -19,7 +19,6 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     @Inject
     public UnifiedArmMaintainer(
             UnifiedArmSubsystem subsystemToMaintain,
-            OperatorInterface oi,
             PropertyFactory pf,
             HumanVsMachineDecider.HumanVsMachineDeciderFactory hvmFactory) {
         super(subsystemToMaintain, pf, hvmFactory, 0.001, 0.001);
