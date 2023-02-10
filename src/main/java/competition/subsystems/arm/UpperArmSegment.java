@@ -67,9 +67,4 @@ public class UpperArmSegment extends ArmSegment {
     public boolean isAbsoluteEncoderReady() {
         return contract.isLowerArmEncoderReady();
     }
-
-    public void periodic() {
-        absoluteEncoderProp.set(absoluteEncoder.getWrappedPosition().getDegrees());
-        neoPositionProp.set(rightMotor.getPosition());
-    }
 }

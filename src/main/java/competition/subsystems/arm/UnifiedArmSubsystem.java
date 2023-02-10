@@ -190,5 +190,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     @Override
     public void periodic() {
         upperArm.periodic();
+        lowerArm.periodic();
     }
 }

@@ -18,12 +18,17 @@ public abstract class ArmSegment {
     private double motorEncoderOffsetInDegrees;
     private double absoluteEncoderOffsetInDegrees;
 
+    private final DoubleProperty absoluteEncoderPositionProp;
+    private final DoubleProperty neoPositionProp;
+
     public ArmSegment(String prefix, PropertyFactory propFactory) {
         propFactory.setPrefix(prefix);
         upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
         lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 360);
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", false);
+        absoluteEncoderPositionProp = propFactory.createEphemeralProperty("AbsoluteEncoderPosition", 0.0);
+        neoPositionProp = propFactory.createEphemeralProperty("NeoPosition", 0.0);
     }
 
     protected abstract XCANSparkMax getLeaderMotor();
@@ -113,5 +118,10 @@ public abstract class ArmSegment {
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();;
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
         }
+    }
+
+    public void periodic() {
+        absoluteEncoderPositionProp.set(getAbsoluteEncoder().getWrappedPosition().getDegrees());
+        neoPositionProp.set(getLeaderMotor().getPosition());
     }
 }
