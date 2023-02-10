@@ -21,11 +21,15 @@ public class UpperArmSegment extends ArmSegment {
     public  DoubleProperty extendLimit;
     public  DoubleProperty retractLimit;
 
+    public final DoubleProperty absoluteEncoderProp;
+    public final DoubleProperty neoPositionProp;
+
     @Inject
     public UpperArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory){
         super("UnifiedArmSubsystem/UpperArm", propFactory);
         String prefix = "UnifiedArmSubsystem/UpperArm";
+        propFactory.setPrefix(prefix);
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
@@ -33,11 +37,14 @@ public class UpperArmSegment extends ArmSegment {
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
         }
-        if (contract.isLowerArmEncoderReady()) {
+        if (contract.isUpperArmEncoderReady()) {
             this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getUpperArmEncoder());
         }
 
         setSoftLimit(false);
+
+        absoluteEncoderProp = propFactory.createEphemeralProperty("AbsoluteEncoder", 0.0);
+        neoPositionProp = propFactory.createEphemeralProperty("NeoPosition", 0.0);
     }
 
 
@@ -59,5 +66,10 @@ public class UpperArmSegment extends ArmSegment {
     @Override
     public boolean isAbsoluteEncoderReady() {
         return contract.isLowerArmEncoderReady();
+    }
+
+    public void periodic() {
+        absoluteEncoderProp.set(absoluteEncoder.getWrappedPosition().getDegrees());
+        neoPositionProp.set(rightMotor.getPosition());
     }
 }

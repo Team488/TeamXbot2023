@@ -182,8 +182,13 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new Pair<>(lowerArmRiskState, upperArmRiskState);
     }
    
-    public void setSoftLimits(boolean on){
+    public void setSoftLimits(boolean on) {
         lowerArm.setSoftLimit(on);
         upperArm.setSoftLimit(on);
+    }
+
+    @Override
+    public void periodic() {
+        upperArm.periodic();
     }
 }
