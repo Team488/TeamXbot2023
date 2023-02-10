@@ -3,8 +3,10 @@ package competition.subsystems.arm.commands;
 import competition.operator_interface.OperatorInterface;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.swerve.SwerveSteeringSubsystem;
+import edu.wpi.first.math.MathUtil;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
+import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.PropertyFactory;
 
@@ -51,9 +53,17 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
     @Override
     protected XYPair getHumanInput() {
-        return new XYPair(
+        double lowerArmPower = MathUtils.deadband(
                 oi.operatorGamepad.getLeftVector().y,
-                oi.operatorGamepad.getRightVector().y
+                oi.getOperatorGamepadTypicalDeadband(),
+                (a)-> MathUtils.exponentAndRetainSign(a,2));
+        double upperArmPower = MathUtils.deadband(
+                oi.operatorGamepad.getRightVector().y,
+                oi.getOperatorGamepadTypicalDeadband(),
+                (a)-> MathUtils.exponentAndRetainSign(a, 2));
+
+        return new XYPair(
+                lowerArmPower,upperArmPower
         );
     }
 

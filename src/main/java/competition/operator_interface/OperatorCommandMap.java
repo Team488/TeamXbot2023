@@ -148,7 +148,7 @@ public class OperatorCommandMap {
         //turn on soft limits
         InstantCommand setSoftLimits = new InstantCommand(()-> arm.setSoftLimits(true));
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSoftLimits);
-        
+
 
         //turn off soft limits
         InstantCommand disableSoftLimits = new InstantCommand(()-> arm.setSoftLimits(false));
