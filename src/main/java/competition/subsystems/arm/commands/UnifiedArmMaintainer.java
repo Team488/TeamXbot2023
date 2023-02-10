@@ -20,6 +20,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     public UnifiedArmMaintainer(
             UnifiedArmSubsystem subsystemToMaintain,
             PropertyFactory pf,
+            OperatorInterface oi,
             HumanVsMachineDecider.HumanVsMachineDeciderFactory hvmFactory) {
         super(subsystemToMaintain, pf, hvmFactory, 0.001, 0.001);
         this.unifiedArm = subsystemToMaintain;
