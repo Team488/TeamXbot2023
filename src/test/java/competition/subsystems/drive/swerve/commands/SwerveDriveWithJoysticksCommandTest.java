@@ -31,7 +31,6 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         assertEquals(DriverStation.Alliance.Blue, pose.getAlliance());
 
         ((MockXboxControllerAdapter)oi.driverGamepad).setLeftStick(new XYPair(0, 1));
-        drive.refreshDataFrame();
         command.initialize();
         command.execute();
 
@@ -55,7 +54,6 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         ((MockXboxControllerAdapter)oi.driverGamepad).setRightStick(new XYPair(0, 1));
         timer.advanceTimeInSecondsBy(100);
         command.setAbsoluteHeadingMode(true);
-        drive.refreshDataFrame();
 
         // at this point, a command of 0,1 should be interpreted as a goal of 90 degrees - meaning no motion,
         // since the robot is already at 90 degrees.
@@ -89,7 +87,6 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         assertEquals(DriverStation.Alliance.Red, pose.getAlliance());
 
         ((MockXboxControllerAdapter)oi.driverGamepad).setLeftStick(new XYPair(0, 1));
-        drive.refreshDataFrame();
         command.initialize();
         command.execute();
 
@@ -113,7 +110,6 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         ((MockXboxControllerAdapter)oi.driverGamepad).setRightStick(new XYPair(0, 1));
         timer.advanceTimeInSecondsBy(100);
         command.setAbsoluteHeadingMode(true);
-        drive.refreshDataFrame();
 
         // at this point, a command of 0,-1 should be interpreted as a goal of 90 degrees - meaning no motion,
         // since the robot is already at 90 degrees.
