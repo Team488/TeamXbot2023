@@ -155,8 +155,13 @@ public abstract class ArmSegment {
     }
 
     public void periodic() {
-        absoluteEncoderPositionProp.set(getArmPositionFromAbsoluteEncoderInDegrees());
-        neoPositionProp.set(getLeaderMotor().getPosition());
-        neoPositionInDegreesProp.set(getArmPositionFromMotorEncoderInDegrees());
+        if (isAbsoluteEncoderReady()) {
+            absoluteEncoderPositionProp.set(getArmPositionFromAbsoluteEncoderInDegrees());
+        }
+
+        if (isMotorReady()) {
+            neoPositionProp.set(getLeaderMotor().getPosition());
+            neoPositionInDegreesProp.set(getArmPositionFromMotorEncoderInDegrees());
+        }
     }
 }

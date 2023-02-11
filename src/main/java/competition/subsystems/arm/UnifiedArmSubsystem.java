@@ -89,8 +89,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
      * @param upperPower power of the upper arm motor
      */
     public void setArmPowers(double lowerPower, double upperPower) {
-        lowerArm.setPower(lowerPower);
-        upperArm.setPower(upperPower);
+        if (lowerArm.isMotorReady()) {
+            lowerArm.setPower(lowerPower);
+        }
+        if (upperArm.isMotorReady()) {
+            upperArm.setPower(upperPower);
+        }
     }
 
 
