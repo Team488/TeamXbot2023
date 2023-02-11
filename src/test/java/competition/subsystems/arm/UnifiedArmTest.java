@@ -32,7 +32,8 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         assertEquals(0.75, target.y, 0.001);
     }
 
-    @Test @Ignore // Revisit once we set XZ positions rather than raw angles.
+    @Test
+    @Ignore // Revisit once we set XZ positions rather than raw angles.
     public void testTypicalCalibrate() {
         arms.typicalCalibrate();
         var effectorPosition = arms.getCurrentValue();
@@ -40,7 +41,8 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         assertEquals(6, effectorPosition.y, 0.001); // Remember, this is "Z"
     }
 
-    @Test @Ignore // Revisit once we set XZ positions rather than raw angles.
+    @Test
+    @Ignore // Revisit once we set XZ positions rather than raw angles.
     public void testCalibrateAt() {
         arms.calibrateAt(90, 0);
         var effectorPosition = arms.getCurrentValue();
