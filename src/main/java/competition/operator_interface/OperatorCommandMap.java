@@ -4,6 +4,7 @@ import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.commands.SetArmsToPositionCommand;
+import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
@@ -136,6 +137,7 @@ public class OperatorCommandMap {
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
+            ClawSubsystem claw,
             SetArmsToPositionCommand setHigh,
             SetArmsToPositionCommand setMid,
             SetArmsToPositionCommand setLow,
@@ -208,6 +210,24 @@ public class OperatorCommandMap {
                 }
         );
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
+
+        InstantCommand openClaw = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Opening Claw");
+                    claw.open();
+                }
+        );
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(openClaw);
+
+        InstantCommand closeClaw = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Closing Claw");
+                    claw.close();
+                }
+        );
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(closeClaw);
     }
 
 }
