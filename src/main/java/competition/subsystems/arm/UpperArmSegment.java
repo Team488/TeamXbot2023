@@ -85,6 +85,8 @@ public class UpperArmSegment extends ArmSegment {
     @Override
     public void periodic() {
         super.periodic();
-        rightMotor.periodic();
+        if (isMotorReady()) {
+            rightMotor.periodic();
+        }
     }
 }
