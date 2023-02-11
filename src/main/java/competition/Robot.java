@@ -24,8 +24,8 @@ public class Robot extends BaseRobot {
         if (BaseRobot.isReal()) {
             // TODO: Figure out some elegant way to detect 2022 vs 2023 chassis and return the appropriate component.
             // until then, you'll have to manually change this line to return the correct component.
-            return DaggerPracticeComponent.create();
-            //return DaggerRobotComponent.create();
+            //return DaggerPracticeComponent.create();
+            return DaggerRobotComponent.create();
 
         } else {
             return DaggerSimulationComponent.create();
@@ -37,8 +37,27 @@ public class Robot extends BaseRobot {
     }
 
     @Override
+    public void disabledInit() {
+        super.disabledInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
+    public void autonomousInit() {
+        super.autonomousInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
+    public void teleopInit() {
+        super.teleopInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
     public void simulationInit() {
         super.simulationInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
         // Automatically enables the robot; remove this line of code if you want the robot
         // to start in a disabled state (as it would on the field). However, this does save you the 
         // hassle of navigating to the DS window and re-enabling the simulated robot.

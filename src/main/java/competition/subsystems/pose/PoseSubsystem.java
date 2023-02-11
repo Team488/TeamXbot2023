@@ -8,6 +8,7 @@ import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
@@ -29,6 +30,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     final SwerveDrivePoseEstimator swerveOdometry;
     private final VisionSubsystem vision;
     private final Field2d fieldForDisplay;
+    protected DriverStation.Alliance cachedAlliance = DriverStation.Alliance.Invalid;
 
     private TimeStableValidator healthyPoseValidator = new TimeStableValidator(1);
     private final DoubleProperty suprisingVisionUpdateDistanceInMetersProp;
@@ -37,6 +39,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
     private final Latch useVisionToUpdateGyroLatch;
+
+    private DoubleProperty matchTime;
 
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
@@ -77,8 +81,23 @@ public class PoseSubsystem extends BasePoseSubsystem {
                this.setCurrentPoseInMeters(getVisionAssistedPositionInMeters());
            }
         });
+        // creating matchtime doubleProperty
+        matchTime = propManager.createEphemeralProperty("Time", DriverStation.getMatchTime());
+
     }
 
+    /**
+     * Update alliance from driver station, typically done during init
+     */
+    public void updateAllianceFromDriverStation() { this.cachedAlliance = DriverStation.getAlliance();}
+
+    /**
+     * Gets the robot's alliance color
+     * @return The robot alliance color
+     */
+    public DriverStation.Alliance getAlliance() {
+        return this.cachedAlliance;
+    }
 
     /**
      * This is a legacy method for tank drive robots, and does not apply to swerve. We should look at
@@ -218,6 +237,15 @@ public class PoseSubsystem extends BasePoseSubsystem {
             drive.getRearLeftSwerveModuleSubsystem().getcurrentPosition(),
             drive.getRearRightSwerveModuleSubsystem().getcurrentPosition()
         };
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        matchTime.set(DriverStation.getMatchTime());
+    }
+    public DoubleProperty getMatchTime(){
+        return matchTime;
     }
 
 }

@@ -8,6 +8,9 @@ import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XSolenoid;
 import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.math.XYPair;
+import xbot.common.properties.BooleanProperty;
+import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,8 +23,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XSolenoid lowerArmSolenoid;
     private XYPair targetPosition;
     public final ArmPositionSolver solver;
-
-    private HumanVsMachineDecider humanVsMachineDecider;
+    private final DoubleProperty lowerArmTarget;
+    private final DoubleProperty upperArmTarget;
 
     public enum KeyArmPosition {
         lowerGoal,
@@ -37,12 +40,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
+    protected final BooleanProperty calibratedProp;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
             UpperArmSegment upperArm,
             XSolenoid.XSolenoidFactory xSolenoidFactory,
-            ElectricalContract eContract) {
+            ElectricalContract eContract,
+            PropertyFactory pf) {
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
         this.lowerArmSolenoid = xSolenoidFactory.create(eContract.getLowerArmSolenoid().channel);
@@ -55,6 +61,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             Rotation2d.fromDegrees(-5.0)
         );
         solver = new ArmPositionSolver(armConfig);
+        pf.setPrefix(this);
+        calibratedProp = pf.createEphemeralProperty("Calibrated", false);
+        upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
+        lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
+        targetPosition = getCurrentValue();
     }
 
     public XYPair getKeyArmPosition(KeyArmPosition keyArmPosition){
@@ -86,9 +97,18 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     @Override
     public XYPair getCurrentValue() {
+
+        return new XYPair(
+                lowerArm.getArmPositionFromAbsoluteEncoderInDegrees(),
+                upperArm.getArmPositionFromAbsoluteEncoderInDegrees()
+        );
+        // Eventually do the smart thing. For now, just do angles.
+        /*
         return solver.getPositionFromRadians(
             lowerArm.getArmPositionInRadians(),
             upperArm.getArmPositionInRadians());
+
+         */
     }
 
     @Override
@@ -118,12 +138,17 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     @Override
     public boolean isCalibrated() {
-        return false;
+        return calibratedProp.get();
     }
 
     public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {
         lowerArm.calibrateThisPositionAs(lowerArmAngleInDegrees);
         upperArm.calibrateThisPositionAs(upperArmAngleInDegrees);
+    }
+
+    public void calibrateAgainstAbsoluteEncoders() {
+        lowerArm.calibrateThisPositionAs(lowerArm.getArmPositionFromAbsoluteEncoderInDegrees());
+        upperArm.calibrateThisPositionAs(upperArm.getArmPositionFromAbsoluteEncoderInDegrees());
     }
 
     /**
@@ -197,9 +222,17 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         }
     }
 
-
-    public void setSoftLimits(boolean on){
+    public void setSoftLimits(boolean on) {
         lowerArm.setSoftLimit(on);
         upperArm.setSoftLimit(on);
+    }
+
+    @Override
+    public void periodic() {
+        lowerArmTarget.set(getTargetValue().x);
+        upperArmTarget.set(getTargetValue().y);
+
+        upperArm.periodic();
+        lowerArm.periodic();
     }
 }

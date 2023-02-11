@@ -37,7 +37,7 @@ public class SwerveSteeringMaintainerCommand extends BaseMaintainerCommand<Doubl
             this.subsystem.setPower(this.subsystem.calculatePower());
         }
 
-        if (enableAutoCalibrate.get() && isMaintainerAtGoal()) {
+        if (enableAutoCalibrate.get() && isMaintainerAtGoal() && Math.abs(subsystem.getVelocity()) < 0.001) {
             this.subsystem.calibrateMotorControllerPositionFromCanCoder();
         }
     }
