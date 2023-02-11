@@ -159,10 +159,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         this.calibrated = true;
     }
 
-    public double getVelocity() {
-        return this.motorController.getVelocity();
-    }
-
     /**
      * Reset the SparkMax encoder position based on the CanCoder measurement.
      * This should only be called when the mechanism is stationary.
