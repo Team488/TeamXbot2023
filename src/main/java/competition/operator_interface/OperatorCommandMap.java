@@ -1,6 +1,8 @@
 package competition.operator_interface;
 
 import competition.auto_programs.BlueBottomScoringPath;
+import competition.subsystems.ClawArm.CloseClawCommand;
+import competition.subsystems.ClawArm.OpenClawCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
@@ -92,6 +94,12 @@ public class OperatorCommandMap {
     @Inject
     public void setupGeneralSwerveCommands(SetSwerveMotorControllerPidParametersCommand setSteeringPidValues) {
         setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
+    }
+
+    @Inject
+    public void setupClawCommands(OperatorInterface oi, OpenClawCommand openCLaw, CloseClawCommand closeClaw){
+        oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(openCLaw);
+        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(closeClaw);
     }
 
     @Inject

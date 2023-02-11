@@ -8,6 +8,7 @@ import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.controls.sensors.XGyro.XGyroFactory;
@@ -37,6 +38,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
     private final Latch useVisionToUpdateGyroLatch;
+
+    private DoubleProperty matchTime;
 
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
@@ -77,6 +80,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
                this.setCurrentPoseInMeters(getVisionAssistedPositionInMeters());
            }
         });
+        // creating matchtime doubleProperty
+        matchTime = propManager.createEphemeralProperty("Time", DriverStation.getMatchTime());
     }
 
 
@@ -218,6 +223,11 @@ public class PoseSubsystem extends BasePoseSubsystem {
             drive.getRearLeftSwerveModuleSubsystem().getcurrentPosition(),
             drive.getRearRightSwerveModuleSubsystem().getcurrentPosition()
         };
+    }
+
+
+    public DoubleProperty getMatchTime(){
+        return matchTime;
     }
 
 }
