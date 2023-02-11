@@ -59,10 +59,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         calibratedProp = pf.createEphemeralProperty("Calibrated", false);
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
-        targetPosition = new XYPair(
-                lowerArm.getArmPositionFromAbsoluteEncoderInDegrees(),
-                upperArm.getArmPositionFromAbsoluteEncoderInDegrees()
-        );
+        targetPosition = getCurrentValue();
     }
 
     public XYPair getKeyArmPosition(KeyArmPosition keyArmPosition){

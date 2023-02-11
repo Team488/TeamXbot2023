@@ -132,14 +132,6 @@ public abstract class ArmSegment {
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
     }
 
-    public double getUpperLimitInDegrees() {
-        return upperLimitInDegrees.get();
-    }
-
-    public double getLowerLimitInDegrees() {
-        return lowerLimitInDegrees.get();
-    }
-
     public void setArmToAngle(Rotation2d angle) {
 
         // Coerce angle to a safe angle
