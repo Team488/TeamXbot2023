@@ -2,8 +2,11 @@ package competition.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
+import xbot.common.math.MathUtils;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
@@ -16,18 +19,29 @@ public abstract class ArmSegment {
     protected abstract double getDegreesPerMotorRotation();
     private final BooleanProperty useAbsoluteEncoderProp;
     private double motorEncoderOffsetInDegrees;
-    private double absoluteEncoderOffsetInDegrees;
-
+    protected abstract double getAbsoluteEncoderOffsetInDegrees();
     private final DoubleProperty absoluteEncoderPositionProp;
     private final DoubleProperty neoPositionProp;
+    private final DoubleProperty neoPositionInDegreesProp;
 
-    public ArmSegment(String prefix, PropertyFactory propFactory) {
+    private static Logger log = LogManager.getLogger(ArmSegment.class);
+
+    String prefix = "";
+
+    double upperDegreeReference;
+    double lowerDegreeReference;
+
+    public ArmSegment(String prefix, PropertyFactory propFactory, double upperDegreeReference, double lowerDegreeReference) {
         propFactory.setPrefix(prefix);
+        this.prefix= prefix;
+        this.upperDegreeReference = upperDegreeReference;
+        this.lowerDegreeReference = lowerDegreeReference;
         upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
         lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
-        useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", false);
+        useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", true);
         absoluteEncoderPositionProp = propFactory.createEphemeralProperty("AbsoluteEncoderPosition", 0.0);
         neoPositionProp = propFactory.createEphemeralProperty("NeoPosition", 0.0);
+        neoPositionInDegreesProp = propFactory.createEphemeralProperty("NeoPositionInDegrees", 0.0);
     }
 
     protected abstract XCANSparkMax getLeaderMotor();
@@ -38,18 +52,31 @@ public abstract class ArmSegment {
 
     public void setPower(double power) {
         if (isMotorReady()) {
+
+            // if too high, no more positive power
+            double currentAngle = getArmPositionFromAbsoluteEncoderInDegrees();
+            if (currentAngle > upperLimitInDegrees.get())
+            {
+                power = MathUtils.constrainDouble(power, -1, 0);
+            }
+            // if too low, no more negative power.
+            if (currentAngle < lowerLimitInDegrees.get()) {
+                power = MathUtils.constrainDouble(power, 0, 1);
+            }
+
             getLeaderMotor().set(power);
         }
     }
 
-    private double getArmPositionFromAbsoluteEncoderInDegrees() {
+    public double getArmPositionFromAbsoluteEncoderInDegrees() {
         if (isAbsoluteEncoderReady()) {
-            return getAbsoluteEncoder().getAbsolutePosition().getDegrees() - absoluteEncoderOffsetInDegrees;
+            return getAbsoluteEncoder().getContiguousPosition(lowerDegreeReference, upperDegreeReference).getValue()
+                    - getAbsoluteEncoderOffsetInDegrees();
         }
         return 0;
     }
 
-    private double getArmPositionFromMotorEncoderInDegrees() {
+    public double getArmPositionFromMotorEncoderInDegrees() {
         if (isMotorReady()) {
             return getLeaderMotor().getPosition() * getDegreesPerMotorRotation() - motorEncoderOffsetInDegrees;
         }
@@ -57,9 +84,6 @@ public abstract class ArmSegment {
     }
 
     public void calibrateThisPositionAs(double degrees) {
-        if (isAbsoluteEncoderReady()) {
-            absoluteEncoderOffsetInDegrees = getAbsoluteEncoder().getAbsolutePosition().getDegrees() - degrees;
-        }
         if (isMotorReady()) {
             motorEncoderOffsetInDegrees = getLeaderMotor().getPosition() * getDegreesPerMotorRotation() - degrees;
         }
@@ -84,11 +108,14 @@ public abstract class ArmSegment {
                 // When setting the soft limits, remember that the underlying motor wants units of rotation, and that
                 // we are potentially offset. So we need to figure out our actual degree target, then divide by
                 // degrees per motor rotation to get something the SparkMAX can understand.
-                configSoftLimit(
-                        (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation(),
-                        (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation());
+
+                double upperLimitInRotations = (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
+                double lowerLimitInRotations = (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
+                log.info(prefix + ", UpperLimitRotations:"+upperLimitInRotations+", LowerLimitRotation:"+lowerLimitInRotations);
+                configSoftLimit(upperLimitInRotations, lowerLimitInRotations);
+            } else {
+                enableSoftLimit(false);
             }
-            enableSoftLimit(false);
         }
     }
 
@@ -102,7 +129,20 @@ public abstract class ArmSegment {
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
     }
 
+    public double getUpperLimitInDegrees() {
+        return upperLimitInDegrees.get();
+    }
+
+    public double getLowerLimitInDegrees() {
+        return lowerLimitInDegrees.get();
+    }
+
     public void setArmToAngle(Rotation2d angle) {
+
+        // Coerce angle to a safe angle
+        double targetAngleDegrees =
+                MathUtils.constrainDouble(angle.getDegrees(), lowerLimitInDegrees.get(), upperLimitInDegrees.get());
+
         // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
         // controller will be using its internal encoder, so we need to translate from one to the other.
         // Our approach is:
@@ -112,15 +152,16 @@ public abstract class ArmSegment {
         // 4) Add the delta to the current position to get a goal position in units the motor controller understands
 
         if (isAbsoluteEncoderReady() && isMotorReady()) {
-            double delta = WrappedRotation2d.fromDegrees(angle.getDegrees() - getArmPositionFromAbsoluteEncoderInDegrees()).getDegrees();
+            double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionFromAbsoluteEncoderInDegrees()).getDegrees();
             double deltaInMotorRotations = delta / getDegreesPerMotorRotation();
-            double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();;
+            double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
         }
     }
 
     public void periodic() {
-        absoluteEncoderPositionProp.set(getAbsoluteEncoder().getWrappedPosition().getDegrees());
+        absoluteEncoderPositionProp.set(getArmPositionFromAbsoluteEncoderInDegrees());
         neoPositionProp.set(getLeaderMotor().getPosition());
+        neoPositionInDegreesProp.set(getArmPositionFromMotorEncoderInDegrees());
     }
 }

@@ -4,7 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import competition.electrical_contract.ElectricalContract;
-import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
@@ -22,15 +21,17 @@ public class LowerArmSegment extends ArmSegment {
     public  DoubleProperty extendLimit;
     public  DoubleProperty retractLimit;
     private final DoubleProperty degreesPerMotorRotationProp;
+    private final DoubleProperty absoluteEncoderOffsetInDegreesProp;
 
     @Inject
     public LowerArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory){
-        super("UnifiedArmSubsystem/LowerArm", propFactory);
+        super("UnifiedArmSubsystem/LowerArm", propFactory, 270, -90);
         String prefix = "UnifiedArmSubsystem/LowerArm";
 
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
+        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
@@ -50,6 +51,11 @@ public class LowerArmSegment extends ArmSegment {
     @Override
     protected double getDegreesPerMotorRotation() {
         return degreesPerMotorRotationProp.get();
+    }
+
+    @Override
+    protected double getAbsoluteEncoderOffsetInDegrees() {
+        return absoluteEncoderOffsetInDegreesProp.get();
     }
 
     @Override

@@ -4,6 +4,7 @@ import competition.operator_interface.OperatorInterface;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.swerve.SwerveSteeringSubsystem;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.math.MathUtils;
@@ -41,9 +42,16 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     protected void calibratedMachineControlAction() {
         XYPair target = unifiedArm.getTargetValue();
         // Find out what angles the arms need to be at in order to achieve the goal.
+
+
+        // Eventually do this. For now just do direct angle setting.
+        /*
         var desiredArmAngles = unifiedArm.solver.solveArmJointPositions(target.x, target.y);
         // Ask the subsystem to move the arms to those angles.
         unifiedArm.setArmsToAngles(desiredArmAngles.getLowerJointRotation(), desiredArmAngles.getUpperJointRotation());
+
+         */
+        unifiedArm.setArmsToAngles(Rotation2d.fromDegrees(target.x), Rotation2d.fromDegrees(target.y));
     }
 
     @Override
