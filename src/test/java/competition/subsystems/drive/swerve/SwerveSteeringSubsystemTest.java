@@ -55,7 +55,6 @@ public class SwerveSteeringSubsystemTest extends BaseCompetitionTest {
         assertEquals("The SparkMAX position should not impact our reported position since XAbsoluteEncoder is available", 0, position, 0.001);
 
         ((MockCANCoder)subsystem.getEncoder()).setAbsolutePosition(10);
-        ((MockCANCoder)subsystem.getEncoder()).refreshDataFrame();
         position = subsystem.getBestEncoderPositionInDegrees();
 
         assertEquals("The new encoder value should be reflected", 10, position, 0.001);
@@ -113,26 +112,24 @@ public class SwerveSteeringSubsystemTest extends BaseCompetitionTest {
     @Test
     public void testCalibrateMotorControllerEncoderFromCanCoder() {
         assertEquals("CanCoder should default to 0 position", 0, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should default to 0 position", 0, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
+        assertEquals("Neo encoder should default to 0 position", 0, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
 
         absoluteEncoder.setAbsolutePosition(50);
-        absoluteEncoder.refreshDataFrame();
         
         assertEquals("CanCoder position should be updated", 50, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should still be at 0 position", 0, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
+        assertEquals("Neo encoder should still be at 0 position", 0, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
 
         subsystem.calibrateMotorControllerPositionFromCanCoder();
 
         assertEquals("CanCoder position should be 50", 50, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should match CanCoder", 50, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
+        assertEquals("Neo encoder should match CanCoder", 50, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
 
         absoluteEncoder.setAbsolutePosition(10);
         motorController.setVelocity(10);
-        absoluteEncoder.refreshDataFrame();
         subsystem.calibrateMotorControllerPositionFromCanCoder();
 
         assertEquals("CanCoder position should be 10", 10, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
-        assertEquals("Neo encoder should not be updated since robot is in motion", 50, subsystem.getMotorControllerEncoderPositionInDegrees(), 0.001);
+        assertEquals("Neo encoder should not be updated since robot is in motion", 50, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
     }
 
 }

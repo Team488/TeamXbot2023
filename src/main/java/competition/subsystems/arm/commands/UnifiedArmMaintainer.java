@@ -3,8 +3,11 @@ package competition.subsystems.arm.commands;
 import competition.operator_interface.OperatorInterface;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.swerve.SwerveSteeringSubsystem;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
+import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.PropertyFactory;
 
@@ -17,8 +20,8 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     @Inject
     public UnifiedArmMaintainer(
             UnifiedArmSubsystem subsystemToMaintain,
-            OperatorInterface oi,
             PropertyFactory pf,
+            OperatorInterface oi,
             HumanVsMachineDecider.HumanVsMachineDeciderFactory hvmFactory) {
         super(subsystemToMaintain, pf, hvmFactory, 0.001, 0.001);
         this.unifiedArm = subsystemToMaintain;
@@ -39,9 +42,16 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     protected void calibratedMachineControlAction() {
         XYPair target = unifiedArm.getTargetValue();
         // Find out what angles the arms need to be at in order to achieve the goal.
+
+
+        // Eventually do this. For now just do direct angle setting.
+        /*
         var desiredArmAngles = unifiedArm.solver.solveArmJointPositions(target.x, target.y);
         // Ask the subsystem to move the arms to those angles.
         unifiedArm.setArmsToAngles(desiredArmAngles.getLowerJointRotation(), desiredArmAngles.getUpperJointRotation());
+
+         */
+        unifiedArm.setArmsToAngles(Rotation2d.fromDegrees(target.x), Rotation2d.fromDegrees(target.y));
     }
 
     @Override
@@ -51,9 +61,17 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
     @Override
     protected XYPair getHumanInput() {
-        return new XYPair(
+        double lowerArmPower = MathUtils.deadband(
                 oi.operatorGamepad.getLeftVector().y,
-                oi.operatorGamepad.getRightVector().y
+                oi.getOperatorGamepadTypicalDeadband(),
+                (a)-> MathUtils.exponentAndRetainSign(a,2));
+        double upperArmPower = MathUtils.deadband(
+                oi.operatorGamepad.getRightVector().y,
+                oi.getOperatorGamepadTypicalDeadband(),
+                (a)-> MathUtils.exponentAndRetainSign(a, 2));
+
+        return new XYPair(
+                lowerArmPower,upperArmPower
         );
     }
 
