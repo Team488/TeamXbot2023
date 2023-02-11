@@ -83,6 +83,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         });
         // creating matchtime doubleProperty
         matchTime = propManager.createEphemeralProperty("Time", DriverStation.getMatchTime());
+
     }
 
     /**
@@ -238,7 +239,11 @@ public class PoseSubsystem extends BasePoseSubsystem {
         };
     }
 
-
+    @Override
+    public void periodic() {
+        super.periodic();
+        matchTime.set(DriverStation.getMatchTime());
+    }
     public DoubleProperty getMatchTime(){
         return matchTime;
     }
