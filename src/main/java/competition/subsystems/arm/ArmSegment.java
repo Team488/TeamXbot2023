@@ -6,6 +6,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
+import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.properties.BooleanProperty;
@@ -70,8 +71,10 @@ public abstract class ArmSegment {
 
     public double getArmPositionFromAbsoluteEncoderInDegrees() {
         if (isAbsoluteEncoderReady()) {
-            return getAbsoluteEncoder().getContiguousPosition(lowerDegreeReference, upperDegreeReference).getValue()
-                    - getAbsoluteEncoderOffsetInDegrees();
+            return ContiguousDouble.reboundValue(
+                    getAbsoluteEncoder().getAbsoluteDegrees()- getAbsoluteEncoderOffsetInDegrees(),
+                    lowerDegreeReference,
+                    upperDegreeReference);
         }
         return 0;
     }
