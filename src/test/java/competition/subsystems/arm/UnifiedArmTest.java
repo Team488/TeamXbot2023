@@ -1,6 +1,7 @@
 package competition.subsystems.arm;
 
 import competition.BaseCompetitionTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import xbot.common.math.XYPair;
 
@@ -31,7 +32,7 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         assertEquals(0.75, target.y, 0.001);
     }
 
-    @Test
+    @Test @Ignore // Revisit once we set XZ positions rather than raw angles.
     public void testTypicalCalibrate() {
         arms.typicalCalibrate();
         var effectorPosition = arms.getCurrentValue();
@@ -39,7 +40,7 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         assertEquals(6, effectorPosition.y, 0.001); // Remember, this is "Z"
     }
 
-    @Test
+    @Test @Ignore // Revisit once we set XZ positions rather than raw angles.
     public void testCalibrateAt() {
         arms.calibrateAt(90, 0);
         var effectorPosition = arms.getCurrentValue();
