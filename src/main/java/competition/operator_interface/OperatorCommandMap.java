@@ -140,6 +140,8 @@ public class OperatorCommandMap {
         setHigh.setTargetPosition(KeyArmPosition.highGoal);
         setRetract.setTargetPosition(KeyArmPosition.fullyRetracted);
 
+
+
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
@@ -154,6 +156,14 @@ public class OperatorCommandMap {
         InstantCommand disableSoftLimits = new InstantCommand(()-> arm.setSoftLimits(false));
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
 
+        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrakes(true));
+        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrakes(false));
+
+        //turn breaks on
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
+        //turn breaks off
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
 
     }
+
 }
