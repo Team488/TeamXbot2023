@@ -140,10 +140,6 @@ public class OperatorCommandMap {
             SetArmsToPositionCommand setMid,
             SetArmsToPositionCommand setLow,
             SetArmsToPositionCommand setRetract) {
-        setLow.setTargetPosition(KeyArmPosition.lowerGoal);
-        setMid.setTargetPosition(KeyArmPosition.midGoal);
-        setHigh.setTargetPosition(KeyArmPosition.highGoal);
-        setRetract.setTargetPosition(KeyArmPosition.fullyRetracted);
         /*
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
@@ -196,6 +192,13 @@ public class OperatorCommandMap {
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
 
+        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrakes(true));
+        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrakes(false));
+
+        //turn breaks on
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
+        //turn breaks off
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
         // Calibrate upper arm against the absolute encoder
         InstantCommand calibrateUpperArm = new InstantCommand(
                 () -> {
@@ -205,7 +208,6 @@ public class OperatorCommandMap {
                 }
         );
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
-
-
     }
+
 }

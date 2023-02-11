@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import competition.electrical_contract.ElectricalContract;
+import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
@@ -31,6 +32,7 @@ public class LowerArmSegment extends ArmSegment {
 
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
+
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
 
         this.contract = eContract;

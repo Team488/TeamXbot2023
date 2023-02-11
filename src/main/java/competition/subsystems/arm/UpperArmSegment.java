@@ -52,15 +52,14 @@ public class UpperArmSegment extends ArmSegment {
 
         setSoftLimit(false);
     }
+    @Override
+    protected double getAbsoluteEncoderOffsetInDegrees() {
+        return absoluteEncoderOffsetInDegreesProp.get();
+    }
 
     @Override
     protected double getDegreesPerMotorRotation() {
         return degreesPerMotorRotationProp.get();
-    }
-
-    @Override
-    protected double getAbsoluteEncoderOffsetInDegrees() {
-        return absoluteEncoderOffsetInDegreesProp.get();
     }
 
     @Override

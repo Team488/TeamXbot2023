@@ -1,8 +1,11 @@
 package competition.subsystems.arm;
 
+import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import xbot.common.command.BaseSetpointSubsystem;
+import xbot.common.controls.actuators.XSolenoid;
 import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
@@ -17,7 +20,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     LowerArmSegment lowerArm;
     UpperArmSegment upperArm;
-
+    public XSolenoid lowerArmSolenoid;
     private XYPair targetPosition;
     public final ArmPositionSolver solver;
     private final DoubleProperty lowerArmTarget;
@@ -43,9 +46,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
             UpperArmSegment upperArm,
+            XSolenoid.XSolenoidFactory xSolenoidFactory,
+            ElectricalContract eContract,
             PropertyFactory pf) {
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
+        this.lowerArmSolenoid = xSolenoidFactory.create(eContract.getLowerArmSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             38.0,
             32.0,
@@ -206,7 +212,16 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
         return new Pair<>(lowerArmRiskState, upperArmRiskState);
     }
-   
+
+    //set brakes for lower arm
+    public void setBrakes(boolean on){
+        if(on){
+            lowerArmSolenoid.setOn(true);
+        } else {
+            lowerArmSolenoid.setOn(false);
+        }
+    }
+
     public void setSoftLimits(boolean on) {
         lowerArm.setSoftLimit(on);
         upperArm.setSoftLimit(on);
