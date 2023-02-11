@@ -3,6 +3,7 @@ package competition.subsystems.arm;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
@@ -41,6 +42,12 @@ public class LowerArmSegment extends ArmSegment {
             this.rightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(), prefix,"RightMotor");
 
             leftMotor.follow(rightMotor, contract.getLowerArmLeftMotor().inverted);
+
+            rightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            leftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+            rightMotor.setOpenLoopRampRate(0.05);
+            rightMotor.setClosedLoopRampRate(0.05);
         }
         if (contract.isLowerArmEncoderReady()) {
             this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getLowerArmEncoder());
@@ -78,5 +85,11 @@ public class LowerArmSegment extends ArmSegment {
     @Override
     public boolean isAbsoluteEncoderReady() {
         return contract.isLowerArmEncoderReady();
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        rightMotor.periodic();
     }
 }
