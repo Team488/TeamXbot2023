@@ -1,6 +1,7 @@
 package competition.subsystems.arm.commands;
 
 import competition.operator_interface.OperatorInterface;
+import competition.subsystems.arm.LowerArmSegment;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.swerve.SwerveSteeringSubsystem;
 import edu.wpi.first.math.MathUtil;
@@ -56,7 +57,13 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
     @Override
     protected double getErrorMagnitude() {
-        return 0;
+        XYPair current = unifiedArm.getCurrentValue();
+        XYPair target = unifiedArm.getTargetValue();
+
+        double lowerArmError = Math.abs(current.x - target.x);
+        double upperArmError = Math.abs(current.y - target.y);
+
+        return lowerArmError + upperArmError;
     }
 
     @Override

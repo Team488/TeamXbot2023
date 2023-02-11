@@ -42,6 +42,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     protected final BooleanProperty calibratedProp;
 
+    protected final BooleanProperty areBrakesEngaged;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -65,6 +67,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         calibratedProp = pf.createEphemeralProperty("Calibrated", false);
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
+        areBrakesEngaged = pf.createEphemeralProperty("AreBrakesEngaged", false);
         targetPosition = getCurrentValue();
     }
 
@@ -89,7 +92,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
      * @param upperPower power of the upper arm motor
      */
     public void setArmPowers(double lowerPower, double upperPower) {
-        lowerArm.setPower(lowerPower);
+        if (areBrakesEngaged.get()) {
+            lowerArm.setPower(0);
+        } else {
+            lowerArm.setPower(lowerPower);
+        }
         upperArm.setPower(upperPower);
     }
 
@@ -132,7 +139,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        lowerArm.setArmToAngle(lowerArmAngle);
+        if (areBrakesEngaged.get()) {
+            lowerArm.setPower(0);
+        } else {
+            lowerArm.setArmToAngle(lowerArmAngle);
+        }
         upperArm.setArmToAngle(upperArmAngle);
     }
 
@@ -217,8 +228,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public void setBrakes(boolean on){
         if(on){
             lowerArmSolenoid.setOn(true);
+            areBrakesEngaged.set(true);
         } else {
             lowerArmSolenoid.setOn(false);
+            areBrakesEngaged.set(false);
         }
     }
 
