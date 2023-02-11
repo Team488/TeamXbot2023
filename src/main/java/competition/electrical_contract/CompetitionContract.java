@@ -121,12 +121,12 @@ public class CompetitionContract extends ElectricalContract {
     }
 
     public DeviceInfo getUpperArmLeftMotor(){
-        return new DeviceInfo("UpperArmLeft",35,false);
+        return new DeviceInfo("UpperArmLeft",35,true);
     }
 
     @Override
     public DeviceInfo getUpperArmRightMotor() {
-        return new DeviceInfo("UpperArmRight",24,false);
+        return new DeviceInfo("UpperArmRight",24,true);
     }
 
     public boolean isLowerArmReady() { return true;}
@@ -135,22 +135,22 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public boolean isLowerArmEncoderReady() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isUpperArmEncoderReady() {
-        return false;
+        return true;
     }
 
     @Override
     public DeviceInfo getLowerArmEncoder() {
-        return new DeviceInfo("UnifiedArmSubsystem/LowerArm",0, false);
+        return new DeviceInfo("UnifiedArmSubsystem/LowerArm",0, true);
     }
 
     @Override
     public DeviceInfo getUpperArmEncoder() {
-        return new DeviceInfo("UnifiedArmSubsystem/UpperArm",0, false);
+        return new DeviceInfo("UnifiedArmSubsystem/UpperArm",1, true);
     }
 
     public DeviceInfo getClawSolenoid() {return new DeviceInfo("ClawSubsystem",5, false);}

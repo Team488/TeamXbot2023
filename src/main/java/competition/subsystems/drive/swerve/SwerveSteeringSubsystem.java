@@ -159,6 +159,10 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         this.calibrated = true;
     }
 
+    public double getVelocity() {
+        return this.motorController.getVelocity();
+    }
+
     /**
      * Reset the SparkMax encoder position based on the CanCoder measurement.
      * This should only be called when the mechanism is stationary.
@@ -170,7 +174,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
 
             if (isMotorControllerDriftTooHigh(currentCanCoderPosition, currentSparkMaxPosition, this.maxMotorEncoderDrift.get())) {
                 if (Math.abs(this.motorController.getVelocity()) > 0) {
-                    log.error("This should not be called when the motor is moving!");
+                    // TODO: this is being called constantly. Seems like a bug.
+                    //log.info("This was called when the motor is moving. No action will be taken.");
                 } else {
                     log.warn("Motor controller encoder drift is too high, recalibrating!");
 

@@ -20,12 +20,19 @@ public class LowerArmSegment extends ArmSegment {
 
     public  DoubleProperty extendLimit;
     public  DoubleProperty retractLimit;
+    private final DoubleProperty degreesPerMotorRotationProp;
+    private final DoubleProperty absoluteEncoderOffsetInDegreesProp;
 
     @Inject
     public LowerArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory){
-        super("UnifiedArmSubsystem/LowerArm", propFactory);
+        super("UnifiedArmSubsystem/LowerArm", propFactory, 270, -90);
         String prefix = "UnifiedArmSubsystem/LowerArm";
+
+        propFactory.setPrefix(prefix);
+        degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
+        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
+
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getLowerArmLeftMotor(), prefix,"LeftMotor");
@@ -40,6 +47,16 @@ public class LowerArmSegment extends ArmSegment {
         setSoftLimit(false);
     }
 
+
+    @Override
+    protected double getDegreesPerMotorRotation() {
+        return degreesPerMotorRotationProp.get();
+    }
+
+    @Override
+    protected double getAbsoluteEncoderOffsetInDegrees() {
+        return absoluteEncoderOffsetInDegreesProp.get();
+    }
 
     @Override
     protected XCANSparkMax getLeaderMotor() {
