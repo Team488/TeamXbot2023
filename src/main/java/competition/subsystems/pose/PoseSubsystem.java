@@ -40,6 +40,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
     private final Latch useVisionToUpdateGyroLatch;
 
+    private DoubleProperty matchTime;
+
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
         super(gyroFactory, propManager);
@@ -79,6 +81,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
                this.setCurrentPoseInMeters(getVisionAssistedPositionInMeters());
            }
         });
+        // creating matchtime doubleProperty
+        matchTime = propManager.createEphemeralProperty("Time", DriverStation.getMatchTime());
     }
 
     /**
@@ -232,6 +236,11 @@ public class PoseSubsystem extends BasePoseSubsystem {
             drive.getRearLeftSwerveModuleSubsystem().getcurrentPosition(),
             drive.getRearRightSwerveModuleSubsystem().getcurrentPosition()
         };
+    }
+
+
+    public DoubleProperty getMatchTime(){
+        return matchTime;
     }
 
 }
