@@ -2,7 +2,6 @@ package competition.auto_programs;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import xbot.common.math.XYPair;
 
 public class AutoLandmarks {
     // Every game piece coordinate
