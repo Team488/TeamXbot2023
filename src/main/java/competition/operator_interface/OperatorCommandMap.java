@@ -140,17 +140,7 @@ public class OperatorCommandMap {
             SetArmsToPositionCommand setMid,
             SetArmsToPositionCommand setLow,
             SetArmsToPositionCommand setRetract) {
-        setLow.setTargetPosition(KeyArmPosition.lowerGoal);
-        setMid.setTargetPosition(KeyArmPosition.midGoal);
-        setHigh.setTargetPosition(KeyArmPosition.highGoal);
-        setRetract.setTargetPosition(KeyArmPosition.fullyRetracted);
-<<<<<<< HEAD
-
-
-
-=======
         /*
->>>>>>> main
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
