@@ -1,10 +1,7 @@
 package competition.subsystems.arm.commands;
 
 import competition.operator_interface.OperatorInterface;
-import competition.subsystems.arm.LowerArmSegment;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.drive.swerve.SwerveSteeringSubsystem;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
@@ -86,4 +83,12 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     protected double getHumanInputMagnitude() {
         return getHumanInput().getMagnitude();
     }
+
+    /*
+    @Override
+    protected void humanControlAction() {
+        unifiedArm.engageBrake(false);
+        super.humanControlAction();
+    }
+    */
 }

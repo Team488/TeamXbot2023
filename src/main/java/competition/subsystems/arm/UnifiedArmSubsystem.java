@@ -213,7 +213,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     //set brakes for lower arm
-    public void setBrakes(boolean on){
+    public void engageBrake(boolean on){
         if(on){
             lowerArmSolenoid.setOn(false);
             areBrakesEngaged.set(true);

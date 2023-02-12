@@ -2,7 +2,6 @@ package competition.operator_interface;
 
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.commands.SetArmsToPositionCommand;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
@@ -15,7 +14,6 @@ import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -152,21 +150,21 @@ public class OperatorCommandMap {
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting neg 90");
-                    arm.setTargetValue(new XYPair(-90, -90));
+                    arm.setTargetValue(new XYPair(75, -20));
                 });
 
         InstantCommand setNeg45 = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting neg 45");
-                    arm.setTargetValue(new XYPair(-90, -45));
+                    arm.setTargetValue(new XYPair(-45, 0));
                 });
 
         InstantCommand setNeg135 = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting neg 135");
-                    arm.setTargetValue(new XYPair(-90, -135));
+                    arm.setTargetValue(new XYPair(-45, -60));
                 });
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setNeg90);
@@ -194,8 +192,8 @@ public class OperatorCommandMap {
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
 
-        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrakes(true));
-        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrakes(false));
+        InstantCommand engageBrakes = new InstantCommand(() -> arm.engageBrake(true));
+        InstantCommand disableBrakes = new InstantCommand(() -> arm.engageBrake(false));
 
         //turn breaks on
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
