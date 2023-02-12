@@ -6,6 +6,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UpperArmSegment;
 import xbot.common.command.BaseCommand;
 import xbot.common.math.MathUtils;
+import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,6 +35,6 @@ public class ControlArmsWithJoyStickCommand extends BaseCommand {
         lowerArmPower = MathUtils.deadband(lowerArmPower, oi.getOperatorGamepadTypicalDeadband());
         upperArmPower = MathUtils.deadband(upperArmPower, oi.getOperatorGamepadTypicalDeadband());
 
-        arms.setArmPowers(lowerArmPower, upperArmPower);
+        arms.setPower(new XYPair(lowerArmPower, upperArmPower));
     }
 }

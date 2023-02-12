@@ -150,7 +150,7 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getClawSolenoid() {return new DeviceInfo(0, false);}
 
     @Override
-    public DeviceInfo getLowerArmSolenoid() {
+    public DeviceInfo getLowerArmBrakeSolenoid() {
         return new DeviceInfo(1, false);
     }
 }

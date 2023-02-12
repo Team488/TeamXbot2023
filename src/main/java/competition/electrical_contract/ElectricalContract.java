@@ -29,5 +29,5 @@ public abstract class ElectricalContract {
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
     public abstract DeviceInfo getClawSolenoid();
 
-    public abstract DeviceInfo getLowerArmSolenoid();
+    public abstract DeviceInfo getLowerArmBrakeSolenoid();
 }
