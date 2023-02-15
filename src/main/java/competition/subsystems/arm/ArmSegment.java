@@ -45,7 +45,15 @@ public abstract class ArmSegment {
         neoPositionInDegreesProp = propFactory.createEphemeralProperty("NeoPositionInDegrees", 0.0);
     }
 
+    protected void configureCommonMotorProperties() {
+        getLeaderMotor().setOpenLoopRampRate(0.05);
+        getLeaderMotor().setClosedLoopRampRate(0.05);
+        getLeaderMotor().setIdleMode(CANSparkMax.IdleMode.kBrake);
+        getFollowerMotor().setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
     protected abstract XCANSparkMax getLeaderMotor();
+    protected abstract XCANSparkMax getFollowerMotor();
     protected abstract XDutyCycleEncoder getAbsoluteEncoder();
 
     public abstract boolean isMotorReady();
