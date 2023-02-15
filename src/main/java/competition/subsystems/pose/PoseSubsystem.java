@@ -144,9 +144,14 @@ public class PoseSubsystem extends BasePoseSubsystem {
         var estimatedPosition = swerveOdometry.getEstimatedPosition();
 
         // Convert back to inches
+        double prevTotalDistanceX = totalDistanceX.get();
+        double prevTotalDistanceY = totalDistanceY.get();
         totalDistanceX.set(estimatedPosition.getX() * PoseSubsystem.INCHES_IN_A_METER);
         totalDistanceY.set(estimatedPosition.getY() * PoseSubsystem.INCHES_IN_A_METER);
         fieldForDisplay.setRobotPose(estimatedPosition);
+        this.velocityX.set((totalDistanceX.get() - prevTotalDistanceX));
+        this.velocityY.set((totalDistanceY.get() - prevTotalDistanceY));
+        this.totalVelocity.set(Math.sqrt(Math.pow(velocityX.get(), 2.0) + Math.pow(velocityY.get(), 2.0)));
     }
 
     private void improveOdometryUsingSimpleAprilTag() {
