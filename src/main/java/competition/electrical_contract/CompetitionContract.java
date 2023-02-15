@@ -153,4 +153,7 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getLowerArmSolenoid() {
         return new DeviceInfo(1, false);
     }
+
+    public DeviceInfo getCollectorMotor(){ return new DeviceInfo(0,false);}
+    public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo(0,false);}
 }

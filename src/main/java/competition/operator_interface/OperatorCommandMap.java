@@ -192,13 +192,13 @@ public class OperatorCommandMap {
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
 
-        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrakes(true));
-        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrakes(false));
+       /* InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrakes(true));
+        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrakes(false));*/
 
         //turn breaks on
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
+       // oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
         //turn breaks off
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
+        // oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
         // Calibrate upper arm against the absolute encoder
         InstantCommand calibrateUpperArm = new InstantCommand(
                 () -> {
