@@ -192,8 +192,8 @@ public class OperatorCommandMap {
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
 
-        InstantCommand engageBrakes = new InstantCommand(() -> arm.engageBrake(true));
-        InstantCommand disableBrakes = new InstantCommand(() -> arm.engageBrake(false));
+        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrake(true));
+        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrake(false));
 
         //turn breaks on
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);

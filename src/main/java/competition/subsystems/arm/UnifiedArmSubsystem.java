@@ -140,6 +140,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return calibratedProp.get();
     }
 
+    public boolean areBrakesEngaged() {
+        return areBrakesEngaged.get();
+    }
+
     public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {
         lowerArm.calibrateThisPositionAs(lowerArmAngleInDegrees);
         upperArm.calibrateThisPositionAs(upperArmAngleInDegrees);
@@ -213,7 +217,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     //set brakes for lower arm
-    public void engageBrake(boolean on){
+    public void setBrake(boolean on){
         if(on){
             lowerArmSolenoid.setOn(false);
             areBrakesEngaged.set(true);
