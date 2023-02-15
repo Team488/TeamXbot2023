@@ -30,7 +30,10 @@ public class AutoBalanceCommand extends BaseCommand {
 
     @Override
     public void execute() {
-        double currentAngle = pose.getRobotPitch();
+        // on the 2023 robot it's roll
+        // on the 2022 robot it's pitch
+        // this is based on the rio orientation
+        double currentAngle = pose.getRobotRoll();
 
         if (Math.abs(currentAngle) < 1.5) {
             currentAngle = 0;
