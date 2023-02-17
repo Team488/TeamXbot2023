@@ -4,9 +4,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import edu.wpi.first.math.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import xbot.common.command.BaseCommand;
 import xbot.common.command.BaseSetpointCommand;
-import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -58,6 +56,10 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
 
         // Then go ahead and set the initial target, so that execute can immediately start looking for that completion.
         setTargetFromFirstEntryInList();
+        // Since we just set the target, the maintainer hasn't had a chance to execute yet and evaluate to see if we
+        // are at that. To avoid premature completion, we will force the subsystem to say the maintainer
+        // is not yet at the goal, since we will be checking that value immediately in execute.
+        arms.setMaintainerIsAtGoal(false);
     }
 
     @Override
@@ -78,6 +80,14 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
         }
 
         // Otherwise, we are still moving to the current target, so do nothing.
+    }
+
+    /**
+     * Likely only has value in testing, though it could be used to expose a bit of state to a dashboard.
+     * @return The list of planned positions to visit.
+     */
+    public List<Pair<UnifiedArmSubsystem.KeyArmPosition, UnifiedArmSubsystem.RobotFacing>> getArmPosesToVisit() {
+        return armPosesToVisit;
     }
 
     private void setTargetFromFirstEntryInList() {

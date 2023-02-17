@@ -49,10 +49,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     // Key angles for the lower and upper arms (in degrees)
     // TODO: Replace these with actual values from testing. For now, safe values of perfectly vertical arm.
     public static XYPair fullyRetractedAngles = new XYPair(90, -90);
-    public static XYPair lowerGoalAngles = new XYPair(90, -90);
-    public static XYPair midGoalAngles = new XYPair(90, -90);
-    public static XYPair highGoalAngles = new XYPair(90, -90);
-    public static XYPair acquireFromCollectorAngles = new XYPair(90, -90);
+    public static XYPair lowerGoalAngles = new XYPair(45, -45);
+    public static XYPair midGoalAngles = new XYPair(50, -15);
+    public static XYPair highGoalAngles = new XYPair(60, 0);
+    public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
     public static XYPair safeExternalTransitionAngles = new XYPair(90, 0);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
