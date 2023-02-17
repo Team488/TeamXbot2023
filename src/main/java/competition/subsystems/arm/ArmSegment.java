@@ -15,8 +15,6 @@ import xbot.common.properties.PropertyFactory;
 
 public abstract class ArmSegment {
 
-    private final DoubleProperty upperLimitInDegrees;
-    private final DoubleProperty lowerLimitInDegrees;
     protected abstract double getDegreesPerMotorRotation();
     private final BooleanProperty useAbsoluteEncoderProp;
     private double motorEncoderOffsetInDegrees;
@@ -37,8 +35,6 @@ public abstract class ArmSegment {
         this.prefix= prefix;
         this.upperDegreeReference = upperDegreeReference;
         this.lowerDegreeReference = lowerDegreeReference;
-        upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", true);
         absoluteEncoderPositionProp = propFactory.createEphemeralProperty("AbsoluteEncoderPosition", 0.0);
         neoPositionProp = propFactory.createEphemeralProperty("NeoPosition", 0.0);
@@ -59,17 +55,20 @@ public abstract class ArmSegment {
     public abstract boolean isMotorReady();
     public abstract boolean isAbsoluteEncoderReady();
 
+    protected abstract double getUpperLimitInDegrees();
+    protected abstract double getLowerLimitInDegrees();
+
     public void setPower(double power) {
         if (isMotorReady()) {
 
             // if too high, no more positive power
             double currentAngle = getArmPositionFromAbsoluteEncoderInDegrees();
-            if (currentAngle > upperLimitInDegrees.get())
+            if (currentAngle > getUpperLimitInDegrees())
             {
                 power = MathUtils.constrainDouble(power, -1, 0);
             }
             // if too low, no more negative power.
-            if (currentAngle < lowerLimitInDegrees.get()) {
+            if (currentAngle < getLowerLimitInDegrees()) {
                 power = MathUtils.constrainDouble(power, 0, 1);
             }
 
@@ -120,8 +119,8 @@ public abstract class ArmSegment {
                 // we are potentially offset. So we need to figure out our actual degree target, then divide by
                 // degrees per motor rotation to get something the SparkMAX can understand.
 
-                double upperLimitInRotations = (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
-                double lowerLimitInRotations = (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
+                double upperLimitInRotations = (getUpperLimitInDegrees() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
+                double lowerLimitInRotations = (getLowerLimitInDegrees() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
                 log.info(prefix + ", UpperLimitRotations:"+upperLimitInRotations+", LowerLimitRotation:"+lowerLimitInRotations);
                 configSoftLimit(upperLimitInRotations, lowerLimitInRotations);
             } else {
@@ -144,7 +143,7 @@ public abstract class ArmSegment {
 
         // Coerce angle to a safe angle
         double targetAngleDegrees =
-                MathUtils.constrainDouble(angle.getDegrees(), lowerLimitInDegrees.get(), upperLimitInDegrees.get());
+                MathUtils.constrainDouble(angle.getDegrees(), getLowerLimitInDegrees(), getUpperLimitInDegrees());
 
         // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
         // controller will be using its internal encoder, so we need to translate from one to the other.

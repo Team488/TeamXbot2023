@@ -3,6 +3,8 @@ package competition.subsystems.arm;
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XSolenoid;
 import xbot.common.math.XYPair;
@@ -18,7 +20,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     LowerArmSegment lowerArm;
     UpperArmSegment upperArm;
-    public XSolenoid lowerArmSolenoid;
+    public XSolenoid lowerArmBrakeSolenoid;
     private XYPair targetPosition;
     public final ArmPositionSolver solver;
     private final DoubleProperty lowerArmTarget;
@@ -51,7 +53,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             PropertyFactory pf) {
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
-        this.lowerArmSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
+        this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             36.0,
             33.0,
@@ -140,6 +142,17 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return calibratedProp.get();
     }
 
+    public void setIsCalibrated(boolean isCalibrated) {
+        calibratedProp.set(isCalibrated);
+    }
+
+    public Command createForceUncalibratedCommand() {
+        return new InstantCommand(() -> {
+            log.info("Forcing arms to uncalibrated mode. Only manual operation will be respected.");
+            calibratedProp.set(false);
+        });
+    }
+
     public boolean areBrakesEngaged() {
         return areBrakesEngaged.get();
     }
@@ -219,10 +232,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     //set brakes for lower arm
     public void setBrake(boolean on){
         if(on){
-            lowerArmSolenoid.setOn(false);
+            lowerArmBrakeSolenoid.setOn(false);
             areBrakesEngaged.set(true);
         } else {
-            lowerArmSolenoid.setOn(true);
+            lowerArmBrakeSolenoid.setOn(true);
             areBrakesEngaged.set(false);
         }
     }
