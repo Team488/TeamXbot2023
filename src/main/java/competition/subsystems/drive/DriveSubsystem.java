@@ -20,6 +20,7 @@ import xbot.common.math.MathUtils;
 import xbot.common.math.PIDManager;
 import xbot.common.math.XYPair;
 import xbot.common.math.PIDManager.PIDManagerFactory;
+import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
@@ -60,6 +61,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
     private final DoubleProperty desiredHeading;
 
+    private final BooleanProperty driverOrientedDriveEnabled;
+
     public enum SwerveModuleLocation {
         FRONT_LEFT,
         FRONT_RIGHT,
@@ -76,8 +79,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
     @Inject
     public DriveSubsystem(PIDManagerFactory pidFactory, XPropertyManager propManager, ElectricalContract contract, PropertyFactory pf,
-            @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
-            @RearLeftDrive SwerveComponent rearLeftSwerve, @RearRightDrive SwerveComponent rearRightSwerve) {
+                          @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
+                          @RearLeftDrive SwerveComponent rearLeftSwerve, @RearRightDrive SwerveComponent rearRightSwerve) {
         log.info("Creating DriveSubsystem");
         pf.setPrefix(this);
 
@@ -106,6 +109,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         // These can be tuned to reduce twitchy wheels
         this.minTranslateSpeed = pf.createPersistentProperty("Minimum translate speed", 0.02);
         this.minRotationalSpeed = pf.createPersistentProperty("Minimum rotational speed", 0.02);
+
+        this.driverOrientedDriveEnabled = pf.createPersistentProperty("Enable Driver Oriented Drive", true);
 
         // TODO: eventually, this should retrieved from auto or the pose subsystem as a field like 
         // "Desired initial wheel direction" so there's no thrash right at the start of a match.
@@ -213,6 +218,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     public void setRotateToHubActive(boolean isActive) {
         rotateToHubActive = isActive;
     }
+
+    public boolean getDriverOrientedDriveEnabled() { return driverOrientedDriveEnabled.get(); }
 
     /**
      * Set the target movement speed and rotation, rotating around the center of the robot.

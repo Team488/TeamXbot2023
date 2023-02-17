@@ -285,7 +285,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
      * @return The rotated input
      */
     private XYPair rotateInputsBasedOnAlliance(XYPair translationInput) {
-        if (alliance == DriverStation.Alliance.Red) {
+        if (alliance == DriverStation.Alliance.Red && drive.getDriverOrientedDriveEnabled()) {
             translationInput.scale(-1, -1);
         }
         return translationInput;

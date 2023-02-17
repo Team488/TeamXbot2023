@@ -24,8 +24,8 @@ public class Robot extends BaseRobot {
         if (BaseRobot.isReal()) {
             // TODO: Figure out some elegant way to detect 2022 vs 2023 chassis and return the appropriate component.
             // until then, you'll have to manually change this line to return the correct component.
-            //return DaggerPracticeComponent.create();
-            return DaggerRobotComponent.create();
+            return DaggerPracticeComponent.create();
+            //return DaggerRobotComponent.create();
 
         } else {
             return DaggerSimulationComponent.create();
