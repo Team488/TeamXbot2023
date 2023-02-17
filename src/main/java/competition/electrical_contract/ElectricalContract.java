@@ -27,10 +27,12 @@ public abstract class ElectricalContract {
     public abstract DeviceInfo getLowerArmEncoder();
     public abstract DeviceInfo getUpperArmEncoder();
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
+    
     public abstract DeviceInfo getClawSolenoid();
-
     public abstract DeviceInfo getLowerArmSolenoid();
     public abstract DeviceInfo getCollectorSolenoid();
     public abstract DeviceInfo getCollectorMotor();
     public abstract boolean isCollectorReady();
+    
+    public abstract DeviceInfo getLowerArmBrakeSolenoid();
 }

@@ -51,10 +51,10 @@ public class SwerveToPointCommand extends BaseCommand {
 
         if (robotRelativeMotion) {
             // If we are using robot relative motion, we need to consider the target position
-            // as being relative to the robot's current position. So value of 0,-60 means
+            // as being relative to the robot's current position. So value of -60,0 means
             // "go backwards 60 inches" from the robot's perspective.
-            // If the robot was pointed at field 0 degrees (right) this would mean setting
-            // a field-relative target of -60, 0 (move the robot left 60 inches).
+            // If the robot was pointed at field -90 degrees (right) this would mean setting
+            // a field-relative target of 0,60 (move the robot left 60 inches).
             targetPosition.rotate(pose.getCurrentHeading().getDegrees());
             
             targetPosition = pose.getCurrentFieldPose().getPoint().clone().add(targetPosition);

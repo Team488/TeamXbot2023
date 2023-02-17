@@ -13,6 +13,7 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
     UpperArmSegment upperArm;
     OperatorInterface oi;
     ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand;
+    UnifiedArmSubsystem arms;
 
     @Override
     public void setUp() {
@@ -21,6 +22,9 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
         upperArm = getInjectorComponent().upperArmSegment();
         controlArmsWithJoyStickCommand = getInjectorComponent().controlArmsWithJoyStickCommand();
         oi = getInjectorComponent().operatorInterface();
+        arms = getInjectorComponent().unifiedArmSubsystem();
+
+        arms.setBrake(false);
     }
 
     @Test

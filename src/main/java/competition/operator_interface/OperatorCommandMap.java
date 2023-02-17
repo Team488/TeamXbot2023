@@ -2,19 +2,22 @@ package competition.operator_interface;
 
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.commands.SetArmsToPositionCommand;
+import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
+import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -44,13 +47,17 @@ public class OperatorCommandMap {
 
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
-                                   SetRobotHeadingCommand resetHeading,
-                                   DriveSubsystem drive,
-                                   PoseSubsystem pose,
-                                   DebuggingSwerveWithJoysticksCommand debugSwerve,
-                                   GoToNextActiveSwerveModuleCommand nextModule,
-                                   SwerveDriveWithJoysticksCommand regularSwerve,
-                                   VisionSubsystem vision) {
+            SetRobotHeadingCommand resetHeading,
+            DriveSubsystem drive,
+            PoseSubsystem pose,
+            DebuggingSwerveWithJoysticksCommand debugSwerve,
+            GoToNextActiveSwerveModuleCommand nextModule,
+            SwerveDriveWithJoysticksCommand regularSwerve,
+            VisionSubsystem vision,
+            VelocityMaintainerCommand velocityMaintainer,
+            PositionMaintainerCommand positionMaintainer,
+            PositionDriveWithJoysticksCommand positionDrive,
+            VelocityDriveWithJoysticksCommand velocityDrive) {
         resetHeading.setHeadingToApply(0);
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
@@ -75,6 +82,12 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+
+        
+        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+        positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
+        velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
+        positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
     }
 
     @Inject
@@ -136,6 +149,7 @@ public class OperatorCommandMap {
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
+            ClawSubsystem claw,
             SetArmsToPositionCommand setHigh,
             SetArmsToPositionCommand setMid,
             SetArmsToPositionCommand setLow,
@@ -150,21 +164,21 @@ public class OperatorCommandMap {
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting neg 90");
-                    arm.setTargetValue(new XYPair(-90, -90));
+                    arm.setTargetValue(new XYPair(75, -20));
                 });
 
         InstantCommand setNeg45 = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting neg 45");
-                    arm.setTargetValue(new XYPair(-90, -45));
+                    arm.setTargetValue(new XYPair(-45, 0));
                 });
 
         InstantCommand setNeg135 = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting neg 135");
-                    arm.setTargetValue(new XYPair(-90, -135));
+                    arm.setTargetValue(new XYPair(-45, -60));
                 });
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setNeg90);
@@ -192,8 +206,9 @@ public class OperatorCommandMap {
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
 
-       /* InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrakes(true));
-        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrakes(false));*/
+
+        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrake(true));
+        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrake(false));
 
         //turn breaks on
        // oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
@@ -208,6 +223,24 @@ public class OperatorCommandMap {
                 }
         );
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
+
+        InstantCommand openClaw = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Opening Claw");
+                    claw.open();
+                }
+        );
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(openClaw);
+
+        InstantCommand closeClaw = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Closing Claw");
+                    claw.close();
+                }
+        );
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(closeClaw);
     }
 
 }

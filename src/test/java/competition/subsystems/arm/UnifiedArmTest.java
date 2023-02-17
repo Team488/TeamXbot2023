@@ -15,6 +15,7 @@ public class UnifiedArmTest extends BaseCompetitionTest {
     public void setUp() {
         super.setUp();
         arms = getInjectorComponent().unifiedArmSubsystem();
+        arms.setBrake(false);
     }
 
     @Test

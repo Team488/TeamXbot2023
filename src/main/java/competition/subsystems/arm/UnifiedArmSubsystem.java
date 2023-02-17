@@ -3,10 +3,8 @@ package competition.subsystems.arm;
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XSolenoid;
-import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
@@ -42,6 +40,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     protected final BooleanProperty calibratedProp;
 
+    protected final BooleanProperty areBrakesEngaged;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -51,7 +51,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             PropertyFactory pf) {
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
-        this.lowerArmSolenoid = xSolenoidFactory.create(eContract.getLowerArmSolenoid().channel);
+        this.lowerArmSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             36.0,
             33.0,
@@ -65,7 +65,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         calibratedProp = pf.createEphemeralProperty("Calibrated", false);
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
+        areBrakesEngaged = pf.createEphemeralProperty("AreBrakesEngaged", false);
         targetPosition = getCurrentValue();
+
+        areBrakesEngaged.set(true);
     }
 
     public XYPair getKeyArmPosition(KeyArmPosition keyArmPosition){
@@ -82,22 +85,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                 return new XYPair(0,0);
         }
     }
-
-    /**
-     * Sets the power of the lower and upper arm motors directly (no PID)
-     * @param lowerPower power of the lower arm motor
-     * @param upperPower power of the upper arm motor
-     */
-    public void setArmPowers(double lowerPower, double upperPower) {
-        if (lowerArm.isMotorReady()) {
-            lowerArm.setPower(lowerPower);
-        }
-        if (upperArm.isMotorReady()) {
-            upperArm.setPower(upperPower);
-        }
-    }
-
-
 
     @Override
     public XYPair getCurrentValue() {
@@ -131,18 +118,30 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
      */
     @Override
     public void setPower(XYPair power) {
-        lowerArm.setPower(power.x);
+        if (areBrakesEngaged.get()) {
+            lowerArm.setPower(0);
+        } else {
+            lowerArm.setPower(power.x);
+        }
         upperArm.setPower(power.y);
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        lowerArm.setArmToAngle(lowerArmAngle);
+        if (areBrakesEngaged.get()) {
+            lowerArm.setPower(0);
+        } else {
+            lowerArm.setArmToAngle(lowerArmAngle);
+        }
         upperArm.setArmToAngle(upperArmAngle);
     }
 
     @Override
     public boolean isCalibrated() {
         return calibratedProp.get();
+    }
+
+    public boolean areBrakesEngaged() {
+        return areBrakesEngaged.get();
     }
 
     public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {
@@ -218,11 +217,13 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     //set brakes for lower arm
-    public void setBrakes(boolean on){
+    public void setBrake(boolean on){
         if(on){
-            lowerArmSolenoid.setOn(true);
-        } else {
             lowerArmSolenoid.setOn(false);
+            areBrakesEngaged.set(true);
+        } else {
+            lowerArmSolenoid.setOn(true);
+            areBrakesEngaged.set(false);
         }
     }
 
