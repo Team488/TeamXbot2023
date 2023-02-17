@@ -40,11 +40,7 @@ public class UpperArmSegment extends ArmSegment {
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
 
-            rightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-            leftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
-            rightMotor.setOpenLoopRampRate(0.05);
-            rightMotor.setClosedLoopRampRate(0.05);
+            configureCommonMotorProperties();
         }
         if (contract.isUpperArmEncoderReady()) {
             this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getUpperArmEncoder());
@@ -65,6 +61,11 @@ public class UpperArmSegment extends ArmSegment {
     @Override
     protected XCANSparkMax getLeaderMotor() {
         return rightMotor;
+    }
+
+    @Override
+    protected XCANSparkMax getFollowerMotor() {
+        return leftMotor;
     }
 
     @Override
