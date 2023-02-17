@@ -23,6 +23,8 @@ public class UpperArmSegment extends ArmSegment {
     public  DoubleProperty retractLimit;
     private final DoubleProperty degreesPerMotorRotationProp;
     private final DoubleProperty absoluteEncoderOffsetInDegreesProp;
+    private final DoubleProperty lowerLimitInDegrees;
+    private final DoubleProperty upperLimitInDegrees;
 
     @Inject
     public UpperArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
@@ -32,6 +34,8 @@ public class UpperArmSegment extends ArmSegment {
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -200);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 20);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
@@ -81,6 +85,16 @@ public class UpperArmSegment extends ArmSegment {
     @Override
     public boolean isAbsoluteEncoderReady() {
         return contract.isLowerArmEncoderReady();
+    }
+
+    @Override
+    protected double getUpperLimitInDegrees() {
+        return upperLimitInDegrees.get();
+    }
+
+    @Override
+    protected double getLowerLimitInDegrees() {
+        return lowerLimitInDegrees.get();
     }
 
     @Override
