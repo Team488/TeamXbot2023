@@ -211,9 +211,9 @@ public class OperatorCommandMap {
         InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrake(false));
 
         //turn breaks on
-       // oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
         //turn breaks off
-        // oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
         // Calibrate upper arm against the absolute encoder
         InstantCommand calibrateUpperArm = new InstantCommand(
                 () -> {

@@ -154,6 +154,10 @@ public class CompetitionContract extends ElectricalContract {
         return new DeviceInfo(1, false);
     }
 
-    public DeviceInfo getCollectorMotor(){ return new DeviceInfo(0,false);}
-    public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo(0,false);}
+    public DeviceInfo getCollectorMotor(){ return new DeviceInfo(25,false);}
+
+    @Override
+    public boolean isCollectorReady() { return true; }
+
+    public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo(2,false);}
 }

@@ -19,7 +19,6 @@ public class ExtendCollectorCommand extends BaseCommand {
     @Override
     public void execute() {
         collector.extend();
-        collector.intake();
     }
 
 }

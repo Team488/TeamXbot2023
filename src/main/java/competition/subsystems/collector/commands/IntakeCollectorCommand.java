@@ -5,10 +5,10 @@ import xbot.common.command.BaseCommand;
 
 import javax.inject.Inject;
 
-public class ForwardCollectorCommand extends BaseCommand {
+public class IntakeCollectorCommand extends BaseCommand {
     CollectorSubsystem collector;
     @Inject
-    public ForwardCollectorCommand(CollectorSubsystem collector) {
+    public IntakeCollectorCommand(CollectorSubsystem collector) {
         this.collector = collector;
         }
         @Override

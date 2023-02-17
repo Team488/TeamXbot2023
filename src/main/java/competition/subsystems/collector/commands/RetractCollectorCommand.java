@@ -20,6 +20,5 @@ public class RetractCollectorCommand extends BaseCommand {
     @Override
     public void execute() {
         collector.retract();
-        collector.eject();
     }
 }

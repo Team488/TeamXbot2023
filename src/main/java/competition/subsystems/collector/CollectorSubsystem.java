@@ -16,11 +16,12 @@ public class CollectorSubsystem extends BaseSubsystem {
     public XSolenoid collectorSolenoid;
     public DoubleProperty intakePower;
     public DoubleProperty ejectPower;
+    private CollectorState currentState;
     final ElectricalContract contract;
 
-    public enum collectorState{
-        extend,
-        retract
+    public enum CollectorState{
+        Extended,
+        Retracted
     }
 
     @Inject
@@ -28,6 +29,7 @@ public class CollectorSubsystem extends BaseSubsystem {
                               XSolenoid.XSolenoidFactory xSolenoidFactory,
                               ElectricalContract eContract){
         this.contract = eContract;
+        this.currentState = CollectorState.Retracted;
         if(contract.isCollectorReady()){
             this.collectorMotor = sparkMaxFactory.create(eContract.getCollectorMotor(),getPrefix(),"CollectorMotor");
             this.collectorSolenoid = xSolenoidFactory.create(eContract.getCollectorSolenoid().channel);
@@ -38,23 +40,24 @@ public class CollectorSubsystem extends BaseSubsystem {
 
     }
 
-    private void changeCollector(collectorState state){
-        if(state == collectorState.extend){
+    private void changeCollector(CollectorState state){
+        currentState = state;
+        if(state == CollectorState.Extended){
             collectorSolenoid.setOn(true);
-        } else if (state == collectorState.retract) {
+        } else if (state == CollectorState.Retracted) {
             collectorSolenoid.setOn(false);
         }
     }
-    public boolean getCollectorState(){
-        return collectorSolenoid.getAdjusted();
+    public CollectorState getCollectorState(){
+        return currentState;
     }
 
     public void extend(){
-        changeCollector(collectorState.extend);
+        changeCollector(CollectorState.Extended);
     }
 
     public void retract(){
-        changeCollector(collectorState.retract);
+        changeCollector(CollectorState.Retracted);
     }
 
     private void setMotorPower(double power){
