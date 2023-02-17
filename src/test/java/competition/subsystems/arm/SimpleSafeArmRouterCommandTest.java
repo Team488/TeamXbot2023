@@ -166,6 +166,17 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         assertTrue(routerCommand.isFinished());
     }
 
+    @Test
+    public void testSafeExternalTransitionAsGoal() {
+        setArmAngles(85, -90);
+        routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Backward);
+        routerCommand.initialize();
+
+        assertTrue(routerCommand.getArmPosesToVisit().size() == 2);
+        checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Forward);
+        checkArbitraryTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Backward, 1);
+    }
+
     private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
         ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
         ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
@@ -177,7 +188,11 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
     }
 
     private void checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition position, UnifiedArmSubsystem.RobotFacing facing) {
-        assertEquals(position, routerCommand.getArmPosesToVisit().get(0).getFirst());
-        assertEquals(facing, routerCommand.getArmPosesToVisit().get(0).getSecond());
+        checkArbitraryTarget(position, facing, 0);
+    }
+
+    private void checkArbitraryTarget(UnifiedArmSubsystem.KeyArmPosition position, UnifiedArmSubsystem.RobotFacing facing, int index) {
+        assertEquals(position, routerCommand.getArmPosesToVisit().get(index).getFirst());
+        assertEquals(facing, routerCommand.getArmPosesToVisit().get(index).getSecond());
     }
 }
