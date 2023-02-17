@@ -15,7 +15,7 @@ public class BasicMobilityPoints extends SequentialCommandGroup{
         moveForward.setRobotRelativeMotion();
         moveForward.setMaxPower(0.5);
         moveForward.setMaxTurningPower(0.5);
-        moveForward.setTargetPosition(new XYPair(0,40), 0);
+        moveForward.setTargetPosition(new XYPair(40,0), 0);
         this.addCommands(moveForward);
     }
 }
