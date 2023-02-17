@@ -7,6 +7,8 @@ import static org.junit.Assert.assertEquals;
 
 import edu.wpi.first.wpilibj.MockXboxControllerAdapter;
 import org.junit.Test;
+import xbot.common.controls.sensors.mock_adapters.MockAbsoluteEncoder;
+import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 
 public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
     LowerArmSegment lowerArm;
@@ -25,6 +27,9 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
         arms = getInjectorComponent().unifiedArmSubsystem();
 
         arms.setBrake(false);
+
+        ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(90.0/360.0);
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(-90.0/360.0);
     }
 
     @Test
