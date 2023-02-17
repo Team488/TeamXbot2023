@@ -7,6 +7,7 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -38,6 +39,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private TimeStableValidator extremelyConfidentVisionValidator = new TimeStableValidator(10);
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
+    private final BooleanProperty allianceAwareFieldProp;
     private final Latch useVisionToUpdateGyroLatch;
 
     private DoubleProperty matchTime;
@@ -52,6 +54,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         isPoseHealthyProp = propManager.createEphemeralProperty("IsPoseHealthy", false);
         extremelyConfidentVisionDistanceUpdateInMetersProp = propManager.createPersistentProperty("ExtremelyConfidentVisionDistanceUpdateInMeters", 0.01);
         isVisionPoseExtremelyConfidentProp = propManager.createEphemeralProperty("IsVisionPoseExtremelyConfident", false);
+        allianceAwareFieldProp = propManager.createPersistentProperty("Alliance Aware Field", true);
 
         // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
         // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
@@ -97,6 +100,39 @@ public class PoseSubsystem extends BasePoseSubsystem {
      */
     public DriverStation.Alliance getAlliance() {
         return this.cachedAlliance;
+    }
+
+    /**
+     * Gets whether the robot should behave with an alliance-aware field.
+     * i.e. Should the field origin always be on the blue alliance side of the field?
+     * @return Whether the robot pose is alliance-aware.
+     */
+    public boolean isAllianceAwareField() { return this.allianceAwareFieldProp.get(); }
+
+    public void setAllianceAwareField(boolean isAllianceAware) { this.allianceAwareFieldProp.set(isAllianceAware); }
+
+    /**
+     * Rotate the vector by 180 degrees if the driver is on the red alliance.
+     * @param vector The vector value.
+     * @return The rotated input.
+     */
+    public XYPair rotateVectorBasedOnAlliance(XYPair vector) {
+        if (getAlliance() == DriverStation.Alliance.Red && isAllianceAwareField()) {
+            vector.scale(-1, -1);
+        }
+        return vector;
+    }
+
+    /**
+     * Rotate the angle by 180 degrees if the driver is on the red alliance.
+     * @param rotation The angle to rotate.
+     * @return The rotated input.
+     */
+    public Rotation2d rotateAngleBasedOnAlliance(Rotation2d rotation) {
+        if (getAlliance() == DriverStation.Alliance.Red && isAllianceAwareField()) {
+            return rotation.rotateBy(Rotation2d.fromDegrees(180));
+        }
+        return rotation;
     }
 
     /**
