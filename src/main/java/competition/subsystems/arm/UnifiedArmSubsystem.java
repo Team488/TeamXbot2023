@@ -142,6 +142,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return calibratedProp.get();
     }
 
+    public void setIsCalibrated(boolean isCalibrated) {
+        calibratedProp.set(isCalibrated);
+    }
+
     public Command createForceUncalibratedCommand() {
         return new InstantCommand(() -> {
             log.info("Forcing arms to uncalibrated mode. Only manual operation will be respected.");

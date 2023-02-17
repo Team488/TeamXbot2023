@@ -132,4 +132,12 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     protected double getHumanInputMagnitude() {
         return getHumanInput().getMagnitude();
     }
+
+    public double getLowerArmErrorThresholdToEngageBrake() {
+        return lowerArmErrorThresholdToEngageBrake.get();
+    }
+
+    public double getLowerArmErrorThresholdToDisengageBrake() {
+        return lowerArmErrorThresholdToDisengageBrake.get();
+    }
 }
