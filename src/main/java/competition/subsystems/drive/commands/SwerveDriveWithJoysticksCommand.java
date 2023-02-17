@@ -109,7 +109,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
         // Get the current translation vector from the gamepad.
         XYPair rawTranslationVector = new XYPair(oi.driverGamepad.getLeftStickX(), oi.driverGamepad.getLeftStickY());
-        rotateInputsBasedOnAlliance(rawTranslationVector);
+        pose.rotateVectorBasedOnAlliance(rawTranslationVector);
         // preserve the angle
         double rawAngle = rawTranslationVector.getAngle();
         // scale the magnitude
@@ -162,7 +162,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // is a "negative" rotation, so the X axis is usually inverted to take that into account). 
             // By doing this inversion, the vector will better map onto a typical cartesian coordinate system.
             XYPair headingVector = new XYPair(-oi.driverGamepad.getRightStickX(), oi.driverGamepad.getRightStickY());
-            rotateInputsBasedOnAlliance(headingVector);
+            pose.rotateVectorBasedOnAlliance(headingVector);
 
             // The next step is to rotate the vector. The FRC frame assumes "forward" is 0 degrees, but the typical cartesian setup
             // of a joystick would have "forward" as 90 degrees.
@@ -277,17 +277,5 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             return humanInputPower * 0.25;
         }
         return humanInputPower;
-    }
-
-    /**
-     * Rotate the inputs by 180 degrees if the driver is on the red alliance.
-     * @param translationInput The raw input value
-     * @return The rotated input
-     */
-    private XYPair rotateInputsBasedOnAlliance(XYPair translationInput) {
-        if (alliance == DriverStation.Alliance.Red) {
-            translationInput.scale(-1, -1);
-        }
-        return translationInput;
     }
 }
