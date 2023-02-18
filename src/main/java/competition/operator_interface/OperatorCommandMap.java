@@ -187,6 +187,8 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(secondTestPosition);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(thirdTestPosition);
 
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
 
         //turn on soft limits
         InstantCommand setSoftLimits = new InstantCommand(
@@ -216,15 +218,6 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
         //turn breaks off
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
-        // Calibrate upper arm against the absolute encoder
-        InstantCommand calibrateUpperArm = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("CalibratingArms");
-                    arm.calibrateAgainstAbsoluteEncoders();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
 
         InstantCommand openClaw = new InstantCommand(
                 () -> {
