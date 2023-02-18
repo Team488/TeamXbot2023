@@ -27,16 +27,33 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     private final DoubleProperty upperArmTarget;
 
     public enum KeyArmPosition {
-        lowerGoal,
-        midGoal,
-        highGoal,
-        fullyRetracted
+        LowerGoal,
+        MidGoal,
+        HighGoal,
+        FullyRetracted,
+        AcquireFromCollector,
+        SafeExternalTransition
     }
 
+    public enum RobotFacing {
+        Forward,
+        Backward
+    }
+
+    // Key positions for the end effector
     public static XYPair fullyRetractedPosition = new XYPair(0, 0);
     public static XYPair lowerGoalPosition = new XYPair(1*12, 0);
     public static XYPair midGoalPosition = new XYPair(3*12, 2*12);
     public static XYPair highGoalPosition = new XYPair(4*12, 3*12);
+
+    // Key angles for the lower and upper arms (in degrees)
+    // TODO: Replace these with actual values from testing. For now, safe values of perfectly vertical arm.
+    public static XYPair fullyRetractedAngles = new XYPair(90, -90);
+    public static XYPair lowerGoalAngles = new XYPair(45, -45);
+    public static XYPair midGoalAngles = new XYPair(50, -15);
+    public static XYPair highGoalAngles = new XYPair(60, 0);
+    public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
+    public static XYPair safeExternalTransitionAngles = new XYPair(90, 0);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -73,19 +90,72 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         areBrakesEngaged.set(true);
     }
 
-    public XYPair getKeyArmPosition(KeyArmPosition keyArmPosition){
+    public XYPair getKeyArmCoordinates(KeyArmPosition keyArmPosition, RobotFacing facing){
+        XYPair candidate = new XYPair();
         switch (keyArmPosition){
-            case lowerGoal:
-                return lowerGoalPosition;
-            case midGoal:
-                return midGoalPosition;
-            case highGoal:
-                return highGoalPosition;
-            case fullyRetracted:
-                return fullyRetractedPosition;
+            case LowerGoal:
+                candidate = lowerGoalPosition;
+                break;
+            case MidGoal:
+                candidate = midGoalPosition;
+                break;
+            case HighGoal:
+                candidate = highGoalPosition;
+                break;
+            case FullyRetracted:
+                candidate = fullyRetractedPosition;
+                break;
             default:
-                return new XYPair(0,0);
+                break;
         }
+        if (facing == RobotFacing.Backward){
+            // TODO: mirror the coordinates
+        }
+        return candidate;
+    }
+
+    public XYPair getKeyArmAngles(KeyArmPosition keyArmPosition, RobotFacing facing) {
+        XYPair candidate = new XYPair();
+        switch (keyArmPosition) {
+            case LowerGoal:
+                candidate = lowerGoalAngles;
+                break;
+            case MidGoal:
+                candidate = midGoalAngles;
+                break;
+            case HighGoal:
+                candidate = highGoalAngles;
+                break;
+            case FullyRetracted:
+                candidate = fullyRetractedAngles;
+                break;
+            case AcquireFromCollector:
+                candidate = acquireFromCollectorAngles;
+                break;
+            case SafeExternalTransition:
+                candidate = safeExternalTransitionAngles;
+                break;
+            default:
+                break;
+        }
+        if (facing == RobotFacing.Backward) {
+            candidate = mirrorArmAngles(candidate);
+        }
+        return candidate;
+    }
+
+    public RobotFacing getCurrentArmFacing() {
+        if (lowerArm.getArmPositionInDegrees() <= 90) {
+            return RobotFacing.Forward;
+        } else {
+            return RobotFacing.Backward;
+        }
+    }
+
+    public static XYPair mirrorArmAngles(XYPair angles) {
+        // The lower arm needs to be mirrored around 90 degrees.
+        // The upper arm needs to be mirrored around -90 degrees.
+        return new XYPair(180 - angles.x, -180 - angles.y);
     }
 
     @Override

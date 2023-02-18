@@ -94,6 +94,27 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         assertTrue(((MockCANSparkMax)arms.upperArm.rightMotor).getReference() < -10);
     }
 
+    @Test
+    public void testMirrorArmAngles() {
+        XYPair perfectlyVertical = new XYPair(90, -90);
+        XYPair mirroredVertical = UnifiedArmSubsystem.mirrorArmAngles(perfectlyVertical);
+        // There should be no change if we mirror around the center point of 90 for the lower arm and -90 for the upper.
+        assertEquals(90, mirroredVertical.x, 0.001);
+        assertEquals(-90, mirroredVertical.y, 0.001);
+
+        // We should see some changes using angles offset by 45 degrees.
+        XYPair offset = new XYPair(135, -45);
+        XYPair mirroredOffset = UnifiedArmSubsystem.mirrorArmAngles(offset);
+        assertEquals(45, mirroredOffset.x, 0.001);
+        assertEquals(-135, mirroredOffset.y, 0.001);
+
+        // Let's check some angles that are more than 135 degrees away from the mirror point.
+        XYPair farAway = new XYPair(-45, 45);
+        XYPair mirroredFarAway = UnifiedArmSubsystem.mirrorArmAngles(farAway);
+        assertEquals(225, mirroredFarAway.x, 0.001);
+        assertEquals(-225, mirroredFarAway.y, 0.001);
+    }
+
     private void checkArmPowers(double lowerPower, double upperPower) {
         assertEquals(lowerPower, arms.lowerArm.rightMotor.get(), 0.001);
         assertEquals(upperPower, arms.upperArm.rightMotor.get(), 0.001);
