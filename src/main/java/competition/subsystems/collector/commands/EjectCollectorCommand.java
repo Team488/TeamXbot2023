@@ -10,6 +10,7 @@ public class EjectCollectorCommand extends BaseCommand {
     @Inject
         public EjectCollectorCommand(CollectorSubsystem collector) {
             this.collector = collector;
+            addRequirements(collector);
         }
 
         @Override
