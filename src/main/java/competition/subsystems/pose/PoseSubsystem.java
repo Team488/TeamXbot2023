@@ -40,6 +40,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
     private final BooleanProperty allianceAwareFieldProp;
+    private final BooleanProperty useVisionForPoseProp;
     private final Latch useVisionToUpdateGyroLatch;
 
     private DoubleProperty matchTime;
@@ -55,6 +56,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         extremelyConfidentVisionDistanceUpdateInMetersProp = propManager.createPersistentProperty("ExtremelyConfidentVisionDistanceUpdateInMeters", 0.01);
         isVisionPoseExtremelyConfidentProp = propManager.createEphemeralProperty("IsVisionPoseExtremelyConfident", false);
         allianceAwareFieldProp = propManager.createPersistentProperty("Alliance Aware Field", true);
+        useVisionForPoseProp = propManager.createPersistentProperty("Enable Vision-Assisted Pose", true);
 
         // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
         // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
@@ -112,6 +114,12 @@ public class PoseSubsystem extends BasePoseSubsystem {
     public void setAllianceAwareField(boolean isAllianceAware) { this.allianceAwareFieldProp.set(isAllianceAware); }
 
     /**
+     * Gets whether the robot should consider vision values for calculating pose.
+     * @return Whether the robot pose will be calculated using vision.
+     */
+    public boolean isUsingVisionAssistedPose() { return this.useVisionForPoseProp.get(); }
+
+    /**
      * Rotate the vector by 180 degrees if the driver is on the red alliance.
      * @param vector The vector value.
      * @return The rotated input.
@@ -165,14 +173,16 @@ public class PoseSubsystem extends BasePoseSubsystem {
                 getSwerveModulePositions()
         );
 
-        // As a prototype, consider any AprilTag seen to be at field coordinates 0,0. Use that information
-        // to position the robot on the field.
-        //improveOdometryUsingSimpleAprilTag();
+        if (isUsingVisionAssistedPose()) {
+            // As a prototype, consider any AprilTag seen to be at field coordinates 0,0. Use that information
+            // to position the robot on the field.
+            //improveOdometryUsingSimpleAprilTag();
 
-        // As a better prototype, use PhotonLib to evaluate multiple AprilTags and get a field-accurate position.
-        improveOdometryUsingPhotonLib(updatedPosition);
+            // As a better prototype, use PhotonLib to evaluate multiple AprilTags and get a field-accurate position.
+            improveOdometryUsingPhotonLib(updatedPosition);
 
-        // TODO: as an even better prototype, use a multi-target PNP solver (not yet available, but coming soon?)
+            // TODO: as an even better prototype, use a multi-target PNP solver (not yet available, but coming soon?)
+        }
 
         // Pull out the new estimated pose from odometry. Note that for now, we only pull out X and Y
         // and trust the gyro implicitly. Eventually, we should allow the gyro to be updated via vision
@@ -220,7 +230,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
             // In any case, update the odometry with the new pose from the camera.
             swerveOdometry.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
-        } {
+        } else {
             // Since we didn't get any vision updates, we assume the current pose is healthy.
             isPoseHealthyProp.set(healthyPoseValidator.checkStable(true));
             // But since we didn't get any vision updates, we can't be super-confident!
