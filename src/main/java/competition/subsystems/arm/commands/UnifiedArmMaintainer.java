@@ -40,7 +40,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     @Override
     protected void humanControlAction() {
         // If the human is trying to move the arm, we should disable the brake.
-        if (getHumanInputMagnitude() > decider.getDeadband())
+        if (Math.abs(getHumanInput().x) > decider.getDeadband())
         {
             unifiedArm.setBrake(false);
         } else {
@@ -122,6 +122,10 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
                 oi.operatorGamepad.getRightVector().y,
                 oi.getOperatorGamepadTypicalDeadband(),
                 (a)-> MathUtils.exponentAndRetainSign(a, 2));
+
+
+        // Further restrict the lower arm
+        lowerArmPower = MathUtils.constrainDouble(lowerArmPower, -0.17, 0.17);
 
         return new XYPair(
                 lowerArmPower,upperArmPower

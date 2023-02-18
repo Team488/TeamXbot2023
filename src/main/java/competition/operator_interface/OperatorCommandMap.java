@@ -162,30 +162,30 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
         */
-        InstantCommand setNeg90 = new InstantCommand(
+        InstantCommand firstTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting neg 90");
-                    arm.setTargetValue(new XYPair(75, -20));
+                    log.info("Setting first test position");
+                    arm.setTargetValue(new XYPair(47.2, 16.85));
                 });
 
-        InstantCommand setNeg45 = new InstantCommand(
+        InstantCommand secondTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting neg 45");
-                    arm.setTargetValue(new XYPair(-45, 0));
+                    log.info("Setting second test position");
+                    arm.setTargetValue(new XYPair(75.6, -20.1));
                 });
 
-        InstantCommand setNeg135 = new InstantCommand(
+        InstantCommand thirdTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting neg 135");
-                    arm.setTargetValue(new XYPair(-45, -60));
+                    log.info("Setting third test position");
+                    arm.setTargetValue(new XYPair(67.1, -69.5));
                 });
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setNeg90);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setNeg45);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setNeg135);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(firstTestPosition);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(secondTestPosition);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(thirdTestPosition);
 
 
         //turn on soft limits
