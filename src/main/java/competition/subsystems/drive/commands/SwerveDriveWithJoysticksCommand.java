@@ -6,6 +6,7 @@ import competition.operator_interface.OperatorInterface;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
+import edu.wpi.first.wpilibj.DriverStation;
 import xbot.common.command.BaseCommand;
 import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineDeciderFactory;
@@ -40,6 +41,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
     final DoubleProperty triggerOnlyPowerScaling;
     final DoubleProperty triggerOnlyExponent;
     final HumanVsMachineDecider decider;
+    DriverStation.Alliance alliance;
 
     @Inject
     public SwerveDriveWithJoysticksCommand(DriveSubsystem drive, PoseSubsystem pose, OperatorInterface oi,
@@ -81,6 +83,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
     public void initialize() {
         log.info("Initializing");
         decider.reset();
+        alliance = pose.getAlliance();
         resetBeforeStartingAbsoluteOrientation();
         resetBeforeStartingRelativeOrientation();
     }
@@ -97,7 +100,6 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
     @Override
     public void execute() {
-
         // Feed the latch with our mode state, so it can reset PIDs or goals as appropriate.
         absoluteOrientationLatch.setValue(absoluteOrientationMode.get());
         
@@ -107,6 +109,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
         // Get the current translation vector from the gamepad.
         XYPair rawTranslationVector = new XYPair(oi.driverGamepad.getLeftStickX(), oi.driverGamepad.getLeftStickY());
+        pose.rotateVectorBasedOnAlliance(rawTranslationVector);
         // preserve the angle
         double rawAngle = rawTranslationVector.getAngle();
         // scale the magnitude
@@ -159,6 +162,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // is a "negative" rotation, so the X axis is usually inverted to take that into account). 
             // By doing this inversion, the vector will better map onto a typical cartesian coordinate system.
             XYPair headingVector = new XYPair(-oi.driverGamepad.getRightStickX(), oi.driverGamepad.getRightStickY());
+            pose.rotateVectorBasedOnAlliance(headingVector);
 
             // The next step is to rotate the vector. The FRC frame assumes "forward" is 0 degrees, but the typical cartesian setup
             // of a joystick would have "forward" as 90 degrees.

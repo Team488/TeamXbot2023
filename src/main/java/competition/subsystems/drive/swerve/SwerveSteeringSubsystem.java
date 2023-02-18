@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
@@ -29,7 +30,7 @@ import xbot.common.properties.PropertyFactory;
 import xbot.common.resiliency.DeviceHealth;
 
 @SwerveSingleton
-public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
+public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
     private static Logger log = Logger.getLogger(SwerveSteeringSubsystem.class);
 
     private final String label;
@@ -44,6 +45,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
     private final BooleanProperty useMotorControllerPid;
     private final DoubleProperty maxMotorEncoderDrift;
 
+    private Rotation2d currentModuleHeadingRotation2d;
     private XCANSparkMax motorController;
     private XCANCoder encoder;
 
@@ -72,6 +74,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
         pf.setPrefix(this);
         this.targetRotation = pf.createEphemeralProperty("TargetRotation", 0.0);
         this.currentModuleHeading = pf.createEphemeralProperty("CurrentModuleHeading", 0.0);
+        this.currentModuleHeadingRotation2d = new Rotation2d(0);
 
         if (electricalContract.isDriveReady()) {
             this.motorController = sparkMaxFactory.create(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
@@ -129,15 +132,22 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Gets current angle in degrees
      */
     @Override
-    public double getCurrentValue() {
+    public Double getCurrentValue() {
         return getBestEncoderPositionInDegrees();
+    }
+
+    /**
+     * Gets current angle as a Rotation2d
+     */
+    public Rotation2d getCurrentRotation() {
+        return this.currentModuleHeadingRotation2d;
     }
 
     /**
      * Gets target angle in degrees
      */
     @Override
-    public double getTargetValue() {
+    public Double getTargetValue() {
         return this.targetRotation.get();
     }
 
@@ -145,7 +155,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * Sets target angle in degrees
      */
     @Override
-    public void setTargetValue(double value) {
+    public void setTargetValue(Double value) {
         this.targetRotation.set(value);
     }
 
@@ -154,7 +164,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
      * @param power The power value, between -1 and 1.
      */
     @Override
-    public void setPower(double power) {
+    public void setPower(Double power) {
         if (this.contract.isDriveReady()) {
             this.motorController.set(power);
         }
@@ -175,6 +185,10 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
         this.calibrated = true;
     }
 
+    public double getVelocity() {
+        return this.motorController.getVelocity();
+    }
+
     /**
      * Reset the SparkMax encoder position based on the CanCoder measurement.
      * This should only be called when the mechanism is stationary.
@@ -186,12 +200,13 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
 
             if (isMotorControllerDriftTooHigh(currentCanCoderPosition, currentSparkMaxPosition, this.maxMotorEncoderDrift.get())) {
                 if (Math.abs(this.motorController.getVelocity()) > 0) {
-                    log.error("This should not be called when the motor is moving!");
+                    // TODO: this is being called constantly. Seems like a bug.
+                    //log.info("This was called when the motor is moving. No action will be taken.");
                 } else {
                     log.warn("Motor controller encoder drift is too high, recalibrating!");
 
                     // Force motors to manual control before resetting position
-                    this.setPower(0);
+                    this.setPower(0.0);
                     REVLibError error = this.motorController.setPosition(currentCanCoderPosition / this.degreesPerMotorRotation.get());
                     if (error != REVLibError.kOk) {
                         log.error("Failed to set position of motor controller: " + error.name());
@@ -341,6 +356,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem {
             //motorEncoderPosition.set(getMotorControllerEncoderPosiitonInDegrees());
         }
 
-        currentModuleHeading.set(getCurrentValue());
+        double positionInDegrees = getBestEncoderPositionInDegrees();
+        currentModuleHeading.set(positionInDegrees);
+        currentModuleHeadingRotation2d = Rotation2d.fromDegrees(positionInDegrees);
     }
 }

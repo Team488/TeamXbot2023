@@ -7,20 +7,29 @@ import static org.junit.Assert.assertEquals;
 
 import edu.wpi.first.wpilibj.MockXboxControllerAdapter;
 import org.junit.Test;
+import xbot.common.controls.sensors.mock_adapters.MockAbsoluteEncoder;
+import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 
 public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
-    LowerArmSubsystem lowerArm;
-    UpperArmSubsystem upperArm;
+    LowerArmSegment lowerArm;
+    UpperArmSegment upperArm;
     OperatorInterface oi;
     ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand;
+    UnifiedArmSubsystem arms;
 
     @Override
     public void setUp() {
         super.setUp();
-        lowerArm = getInjectorComponent().lowerArmSubsystem();
-        upperArm = getInjectorComponent().upperArmSubsystem();
+        lowerArm = getInjectorComponent().lowerArmSegment();
+        upperArm = getInjectorComponent().upperArmSegment();
         controlArmsWithJoyStickCommand = getInjectorComponent().controlArmsWithJoyStickCommand();
         oi = getInjectorComponent().operatorInterface();
+        arms = getInjectorComponent().unifiedArmSubsystem();
+
+        arms.setBrake(false);
+
+        ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(90.0/360.0);
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(-90.0/360.0);
     }
 
     @Test
@@ -49,11 +58,8 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
         checkArmPowers(-1,-1);
     }
     private void checkArmPowers(double lowerArmPower,double upperArmPower){
-
-        assertEquals(upperArmPower,upperArm.upperArmLeftMotor.get(), 0.001);
-        assertEquals(upperArmPower,upperArm.upperArmRightMotor.get(), 0.001);
-
-        assertEquals(lowerArmPower,lowerArm.lowerArmLeftMotor.get(), 0.001);
-        assertEquals(lowerArmPower,lowerArm.lowerArmRightMotor.get(), 0.001);
+        // Only check the right motors, as they are the "leaders".
+        assertEquals(upperArmPower,upperArm.rightMotor.get(), 0.001);
+        assertEquals(lowerArmPower,lowerArm.rightMotor.get(), 0.001);
     }
 }

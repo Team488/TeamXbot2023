@@ -20,7 +20,7 @@ import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 @SwerveSingleton
-public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
+public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
     private static Logger log = Logger.getLogger(SwerveDriveSubsystem.class);
 
     private final String label;
@@ -97,12 +97,12 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
      * Gets current velocity in inches per second
      */
     @Override
-    public double getCurrentValue() {
+    public Double getCurrentValue() {
         if (this.contract.isDriveReady()) {
             // Spark returns in RPM - need to convert to inches per second
             return this.motorController.getVelocity() * this.inchesPerMotorRotation.get() / 60.0;
         } else {
-            return 0;
+            return 0.0;
         }
     }
 
@@ -110,7 +110,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
      * Gets target velocity in inches per second
      */
     @Override
-    public double getTargetValue() {
+    public Double getTargetValue() {
         return this.targetVelocity.get();
     }
 
@@ -118,7 +118,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
      * Sets target velocity in inches per second
      */
     @Override
-    public void setTargetValue(double value) {
+    public void setTargetValue(Double value) {
         this.targetVelocity.set(value);
     }
 
@@ -131,7 +131,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem {
     }
 
     @Override
-    public void setPower(double power) {
+    public void setPower(Double power) {
         if (this.contract.isDriveReady()) {
             this.motorController.set(power);
         }
