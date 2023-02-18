@@ -4,6 +4,7 @@ import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SetArmsToPositionCommand;
 import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
@@ -152,14 +153,15 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
+            CollectorSubsystem collector,
             SetArmsToPositionCommand setHigh,
             SetArmsToPositionCommand setMid,
             SetArmsToPositionCommand setLow,
             SetArmsToPositionCommand setRetract) {
         /*
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
         */
         InstantCommand setNeg90 = new InstantCommand(
@@ -225,7 +227,7 @@ public class OperatorCommandMap {
                 }
         );
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
-
+        //open claw using left bumper
         InstantCommand openClaw = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -233,8 +235,8 @@ public class OperatorCommandMap {
                     claw.open();
                 }
         );
-        oi.operatorGamepad.getPovIfAvailable(0).onTrue(openClaw);
-
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(openClaw);
+        //close claw using right bumper
         InstantCommand closeClaw = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -242,7 +244,51 @@ public class OperatorCommandMap {
                     claw.close();
                 }
         );
-        oi.operatorGamepad.getPovIfAvailable(180).onTrue(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(closeClaw);
+
+
+        InstantCommand retract = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Retracting");
+                    collector.retract();
+                }
+        );
+        //Use left of dpad to retract collector
+        oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
+
+        InstantCommand extend = new InstantCommand(
+                () ->{
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Extending");
+                    collector.extend();
+                }
+        );
+        //Use right of dpad to extend collector
+        oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
+
+        //Use right trigger to collect game piece
+        InstantCommand collect = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Collecting");
+                    collector.intake();
+                }
+        );
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(collect);
+
+        //Use left trigger to eject game piece
+        InstantCommand eject = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Ejecting");
+                    collector.eject();
+                }
+        );
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(eject);
+
+
+
     }
 
 }
