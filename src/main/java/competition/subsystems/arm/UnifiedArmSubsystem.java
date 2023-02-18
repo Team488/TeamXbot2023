@@ -223,6 +223,30 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         });
     }
 
+    /**
+     * Adjusts the target lower arm angle by some number of degrees.
+     * @param trimAmount The number of degrees to change the target by.
+     * @return A command that changes the target.
+     */
+    public Command createLowerArmTrimCommand(double trimAmount) {
+        return new InstantCommand(() -> {
+            XYPair currentValue = getCurrentValue();
+            setTargetValue(new XYPair(currentValue.x + trimAmount, currentValue.y));
+        });
+    }
+
+    /**
+     * Adjusts the target upper arm angle by some number of degrees.
+     * @param trimAmount The number of degrees to change the target by.
+     * @return A command that changes the target.
+     */
+    public Command createUpperArmTrimCommand(double trimAmount) {
+        return new InstantCommand(() -> {
+            XYPair currentValue = getCurrentValue();
+            setTargetValue(new XYPair(currentValue.x, currentValue.y + trimAmount));
+        });
+    }
+
     public boolean areBrakesEngaged() {
         return areBrakesEngaged.get();
     }
