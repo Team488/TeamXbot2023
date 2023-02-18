@@ -15,10 +15,11 @@ public class RetractCollectorCommand extends BaseCommand {
     @Override
     public void initialize() {
         log.info("Initializing");
+        collector.retract();
     }
 
     @Override
     public void execute() {
-        collector.retract();
+
     }
 }

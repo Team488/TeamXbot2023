@@ -14,11 +14,16 @@ public class ExtendCollectorCommand extends BaseCommand {
     @Override
     public void initialize() {
         log.info("Initializing");
+        collector.extend();
     }
 
     @Override
     public void execute() {
-        collector.extend();
+
+    }
+
+    public boolean isFinished(){
+        return true;
     }
 
 }
