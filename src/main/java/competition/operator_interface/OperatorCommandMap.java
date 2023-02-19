@@ -56,7 +56,6 @@ public class OperatorCommandMap {
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision,
-            VelocityMaintainerCommand velocityMaintainer,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
@@ -85,16 +84,20 @@ public class OperatorCommandMap {
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
-        
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
     }
 
     @Inject
-    public void setupAutonomousDriveCommands(OperatorInterface oi, AutoBalanceCommand balanceCommand) {
+    public void setupAutonomousDriveCommands(
+            OperatorInterface oi,
+            VelocityMaintainerCommand velocityMaintainer,
+            AutoBalanceCommand balanceCommand) {
         oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
+        oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
+        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject
@@ -187,6 +190,8 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(secondTestPosition);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(thirdTestPosition);
 
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
 
         //turn on soft limits
         InstantCommand setSoftLimits = new InstantCommand(
@@ -216,15 +221,6 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
         //turn breaks off
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
-        // Calibrate upper arm against the absolute encoder
-        InstantCommand calibrateUpperArm = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("CalibratingArms");
-                    arm.calibrateAgainstAbsoluteEncoders();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
 
         InstantCommand openClaw = new InstantCommand(
                 () -> {

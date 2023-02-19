@@ -193,8 +193,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getCurrentValue() {
 
         return new XYPair(
-                lowerArm.getArmPositionFromAbsoluteEncoderInDegrees(),
-                upperArm.getArmPositionFromAbsoluteEncoderInDegrees()
+                lowerArm.getArmPositionInDegrees(),
+                upperArm.getArmPositionInDegrees()
         );
         // Eventually do the smart thing. For now, just do angles.
         /*
@@ -243,6 +243,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return calibratedProp.get();
     }
 
+    public void setPitchCompensation(boolean enabled) {
+        this.lowerArm.setPitchCompensation(enabled);
+        this.upperArm.setPitchCompensation(enabled);
+    }
+
     public void setIsCalibrated(boolean isCalibrated) {
         calibratedProp.set(isCalibrated);
     }
@@ -251,6 +256,30 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new InstantCommand(() -> {
             log.info("Forcing arms to uncalibrated mode. Only manual operation will be respected.");
             calibratedProp.set(false);
+        });
+    }
+
+    /**
+     * Adjusts the target lower arm angle by some number of degrees.
+     * @param trimAmount The number of degrees to change the target by.
+     * @return A command that changes the target.
+     */
+    public Command createLowerArmTrimCommand(double trimAmount) {
+        return new InstantCommand(() -> {
+            XYPair currentValue = getCurrentValue();
+            setTargetValue(new XYPair(currentValue.x + trimAmount, currentValue.y));
+        });
+    }
+
+    /**
+     * Adjusts the target upper arm angle by some number of degrees.
+     * @param trimAmount The number of degrees to change the target by.
+     * @return A command that changes the target.
+     */
+    public Command createUpperArmTrimCommand(double trimAmount) {
+        return new InstantCommand(() -> {
+            XYPair currentValue = getCurrentValue();
+            setTargetValue(new XYPair(currentValue.x, currentValue.y + trimAmount));
         });
     }
 
