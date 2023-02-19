@@ -161,17 +161,25 @@ public class OperatorCommandMap {
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
-            ClawSubsystem claw,
-            SetArmsToPositionCommand setHigh,
-            SetArmsToPositionCommand setMid,
-            SetArmsToPositionCommand setLow,
-            SetArmsToPositionCommand setRetract) {
-        /*
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
-        */
+            ClawSubsystem claw) {
+
+        InstantCommand setCubeMode = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Setting cube mode");
+                    arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
+                });
+
+        InstantCommand setConeMode = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Setting cone mode");
+                    arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
+                });
+
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setCubeMode);
+
         InstantCommand firstTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -199,27 +207,6 @@ public class OperatorCommandMap {
 
         oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
-
-        //turn on soft limits
-        InstantCommand setSoftLimits = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Activating soft limits");
-                    arm.setSoftLimits(true);
-                });
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSoftLimits);
-
-
-        //turn off soft limits
-        InstantCommand disableSoftLimits = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Disabling soft limits");
-                    arm.setSoftLimits(false);
-                });
-
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(disableSoftLimits);
-
 
         InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrake(true));
         InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrake(false));

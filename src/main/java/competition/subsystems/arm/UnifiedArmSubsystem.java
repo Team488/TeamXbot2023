@@ -25,9 +25,13 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public final ArmPositionSolver solver;
     private final DoubleProperty lowerArmTarget;
     private final DoubleProperty upperArmTarget;
-
+    private GamePieceMode gamePieceMode;
+    public enum GamePieceMode {
+        Cone,
+        Cube,
+    }
     public enum KeyArmPosition {
-        LowerGoal,
+        LowGoal,
         MidGoal,
         HighGoal,
         FullyRetracted,
@@ -47,11 +51,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair highGoalPosition = new XYPair(4*12, 3*12);
 
     // Key angles for the lower and upper arms (in degrees)
-    // TODO: Replace these with actual values from testing. For now, safe values of perfectly vertical arm.
     public static XYPair fullyRetractedAngles = new XYPair(90, -90);
-    public static XYPair lowerGoalAngles = new XYPair(45, -45);
-    public static XYPair midGoalAngles = new XYPair(50, -15);
-    public static XYPair highGoalAngles = new XYPair(60, 0);
+    public static XYPair lowerGoalCubeAngles = new XYPair(67.1 , -69.5);
+    public static XYPair midGoalCubeAngles = new XYPair(75.6, -20);
+    public static XYPair highGoalCubeAngles = new XYPair(47.2, 16.85);
+    public static XYPair lowerGoalConeAngles = new XYPair(67.1,-69.5);
+    public static XYPair midGoalConeAngles = new XYPair(80.2,0.35);
+    public static XYPair highGoalConeAngles = new XYPair(47.5,29.8);
+
+
     public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
     public static XYPair safeExternalTransitionAngles = new XYPair(90, 0);
 
@@ -93,15 +101,20 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getKeyArmCoordinates(KeyArmPosition keyArmPosition, RobotFacing facing){
         XYPair candidate = new XYPair();
         switch (keyArmPosition){
-            case LowerGoal:
+            case LowGoal:
                 candidate = lowerGoalPosition;
                 break;
+
             case MidGoal:
                 candidate = midGoalPosition;
                 break;
+
             case HighGoal:
-                candidate = highGoalPosition;
+                candidate=highGoalPosition;
                 break;
+
+
+
             case FullyRetracted:
                 candidate = fullyRetractedPosition;
                 break;
@@ -117,15 +130,33 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getKeyArmAngles(KeyArmPosition keyArmPosition, RobotFacing facing) {
         XYPair candidate = new XYPair();
         switch (keyArmPosition) {
-            case LowerGoal:
-                candidate = lowerGoalAngles;
+            case LowGoal:
+                if(gamePieceMode == GamePieceMode.Cube){
+                    candidate = lowerGoalCubeAngles;
+                }
+                else{
+                    candidate = lowerGoalConeAngles;
+                }
                 break;
+
             case MidGoal:
-                candidate = midGoalAngles;
+                if(gamePieceMode == GamePieceMode.Cube){
+                    candidate = midGoalCubeAngles;
+                }
+                else{
+                    candidate = midGoalConeAngles;
+                }
                 break;
             case HighGoal:
-                candidate = highGoalAngles;
+                if(gamePieceMode == GamePieceMode.Cube){
+                    candidate = highGoalCubeAngles;
+                }
+                else{
+                    candidate = highGoalConeAngles;
+                }
                 break;
+
+
             case FullyRetracted:
                 candidate = fullyRetractedAngles;
                 break;
@@ -351,5 +382,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
         upperArm.periodic();
         lowerArm.periodic();
+    }
+
+    public void setGamePieceMode(GamePieceMode gamePiece){
+        this.gamePieceMode = gamePiece;
     }
 }

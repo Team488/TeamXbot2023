@@ -56,6 +56,7 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
         // If our goal is to go to the SafeExternalTransition point, then we don't need to add it to the list - it
         // was added by default!
         if (targetArmPosition != UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition) {
+
             armPosesToVisit.add(new Pair<>(targetArmPosition, targetRobotFacing));
         }
 
