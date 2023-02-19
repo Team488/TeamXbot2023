@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 
 import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
+import competition.subsystems.pose.PoseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
@@ -28,8 +29,8 @@ public class UpperArmSegment extends ArmSegment {
 
     @Inject
     public UpperArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
-                           ElectricalContract eContract, PropertyFactory propFactory){
-        super("UnifiedArmSubsystem/UpperArm", propFactory, 90, -270);
+                           ElectricalContract eContract, PropertyFactory propFactory, PoseSubsystem pose){
+        super("UnifiedArmSubsystem/UpperArm", propFactory, pose, 90, -270);
         String prefix = "UnifiedArmSubsystem/UpperArm";
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);

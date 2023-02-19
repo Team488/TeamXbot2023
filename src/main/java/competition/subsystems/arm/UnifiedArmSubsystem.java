@@ -162,8 +162,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getCurrentValue() {
 
         return new XYPair(
-                lowerArm.getArmPositionFromAbsoluteEncoderInDegrees(),
-                upperArm.getArmPositionFromAbsoluteEncoderInDegrees()
+                lowerArm.getArmPositionInDegrees(),
+                upperArm.getArmPositionInDegrees()
         );
         // Eventually do the smart thing. For now, just do angles.
         /*
@@ -210,6 +210,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     @Override
     public boolean isCalibrated() {
         return calibratedProp.get();
+    }
+
+    public void setPitchCompensation(boolean enabled) {
+        this.lowerArm.setPitchCompensation(enabled);
+        this.upperArm.setPitchCompensation(enabled);
     }
 
     public void setIsCalibrated(boolean isCalibrated) {
