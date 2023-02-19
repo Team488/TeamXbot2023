@@ -126,6 +126,9 @@ public class AutoBalanceCommand extends BaseCommand {
             case Complete:
                 velocityGoal = 0;
                 return;
+            default:
+                // How did this even happen?
+                break;
         }
 
         balanceStateProp.set(currentBalanceState.toString());
