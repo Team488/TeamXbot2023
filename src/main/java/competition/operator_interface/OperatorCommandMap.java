@@ -56,7 +56,6 @@ public class OperatorCommandMap {
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision,
-            VelocityMaintainerCommand velocityMaintainer,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
@@ -85,16 +84,20 @@ public class OperatorCommandMap {
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
-        
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
     }
 
     @Inject
-    public void setupAutonomousDriveCommands(OperatorInterface oi, AutoBalanceCommand balanceCommand) {
+    public void setupAutonomousDriveCommands(
+            OperatorInterface oi,
+            VelocityMaintainerCommand velocityMaintainer,
+            AutoBalanceCommand balanceCommand) {
         oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
+        oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
+        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject

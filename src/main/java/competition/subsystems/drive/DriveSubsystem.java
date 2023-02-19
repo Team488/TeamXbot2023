@@ -61,6 +61,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
     private final DoubleProperty desiredHeading;
 
+    private boolean activateBrakeOverride = false;
+
     public enum SwerveModuleLocation {
         FRONT_LEFT,
         FRONT_RIGHT,
@@ -233,6 +235,10 @@ public class DriveSubsystem extends BaseDriveSubsystem {
      */
     public void move(XYPair translate, double rotate, XYPair centerOfRotationInches) {
 
+        if (activateBrakeOverride) {
+            this.setWheelsToXMode();
+            return;
+        }
         // First, we need to check if we've been asked to move at all. If not, we should look at the last time we were given a commanded direction
         // and keep the wheels pointed that way. That prevents the wheels from returning to "0" degrees when the driver has gone back to 
         // neutral joystick position.
@@ -295,6 +301,10 @@ public class DriveSubsystem extends BaseDriveSubsystem {
             lastCommandedDirection = translate;
             lastCommandedRotation = rotate;
         }        
+    }
+
+    public void setActivateBrakeOverride(boolean activateBrakeOverride) {
+        this.activateBrakeOverride = activateBrakeOverride;
     }
 
     public void setWheelsToXMode() {
