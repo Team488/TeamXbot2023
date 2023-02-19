@@ -85,6 +85,14 @@ public abstract class ArmSegment {
         }
     }
 
+    public boolean isAboveUpperLimit() {
+        return getArmPositionInDegrees() > getUpperLimitInDegrees();
+    }
+
+    public boolean isBelowLowerLimit() {
+        return getArmPositionInDegrees() < getLowerLimitInDegrees();
+    }
+
     public void setPitchCompensation(boolean enabled) {
         this.usePitchCompensationProp.set(enabled);
     }

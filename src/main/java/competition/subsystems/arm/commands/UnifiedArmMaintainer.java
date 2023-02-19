@@ -40,9 +40,20 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     @Override
     protected void humanControlAction() {
         // If the human is trying to move the arm, we should disable the brake.
-        if (Math.abs(getHumanInput().x) > decider.getDeadband())
+        double lowerArmHumanInput = getHumanInput().x;
+        if (Math.abs(lowerArmHumanInput) > decider.getDeadband())
         {
-            unifiedArm.setBrake(false);
+            boolean engageBrake = false;
+            // However! If the human is trying to push the lower arm down beyond its limits, the brake
+            // will disengage and the arm will just fall down due to gravity. To prevent this, if we are trying
+            // to command power to the lowerArm but the lower arm is restricting that due to safeties, we should
+            // keep the brake engaged.
+            if (    lowerArmHumanInput < 0 && unifiedArm.lowerArm.isBelowLowerLimit()
+                 || lowerArmHumanInput > 0 && unifiedArm.lowerArm.isAboveUpperLimit()) {
+                engageBrake = true;
+            }
+
+            unifiedArm.setBrake(engageBrake);
         } else {
             // Otherwise, we should engage the brake. Normally this wouldn't be possible (since
             // humanControlAction is only called when the decider is above the deadband) but it
