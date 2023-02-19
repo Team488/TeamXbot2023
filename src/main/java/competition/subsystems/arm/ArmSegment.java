@@ -71,7 +71,7 @@ public abstract class ArmSegment {
         if (isMotorReady()) {
 
             // if too high, no more positive power
-            double currentAngle = getArmPositionFromAbsoluteEncoderInDegrees();
+            double currentAngle = getArmPositionInDegrees();
             if (currentAngle > getUpperLimitInDegrees())
             {
                 power = MathUtils.constrainDouble(power, -1, 0);
@@ -174,7 +174,7 @@ public abstract class ArmSegment {
         // 4) Add the delta to the current position to get a goal position in units the motor controller understands
 
         if (isAbsoluteEncoderReady() && isMotorReady()) {
-            double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionFromAbsoluteEncoderInDegrees()).getDegrees();
+            double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionInDegrees()).getDegrees();
             double deltaInMotorRotations = delta / getDegreesPerMotorRotation();
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
