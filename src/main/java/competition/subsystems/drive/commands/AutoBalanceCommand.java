@@ -21,6 +21,7 @@ public class AutoBalanceCommand extends BaseCommand {
     final double firstAttemptSpeed = 0.10;
     double currentAttemptSpeed = firstAttemptSpeed;
     double lastDetectedFallTime = -1000;
+    double initialAnalyzedAngle = 0;
 
     public enum BalanceState {
         Analyzing,
@@ -75,6 +76,8 @@ public class AutoBalanceCommand extends BaseCommand {
             case Analyzing:
                 drivingAgainstPositiveAngle = currentAngle > 0.0;
                 currentBalanceState = BalanceState.Driving;
+                drive.setActivateBrakeOverride(false);
+                initialAnalyzedAngle = currentAngle;
                 break;
             case Driving:
 
@@ -91,10 +94,10 @@ public class AutoBalanceCommand extends BaseCommand {
                 // If we're driving against the positive angle, see a sudden drop in angle, we need
                 // to advance to FallDetected. Likewise, if we're driving against the negative angle,
                 // and we see a sudden increase in angle, we need to advance to FallDetected.
-
-                if (drivingAgainstPositiveAngle && currentAngle < 9) {
+                double fallThreshold = 2;
+                if (drivingAgainstPositiveAngle && initialAnalyzedAngle-currentAngle > fallThreshold) {
                     currentBalanceState = BalanceState.FallDetected;
-                } else if (!drivingAgainstPositiveAngle && currentAngle > -9) {
+                } else if (!drivingAgainstPositiveAngle && initialAnalyzedAngle-currentAngle < -fallThreshold) {
                     currentBalanceState = BalanceState.FallDetected;
                 }
 
@@ -106,9 +109,10 @@ public class AutoBalanceCommand extends BaseCommand {
                 currentBalanceState = BalanceState.Waiting;
                 lastDetectedFallTime = XTimer.getFPGATimestamp();
                 velocityGoal = 0;
+                drive.setActivateBrakeOverride(true);
                 break;
             case Waiting:
-                if (XTimer.getFPGATimestamp() - lastDetectedFallTime > 1.0) {
+                if (XTimer.getFPGATimestamp() - lastDetectedFallTime > 2.0) {
                     if (Math.abs(currentAngle) < 1.5) {
                         // We've successfully balanced!
                         currentBalanceState = BalanceState.Complete;
@@ -148,5 +152,6 @@ public class AutoBalanceCommand extends BaseCommand {
     @Override
     public void end(boolean interrupted) {
         drive.setVelocityMaintainerXTarget(0);
+        drive.setActivateBrakeOverride(false);
     }
 }
