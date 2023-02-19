@@ -3,6 +3,7 @@ package competition.subsystems.drive;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
@@ -294,6 +295,16 @@ public class DriveSubsystem extends BaseDriveSubsystem {
             lastCommandedDirection = translate;
             lastCommandedRotation = rotate;
         }        
+    }
+
+    public void setWheelsToXMode() {
+        SwerveModuleState frontLeft = new SwerveModuleState(0, new Rotation2d(+45));
+        SwerveModuleState frontRight = new SwerveModuleState(0, new Rotation2d(-45));
+        this.getFrontLeftSwerveModuleSubsystem().setTargetState(frontLeft);
+        this.getFrontRightSwerveModuleSubsystem().setTargetState(frontRight);
+        this.getRearLeftSwerveModuleSubsystem().setTargetState(frontRight);
+        this.getRearRightSwerveModuleSubsystem().setTargetState(frontLeft);
+
     }
 
     /***
