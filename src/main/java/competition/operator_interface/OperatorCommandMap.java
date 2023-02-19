@@ -154,17 +154,25 @@ public class OperatorCommandMap {
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
-            ClawSubsystem claw,
-            SetArmsToPositionCommand setHigh,
-            SetArmsToPositionCommand setMid,
-            SetArmsToPositionCommand setLow,
-            SetArmsToPositionCommand setRetract) {
-        /*
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setLow);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setMid);
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
-        */
+            ClawSubsystem claw) {
+
+        InstantCommand setCubeMode = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Setting cube mode");
+                    arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
+                });
+
+        InstantCommand setConeMode = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Setting cone mode");
+                    arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
+                });
+
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setCubeMode);
+
         InstantCommand firstTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
