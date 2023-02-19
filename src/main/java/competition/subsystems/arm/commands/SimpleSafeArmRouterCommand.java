@@ -34,7 +34,7 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
     @Override
     public void initialize() {
         log.info("Initializing");
-        UnifiedArmSubsystem.RobotFacing currentArmFacing = arms.getCurrentArmFacing();
+        UnifiedArmSubsystem.RobotFacing currentArmFacing = arms.getCurrentEndEffectorFacing();
 
         // Some basic rules:
         // 1) As long as we are on the same side, it should always be safe go to the SafeExternalTransition point.
