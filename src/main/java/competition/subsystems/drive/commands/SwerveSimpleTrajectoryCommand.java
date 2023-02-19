@@ -20,7 +20,6 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     DriveSubsystem drive;
     PoseSubsystem pose;
-    DoubleProperty directionToTarget;
     HeadingModule headingModule;
 
     private Supplier<List<XbotSwervePoint>> keyPointsProvider;
@@ -32,6 +31,8 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     double maxPower = 1.0;
     double maxTurningPower = 1.0;
     double lerpTime = 0;
+
+    int targetIndex = 0;
 
     @Inject
     public SwerveSimpleTrajectoryCommand(DriveSubsystem drive, PoseSubsystem pose, PropertyFactory pf, HeadingModuleFactory headingModuleFactory) {
@@ -48,7 +49,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     // --------------------------------------------------------------
 
     public void setKeyPoints(List<XbotSwervePoint> keyPoints) {
-        this.keyPoints = keyPoints;
+        setKeyPointsProvider(() -> keyPoints);
     }
 
     public void setKeyPointsProvider(Supplier<List<XbotSwervePoint>> keyPointsProvider) {
@@ -74,6 +75,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
         baselinePoint = new XbotSwervePoint(pose.getCurrentPose2d(), 0);
         lerpTime = XTimer.getFPGATimestamp();
+        targetIndex = 0;
     }
 
     @Override
@@ -86,7 +88,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         }
 
         // Linearly interpolate between the baselinePoint and the first keyPoint.
-        var targetKeyPoint = keyPoints.get(0);
+        var targetKeyPoint = keyPoints.get(targetIndex);
 
         if (targetKeyPoint.secondsToPoint <= 0) {
             log.error("Cannot have a keypoint with a time of 0 or less!");
@@ -103,15 +105,14 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
         // If the fraction is above 1, it's time to set a new baseline point and start LERPing on the next
         // one.
-        if (lerpFraction >= 1 && keyPoints.size() > 1) {
+        if (lerpFraction >= 1 && targetIndex < keyPoints.size()-1) {
             // What was our target now becomes our baseline.
             baselinePoint = targetKeyPoint;
             lerpTime = XTimer.getFPGATimestamp();
 
-            // Remove our target from the list of points to visit
-            keyPoints.remove(0);
-            // And set our new target to what is now the first point in the list.
-            targetKeyPoint = keyPoints.get(0);
+            targetIndex++;
+            // And set our new target to the next element of the list
+            targetKeyPoint = keyPoints.get(targetIndex);
         }
 
         // Most of the time, the fraction will be less than one.
@@ -139,7 +140,6 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
         // Create a vector in the direction of the goal, scaled by the drivePower.
         XYPair intent = XYPair.fromPolar(goalVector.getAngle(), drivePower);
-        directionToTarget.set(goalVector.getAngle());
 
         double headingPower = headingModule.calculateHeadingPower(
                 targetKeyPoint.keyPose.getRotation().getDegrees());
@@ -158,7 +158,8 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     @Override
     public boolean isFinished() {
-        return drive.getPositionalPid().isOnTarget() && headingModule.isOnTarget() && keyPoints.size() == 1;
+        return drive.getPositionalPid().isOnTarget() && headingModule.isOnTarget()
+                && targetIndex == keyPoints.size()-1;
     }
 
     @Override

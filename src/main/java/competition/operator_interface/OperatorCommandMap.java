@@ -161,11 +161,14 @@ public class OperatorCommandMap {
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
 
-        swerveSimpleTrajectoryCommand.setMaxPower(0.2);
-        swerveSimpleTrajectoryCommand.setMaxTurningPower(0.1);
-        XbotSwervePoint firstPoint = new XbotSwervePoint(100, 0, 0, 5);
-        XbotSwervePoint secondPoint = new XbotSwervePoint(100, 100, 0, 5);
-        swerveSimpleTrajectoryCommand.setKeyPoints(List.of(firstPoint, secondPoint));
+        swerveSimpleTrajectoryCommand.setMaxPower(0.75);
+        swerveSimpleTrajectoryCommand.setMaxTurningPower(0.4);
+        XbotSwervePoint firstPoint = new XbotSwervePoint(60, 0, 0, 3);
+        XbotSwervePoint secondPoint = new XbotSwervePoint(60, 60, 90, 2);
+        swerveSimpleTrajectoryCommand.setKeyPoints(
+                new ArrayList<>(List.of(firstPoint, secondPoint)
+            )
+        );
 
         oi.driverGamepad.getPovIfAvailable(90).onTrue(swerveSimpleTrajectoryCommand);
     }
