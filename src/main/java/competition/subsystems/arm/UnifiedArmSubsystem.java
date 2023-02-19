@@ -18,8 +18,8 @@ import javax.inject.Singleton;
 @Singleton
 public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
-    LowerArmSegment lowerArm;
-    UpperArmSegment upperArm;
+    public LowerArmSegment lowerArm;
+    public UpperArmSegment upperArm;
     public XSolenoid lowerArmBrakeSolenoid;
     private XYPair targetPosition;
     public final ArmPositionSolver solver;
