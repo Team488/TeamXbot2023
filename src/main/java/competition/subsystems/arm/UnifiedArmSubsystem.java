@@ -175,10 +175,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return candidate;
     }
 
-    public RobotFacing getCurrentArmFacing() {
-        if (lowerArm.getArmPositionInDegrees() <= 90) {
+    public RobotFacing getCurrentEndEffectorFacing() {
+        if (getCurrentXZCoordinates().x > 0) {
             return RobotFacing.Forward;
-        } else {
+        }
+        else {
             return RobotFacing.Backward;
         }
     }
@@ -203,6 +204,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             upperArm.getArmPositionInRadians());
 
          */
+    }
+
+    public XYPair getCurrentXZCoordinates() {
+        return solver.getPositionFromRadians(
+            lowerArm.getArmPositionInRadians(),
+            upperArm.getArmPositionInRadians());
     }
 
     @Override
