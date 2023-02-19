@@ -1,6 +1,7 @@
 package competition.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
+import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,11 +18,15 @@ public abstract class ArmSegment {
 
     protected abstract double getDegreesPerMotorRotation();
     private final BooleanProperty useAbsoluteEncoderProp;
+    private final BooleanProperty usePitchCompensationProp;
+    private final BooleanProperty invertPitchCompensationProp;
     private double motorEncoderOffsetInDegrees;
     protected abstract double getAbsoluteEncoderOffsetInDegrees();
     private final DoubleProperty absoluteEncoderPositionProp;
     private final DoubleProperty neoPositionProp;
     private final DoubleProperty neoPositionInDegreesProp;
+    private final DoubleProperty compensatedPositionProp;
+    private final PoseSubsystem pose;
 
     private static Logger log = LogManager.getLogger(ArmSegment.class);
 
@@ -30,15 +35,19 @@ public abstract class ArmSegment {
     double upperDegreeReference;
     double lowerDegreeReference;
 
-    public ArmSegment(String prefix, PropertyFactory propFactory, double upperDegreeReference, double lowerDegreeReference) {
+    public ArmSegment(String prefix, PropertyFactory propFactory, PoseSubsystem pose, double upperDegreeReference, double lowerDegreeReference) {
         propFactory.setPrefix(prefix);
         this.prefix= prefix;
+        this.pose = pose;
         this.upperDegreeReference = upperDegreeReference;
         this.lowerDegreeReference = lowerDegreeReference;
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", true);
+        usePitchCompensationProp = propFactory.createEphemeralProperty("usePitchCompensation", false);
+        invertPitchCompensationProp = propFactory.createPersistentProperty("invertPitchCompensation", false);
         absoluteEncoderPositionProp = propFactory.createEphemeralProperty("AbsoluteEncoderPosition", 0.0);
         neoPositionProp = propFactory.createEphemeralProperty("NeoPosition", 0.0);
         neoPositionInDegreesProp = propFactory.createEphemeralProperty("NeoPositionInDegrees", 0.0);
+        compensatedPositionProp = propFactory.createEphemeralProperty("CompensatedPosition", 0.0);
     }
 
     protected void configureCommonMotorProperties() {
@@ -76,6 +85,10 @@ public abstract class ArmSegment {
         }
     }
 
+    public void setPitchCompensation(boolean enabled) {
+        this.usePitchCompensationProp.set(enabled);
+    }
+
     public double getArmPositionFromAbsoluteEncoderInDegrees() {
         if (isAbsoluteEncoderReady()) {
             return ContiguousDouble.reboundValue(
@@ -100,11 +113,18 @@ public abstract class ArmSegment {
     }
 
     public double getArmPositionInDegrees() {
+        double sensorPosition;
         if (useAbsoluteEncoderProp.get()) {
-            return getArmPositionFromAbsoluteEncoderInDegrees();
+            sensorPosition = getArmPositionFromAbsoluteEncoderInDegrees();
         } else {
-            return getArmPositionFromMotorEncoderInDegrees();
+            sensorPosition = getArmPositionFromMotorEncoderInDegrees();
         }
+
+        if (usePitchCompensationProp.get() == true) {
+            return sensorPosition - (pose.getRobotPitch() * (invertPitchCompensationProp.get() ? -1.0 : 1.0));
+        }
+
+        return sensorPosition;
     }
 
     public double getArmPositionInRadians() {
@@ -170,5 +190,7 @@ public abstract class ArmSegment {
             neoPositionProp.set(getLeaderMotor().getPosition());
             neoPositionInDegreesProp.set(getArmPositionFromMotorEncoderInDegrees());
         }
+
+        compensatedPositionProp.set(getArmPositionInDegrees());
     }
 }
