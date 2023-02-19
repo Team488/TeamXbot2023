@@ -35,7 +35,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         // Going to first transition point
         // -------------------------------------------
 
-        routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoalCube, UnifiedArmSubsystem.RobotFacing.Forward);
+        routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
         routerCommand.initialize();
         // Should be going to same-side transition point
@@ -68,12 +68,12 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
 
         // This should cause the router to move to the next target.
         routerCommand.execute();
-        checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoalCube, UnifiedArmSubsystem.RobotFacing.Forward);
+        checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
         assertFalse(routerCommand.isFinished());
 
         maintainer.execute();
         // Now move the arm to the high goal point.
-        setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.HighGoalCube, UnifiedArmSubsystem.RobotFacing.Forward);
+        setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
         maintainer.execute();
         assertFalse(arms.isMaintainerAtGoal());
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
@@ -96,7 +96,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         // Going to first transition point (forward)
         // -------------------------------------------
 
-        routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoalCube, UnifiedArmSubsystem.RobotFacing.Backward);
+        routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Backward);
 
         routerCommand.initialize();
         // Should be going to same-side transition point
@@ -148,12 +148,12 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
 
         // This should cause the router to move to the next target.
         routerCommand.execute();
-        checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoalCube, UnifiedArmSubsystem.RobotFacing.Backward);
+        checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Backward);
         assertFalse(routerCommand.isFinished());
 
         maintainer.execute();
         // Now move the arm to the high goal point.
-        setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.HighGoalCube, UnifiedArmSubsystem.RobotFacing.Backward);
+        setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Backward);
         maintainer.execute();
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
         timer.advanceTimeInSecondsBy(10);
