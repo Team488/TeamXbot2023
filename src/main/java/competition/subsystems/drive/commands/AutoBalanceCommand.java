@@ -5,9 +5,11 @@ import javax.inject.Inject;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import xbot.common.command.BaseCommand;
+import xbot.common.controls.sensors.XTimer;
 import xbot.common.math.PIDManager;
-import xbot.common.math.XYPair;
 import xbot.common.math.PIDManager.PIDManagerFactory;
+import xbot.common.properties.PropertyFactory;
+import xbot.common.properties.StringProperty;
 
 public class AutoBalanceCommand extends BaseCommand {
     
@@ -16,22 +18,31 @@ public class AutoBalanceCommand extends BaseCommand {
     private final PIDManager pidManager;
 
     private boolean drivingAgainstPositiveAngle = true;
-    final double firstAttemptSpeed = 0.25;
+    final double firstAttemptSpeed = 0.10;
     double currentAttemptSpeed = firstAttemptSpeed;
+    double lastDetectedFallTime = -1000;
 
     public enum BalanceState {
+        Analyzing,
         Driving,
-        Locked,
+        FallDetected,
+        Waiting,
         Complete
     }
 
-    private BalanceState currentBalanceState = BalanceState.Driving;
+    private final StringProperty balanceStateProp;
+
+    private BalanceState currentBalanceState = BalanceState.Analyzing;
 
     @Inject
-    public AutoBalanceCommand(DriveSubsystem drive, PoseSubsystem pose, PIDManagerFactory pidFactory) {
+    public AutoBalanceCommand(DriveSubsystem drive, PoseSubsystem pose, PIDManagerFactory pidFactory,
+                              PropertyFactory pf) {
         this.drive = drive;
         this.pose = pose;
         this.pidManager = pidFactory.create(this.getPrefix(), 0.1, 0, 0);
+        pf.setPrefix(this);
+
+        balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");
     }
 
     // Basic idea:
@@ -49,7 +60,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
         drivingAgainstPositiveAngle = getAngle() > 0.0;
         currentAttemptSpeed = firstAttemptSpeed;
-        currentBalanceState = BalanceState.Driving;
+        currentBalanceState = BalanceState.Analyzing;
     }
 
     @Override
@@ -57,28 +68,70 @@ public class AutoBalanceCommand extends BaseCommand {
         // Let's assume that we are already strongly "on the ramp", which is to say, at or very close
         // to the resting angle of the robot, which is +/-15 degrees.
 
+        double currentAngle = getAngle();
+
+        double velocityGoal = 0;
         switch (currentBalanceState) {
-            case Driving:
+            case Analyzing:
+                drivingAgainstPositiveAngle = currentAngle > 0.0;
+                currentBalanceState = BalanceState.Driving;
                 break;
-            case Locked:
-                drive
+            case Driving:
+
+                // If we are driving against the positive angle, we need to use positive velocity to
+                // climb the ramp. If we are driving against negative angle, we need negative velocity
+                // to climb the ramp.
+
+                if (drivingAgainstPositiveAngle) {
+                    velocityGoal = currentAttemptSpeed;
+                } else {
+                    velocityGoal = -currentAttemptSpeed;
+                }
+
+                // If we're driving against the positive angle, see a sudden drop in angle, we need
+                // to advance to FallDetected. Likewise, if we're driving against the negative angle,
+                // and we see a sudden increase in angle, we need to advance to FallDetected.
+
+                if (drivingAgainstPositiveAngle && currentAngle < 9) {
+                    currentBalanceState = BalanceState.FallDetected;
+                } else if (!drivingAgainstPositiveAngle && currentAngle > -9) {
+                    currentBalanceState = BalanceState.FallDetected;
+                }
+
+                break;
+            case FallDetected:
+                // We've detected a fall, so we need to stop driving and wait for a bit.
+                // We'll also slow down the drive speed for the next attempt.
+                currentAttemptSpeed = currentAttemptSpeed * 0.5;
+                currentBalanceState = BalanceState.Waiting;
+                lastDetectedFallTime = XTimer.getFPGATimestamp();
+                velocityGoal = 0;
+                break;
+            case Waiting:
+                if (XTimer.getFPGATimestamp() - lastDetectedFallTime > 1.0) {
+                    if (Math.abs(currentAngle) < 1.5) {
+                        // We've successfully balanced!
+                        currentBalanceState = BalanceState.Complete;
+                    } else {
+                        // We're still not balanced, so we need to try again.
+                        currentBalanceState = BalanceState.Analyzing;
+                    }
+                }
+                velocityGoal = 0;
                 break;
             case Complete:
+                velocityGoal = 0;
                 return;
         }
 
-
-        double currentAngle = getAngle();
-        double velocity = pidManager.calculate(0, currentAngle);
-
-        drive.setVelocityMaintainerXTarget(velocity);
+        balanceStateProp.set(currentBalanceState.toString());
+        drive.setVelocityMaintainerXTarget(velocityGoal);
     }
 
     private double getAngle() {
-        // on the 2023 robot it's roll
-        // on the 2022 robot it's pitch
         // this is based on the rio orientation
-        double currentAngle = pose.getRobotRoll();
+        double currentAngle = -(pose.getRobotPitch() - 1.75);
+
 
         if (Math.abs(currentAngle) < 1.5) {
             currentAngle = 0;
