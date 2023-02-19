@@ -1,5 +1,6 @@
 package competition.operator_interface;
 
+import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SetArmsToPositionCommand;
@@ -145,9 +146,15 @@ public class OperatorCommandMap {
     @Inject
     public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
                                         OperatorInterface oi,
-                                        BlueBottomScoringPath bluebottom) {
+                                        BlueBottomScoringPath blueBottom,
+                                        BasicMobilityPoints basicMobilityPoints) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
-        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueButtomScoring");
+        setBlueBottomScoring.setAutoCommand(blueBottom);
+        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
+
+        var setBasicMobilityPoints = setAutonomousCommandProvider.get();
+        setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
+        setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
     }
 
     @Inject
