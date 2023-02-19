@@ -13,10 +13,12 @@ import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
+import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,6 +39,8 @@ import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Maps operator interface buttons to commands
@@ -147,7 +151,8 @@ public class OperatorCommandMap {
     public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
-                                        BasicMobilityPoints basicMobilityPoints) {
+                                        BasicMobilityPoints basicMobilityPoints,
+                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -155,6 +160,14 @@ public class OperatorCommandMap {
         var setBasicMobilityPoints = setAutonomousCommandProvider.get();
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
+
+        swerveSimpleTrajectoryCommand.setMaxPower(0.2);
+        swerveSimpleTrajectoryCommand.setMaxTurningPower(0.1);
+        XbotSwervePoint firstPoint = new XbotSwervePoint(100, 0, 0, 5);
+        XbotSwervePoint secondPoint = new XbotSwervePoint(100, 100, 0, 5);
+        swerveSimpleTrajectoryCommand.setKeyPoints(List.of(firstPoint, secondPoint));
+
+        oi.driverGamepad.getPovIfAvailable(90).onTrue(swerveSimpleTrajectoryCommand);
     }
 
     @Inject
