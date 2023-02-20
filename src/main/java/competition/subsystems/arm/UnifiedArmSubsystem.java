@@ -61,7 +61,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
 
     public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
-    public static XYPair safeExternalTransitionAngles = new XYPair(110, -20);
+    public static XYPair safeExternalTransitionAngles = new XYPair(100, -10);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
