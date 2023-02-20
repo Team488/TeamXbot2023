@@ -3,6 +3,7 @@ package competition.subsystems.arm;
 import competition.BaseCompetitionTest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.junit.Test;
+import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 
@@ -110,5 +111,22 @@ public class ArmPositionSolverTest extends BaseCompetitionTest {
 
         assertEquals(0, effector.x, 0.001);
         assertEquals(2, effector.y, 0.001);
+    }
+
+    @Test
+    public void testFindRobotFrameGoal() {
+        // The upper arm is leaning up and back, and we want the lower arm horizontally forward.
+        double result = ArmPositionSolver.getUpperArmAngleNeededToAchieveRobotFrameAngle(
+                3.0/8.0 * MathUtils.Tau,
+                0);
+        double reboundedResult = ContiguousDouble.reboundValue(result, 0, MathUtils.Tau);
+        assertEquals(1.0/8.0 * MathUtils.Tau, reboundedResult, 0.001);
+
+        // The upper arm is leaning up and forward, and we want the lower arm straight down.
+        result = ArmPositionSolver.getUpperArmAngleNeededToAchieveRobotFrameAngle(
+                1.0/8.0 * MathUtils.Tau,
+                3.0/4.0 * MathUtils.Tau);
+        reboundedResult = ContiguousDouble.reboundValue(result, 0, MathUtils.Tau);
+        assertEquals(1.0/8.0 * MathUtils.Tau, reboundedResult, 0.001);
     }
 }
