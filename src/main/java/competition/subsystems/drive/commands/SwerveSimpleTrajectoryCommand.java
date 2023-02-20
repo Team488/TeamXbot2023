@@ -4,6 +4,8 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.command.BaseCommand;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.math.XYPair;
@@ -30,15 +32,21 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     double maxPower = 1.0;
     double maxTurningPower = 1.0;
-    double lerpTime = 0;
-
+    double accumulatedProductiveSeconds = 0;
+    double previousTimestamp = 0;
+    double maximumDistanceFromChasePointInInches = 24;
     int targetIndex = 0;
+
+    private final Field2d ghostDisplay;
 
     @Inject
     public SwerveSimpleTrajectoryCommand(DriveSubsystem drive, PoseSubsystem pose, PropertyFactory pf, HeadingModuleFactory headingModuleFactory) {
         this.drive = drive;
         this.pose = pose;
         headingModule = headingModuleFactory.create(drive.getRotateToHeadingPid());
+
+        ghostDisplay = new Field2d();
+        SmartDashboard.putData("Ghost", ghostDisplay);
 
         pf.setPrefix(this);
         this.addRequirements(drive);
@@ -74,12 +82,17 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         keyPoints = keyPointsProvider.get();
 
         baselinePoint = new XbotSwervePoint(pose.getCurrentPose2d(), 0);
-        lerpTime = XTimer.getFPGATimestamp();
+        previousTimestamp = XTimer.getFPGATimestamp();
         targetIndex = 0;
+        accumulatedProductiveSeconds = 0;
+
     }
 
     @Override
     public void execute() {
+
+        double secondsSinceLastExecute = XTimer.getFPGATimestamp() - previousTimestamp;
+        accumulatedProductiveSeconds += secondsSinceLastExecute;
 
         // If we somehow have no points to visit, don't do anything.
         if (keyPoints.size() == 0) {
@@ -101,14 +114,14 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         Translation2d chasePoint = targetKeyPoint.keyPose.getTranslation();
 
         // Now, try to find a better point via linear interpolation.
-        double lerpFraction = (XTimer.getFPGATimestamp() - lerpTime) / targetKeyPoint.secondsToPoint;
+        double lerpFraction = (accumulatedProductiveSeconds) / targetKeyPoint.secondsToPoint;
 
         // If the fraction is above 1, it's time to set a new baseline point and start LERPing on the next
         // one.
         if (lerpFraction >= 1 && targetIndex < keyPoints.size()-1) {
             // What was our target now becomes our baseline.
             baselinePoint = targetKeyPoint;
-            lerpTime = XTimer.getFPGATimestamp();
+            accumulatedProductiveSeconds = 0;
 
             targetIndex++;
             // And set our new target to the next element of the list
@@ -121,6 +134,16 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
             chasePoint = baselinePoint.keyPose.getTranslation().interpolate(
                     targetKeyPoint.keyPose.getTranslation(), lerpFraction);
         }
+
+        // But if that chase point is "too far ahead", we need to freeze the chasePoint
+        // until the robot has a chance to catch up.
+        if (pose.getCurrentPose2d().getTranslation().getDistance(chasePoint) > maximumDistanceFromChasePointInInches) {
+            // This effectively "rewinds time" for the next loop.
+            accumulatedProductiveSeconds -= secondsSinceLastExecute;
+        }
+
+        // Update the ghost display.
+        ghostDisplay.setRobotPose(new Pose2d(chasePoint.div(PoseSubsystem.INCHES_IN_A_METER), targetKeyPoint.keyPose.getRotation()));
 
         // Now that we have a chase point, we can drive to it. The rest of the logic is
         // from our proven SwerveToPointCommand. Eventually, the common components should be
@@ -154,6 +177,9 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         }
 
         drive.fieldOrientedDrive(intent, headingPower, pose.getCurrentHeading().getDegrees(), false);
+        previousTimestamp = XTimer.getFPGATimestamp();
+
+        Pose2d pose = new Pose2d();
     }
 
     @Override

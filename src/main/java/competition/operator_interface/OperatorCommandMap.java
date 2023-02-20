@@ -55,6 +55,7 @@ public class OperatorCommandMap {
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
             SetRobotHeadingCommand resetHeading,
+            SetRobotHeadingCommand resetHeadingCube,
             DriveSubsystem drive,
             PoseSubsystem pose,
             DebuggingSwerveWithJoysticksCommand debugSwerve,
@@ -65,19 +66,25 @@ public class OperatorCommandMap {
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
         resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
+
+        NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
+                () -> pose.setCurrentPosition(70, 102));
+        ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
 
         StartEndCommand enableVisionRotation = new StartEndCommand(
                 () -> drive.setRotateToHubActive(true),
                 () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
+        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
         //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
 
-        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
+        //oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
 
@@ -161,14 +168,24 @@ public class OperatorCommandMap {
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
 
-        swerveSimpleTrajectoryCommand.setMaxPower(0.75);
+        swerveSimpleTrajectoryCommand.setMaxPower(0.66);
         swerveSimpleTrajectoryCommand.setMaxTurningPower(0.4);
-        XbotSwervePoint firstPoint = new XbotSwervePoint(60, 0, 0, 3);
-        XbotSwervePoint secondPoint = new XbotSwervePoint(60, 60, 90, 2);
+        XbotSwervePoint backAwayFromGoal = new XbotSwervePoint(76, 102, -180, 0.5);
+        XbotSwervePoint finishBackAway = new XbotSwervePoint(82, 102, 0, 0.5);
+        XbotSwervePoint goSouth = new XbotSwervePoint(82, 30, 0, 1.0);
+        XbotSwervePoint goEast = new XbotSwervePoint(220, 30, 0, 2.0);
+        XbotSwervePoint goNorth = new XbotSwervePoint(220, 102, 0, 1.0);
+        XbotSwervePoint mantleChargePad = new XbotSwervePoint(160, 102, 0, 1.0);
+
         swerveSimpleTrajectoryCommand.setKeyPoints(
-                new ArrayList<>(List.of(firstPoint, secondPoint)
-            )
-        );
+                new ArrayList<>(List.of(
+                        backAwayFromGoal,
+                        finishBackAway,
+                        goSouth,
+                        goEast,
+                        goNorth,
+                        mantleChargePad
+                )));
 
         oi.driverGamepad.getPovIfAvailable(90).onTrue(swerveSimpleTrajectoryCommand);
     }
