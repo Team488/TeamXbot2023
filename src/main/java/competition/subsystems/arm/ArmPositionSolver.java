@@ -1,6 +1,7 @@
 package competition.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 
 public class ArmPositionSolver {
@@ -68,11 +69,17 @@ public class ArmPositionSolver {
     }
 
     public XYPair getPositionFromRadians(double lowerArmAngleRadians, double upperArmAngleRadians) {
+        // The upper arm angle is now effectively coupled to the lower arm angle, so the effective angle
+        // needs to be adjusted. For example, if the lower arm is at 45 degrees, and the upper arm is at -45 degrees,
+        // the lower arm's true angle is -90 (pointed into the ground).
+
+        double adjustedUpperArmAngleRadians = upperArmAngleRadians + (lowerArmAngleRadians + MathUtils.Tau/2.0);
+
         return new XYPair(
                 Math.cos(lowerArmAngleRadians)*configuration.getLowerArmLength()
-                +Math.cos(upperArmAngleRadians)*configuration.getUpperArmLength(),
+                +Math.cos(adjustedUpperArmAngleRadians)*configuration.getUpperArmLength(),
                 Math.sin(lowerArmAngleRadians)*configuration.getLowerArmLength()
-                + Math.sin(upperArmAngleRadians)*configuration.getUpperArmLength()
+                + Math.sin(adjustedUpperArmAngleRadians)*configuration.getUpperArmLength()
         );
     }
 }
