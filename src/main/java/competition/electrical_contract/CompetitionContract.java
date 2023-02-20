@@ -153,5 +153,17 @@ public class CompetitionContract extends ElectricalContract {
         return new DeviceInfo("UnifiedArmSubsystem/UpperArm",1, true);
     }
 
-    public DeviceInfo getClawSolenoid() {return new DeviceInfo("ClawSubsystem",5, false);}
+    public DeviceInfo getClawSolenoid() {return new DeviceInfo("ClawSubsystem",0, false);}
+
+    @Override
+    public DeviceInfo getLowerArmBrakeSolenoid() {
+        return new DeviceInfo("LowerArmBrake", 1, false);
+    }
+
+    public DeviceInfo getCollectorMotor(){ return new DeviceInfo("Collector",25,false);}
+
+    @Override
+    public boolean isCollectorReady() { return true; }
+
+    public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo("Collector", 2,false);}
 }

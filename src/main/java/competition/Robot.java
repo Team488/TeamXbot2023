@@ -4,11 +4,14 @@ package competition;
 import competition.injection.components.BaseRobotComponent;
 import competition.injection.components.DaggerPracticeComponent;
 import competition.injection.components.DaggerRobotComponent;
+import competition.injection.components.DaggerRoboxComponent;
 import competition.injection.components.DaggerSimulationComponent;
 import competition.injection.components.RobotComponent;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.command.BaseRobot;
 import xbot.common.math.FieldPose;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
@@ -28,11 +31,26 @@ public class Robot extends BaseRobot {
 
     protected BaseRobotComponent createDaggerComponent() {
         if (BaseRobot.isReal()) {
-            // TODO: Figure out some elegant way to detect 2022 vs 2023 chassis and return the appropriate component.
-            // until then, you'll have to manually change this line to return the correct component.
-            //return DaggerPracticeComponent.create();
-            return DaggerRobotComponent.create();
 
+            // Initialize the contract to use if this is a fresh robot. Assume competition since that's the safest.
+            if (!Preferences.containsKey("ContractToUse")) {
+                Preferences.setString("ContractToUse", "Competition");
+            }
+
+            String chosenContract = Preferences.getString("ContractToUse", "Competition");
+
+            switch (chosenContract) {
+                case "Practice":
+                    System.out.println("Using practice contract");
+                    return DaggerPracticeComponent.create();
+                case "Robox":
+                    System.out.println("Using Robox contract");
+                    return DaggerRoboxComponent.create();
+                default:
+                    System.out.println("Using Competition contract");
+                    // In all other cases, return the competition component.
+                    return DaggerRobotComponent.create();
+            }
         } else {
             return DaggerSimulationComponent.create();
         }
@@ -43,8 +61,27 @@ public class Robot extends BaseRobot {
     }
 
     @Override
+    public void disabledInit() {
+        super.disabledInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
+    public void autonomousInit() {
+        super.autonomousInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
+    public void teleopInit() {
+        super.teleopInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+    }
+
+    @Override
     public void simulationInit() {
         super.simulationInit();
+        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
         // Automatically enables the robot; remove this line of code if you want the robot
         // to start in a disabled state (as it would on the field). However, this does save you the 
         // hassle of navigating to the DS window and re-enabling the simulated robot.

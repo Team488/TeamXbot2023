@@ -6,6 +6,8 @@ import competition.injection.modules.CompetitionTestModule;
 import competition.subsystems.arm.LowerArmSegment;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UpperArmSegment;
+import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
+import competition.subsystems.arm.commands.UnifiedArmMaintainer;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.claw.OpenClawCommand;
@@ -51,4 +53,8 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract OpenClawCommand openClawCommand();
 
     public abstract CloseClawCommand closeClawCommand();
+
+    public abstract UnifiedArmMaintainer unifiedArmMaintainer();
+
+    public abstract SimpleSafeArmRouterCommand simpleSafeArmRouterCommand();
 }

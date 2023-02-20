@@ -77,6 +77,7 @@ public class SwerveToPointCommandTest extends BaseFullSwerveTest {
         command.initialize();
         command.execute();
 
+        checkAllModuleAngle(90);
         checkAllModulesGoingForward(true);
 
         command.setTargetPosition(new XYPair(0,0), 0);

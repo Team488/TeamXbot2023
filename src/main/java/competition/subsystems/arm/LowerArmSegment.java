@@ -3,7 +3,10 @@ package competition.subsystems.arm;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
+import competition.subsystems.pose.PoseSubsystem;
+import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
@@ -23,15 +26,21 @@ public class LowerArmSegment extends ArmSegment {
     private final DoubleProperty degreesPerMotorRotationProp;
     private final DoubleProperty absoluteEncoderOffsetInDegreesProp;
 
+    private final DoubleProperty lowerLimitInDegrees;
+    private final DoubleProperty upperLimitInDegrees;
+
+
     @Inject
     public LowerArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
-                           ElectricalContract eContract, PropertyFactory propFactory){
-        super("UnifiedArmSubsystem/LowerArm", propFactory, 270, -90);
+                           ElectricalContract eContract, PropertyFactory propFactory, PoseSubsystem pose){
+        super("UnifiedArmSubsystem/LowerArm", propFactory, pose, 270, -90);
         String prefix = "UnifiedArmSubsystem/LowerArm";
 
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 20);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 160);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
@@ -39,6 +48,8 @@ public class LowerArmSegment extends ArmSegment {
             this.rightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(), prefix,"RightMotor");
 
             leftMotor.follow(rightMotor, contract.getLowerArmLeftMotor().inverted);
+
+            configureCommonMotorProperties();
         }
         if (contract.isLowerArmEncoderReady()) {
             this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getLowerArmEncoder());
@@ -81,5 +92,23 @@ public class LowerArmSegment extends ArmSegment {
     @Override
     public boolean isAbsoluteEncoderReady() {
         return contract.isLowerArmEncoderReady();
+    }
+
+    @Override
+    protected double getUpperLimitInDegrees() {
+        return upperLimitInDegrees.get();
+    }
+
+    @Override
+    protected double getLowerLimitInDegrees() {
+        return lowerLimitInDegrees.get();
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        if (isMotorReady()) {
+            rightMotor.periodic();
+        }
     }
 }

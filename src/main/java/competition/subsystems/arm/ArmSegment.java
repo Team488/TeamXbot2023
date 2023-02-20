@@ -1,6 +1,7 @@
 package competition.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
+import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,17 +12,18 @@ import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.properties.BooleanProperty;
-import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 public abstract class ArmSegment implements DataFrameRefreshable {
 
-    private final DoubleProperty upperLimitInDegrees;
-    private final DoubleProperty lowerLimitInDegrees;
     protected abstract double getDegreesPerMotorRotation();
     private final BooleanProperty useAbsoluteEncoderProp;
+    private final BooleanProperty usePitchCompensationProp;
+    private final BooleanProperty invertPitchCompensationProp;
     private double motorEncoderOffsetInDegrees;
     protected abstract double getAbsoluteEncoderOffsetInDegrees();
+    private final PoseSubsystem pose;
+
     private static Logger log = LogManager.getLogger(ArmSegment.class);
 
     String prefix = "";
@@ -29,14 +31,22 @@ public abstract class ArmSegment implements DataFrameRefreshable {
     double upperDegreeReference;
     double lowerDegreeReference;
 
-    public ArmSegment(String prefix, PropertyFactory propFactory, double upperDegreeReference, double lowerDegreeReference) {
+    public ArmSegment(String prefix, PropertyFactory propFactory, PoseSubsystem pose, double upperDegreeReference, double lowerDegreeReference) {
         propFactory.setPrefix(prefix);
         this.prefix= prefix;
+        this.pose = pose;
         this.upperDegreeReference = upperDegreeReference;
         this.lowerDegreeReference = lowerDegreeReference;
-        upperLimitInDegrees = propFactory.createPersistentProperty("upperLimitInDegrees", 0);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("lowerLimitInDegrees", 0);
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", true);
+        usePitchCompensationProp = propFactory.createEphemeralProperty("usePitchCompensation", false);
+        invertPitchCompensationProp = propFactory.createPersistentProperty("invertPitchCompensation", false);
+    }
+
+    protected void configureCommonMotorProperties() {
+        getLeaderMotor().setOpenLoopRampRate(0.05);
+        getLeaderMotor().setClosedLoopRampRate(0.05);
+        getLeaderMotor().setIdleMode(CANSparkMax.IdleMode.kBrake);
+        getFollowerMotor().setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     protected abstract XCANSparkMax getLeaderMotor();
@@ -46,22 +56,37 @@ public abstract class ArmSegment implements DataFrameRefreshable {
     public abstract boolean isMotorReady();
     public abstract boolean isAbsoluteEncoderReady();
 
+    protected abstract double getUpperLimitInDegrees();
+    protected abstract double getLowerLimitInDegrees();
+
     public void setPower(double power) {
         if (isMotorReady()) {
 
             // if too high, no more positive power
-            double currentAngle = getArmPositionFromAbsoluteEncoderInDegrees();
-            if (currentAngle > upperLimitInDegrees.get())
+            double currentAngle = getArmPositionInDegrees();
+            if (currentAngle > getUpperLimitInDegrees())
             {
                 power = MathUtils.constrainDouble(power, -1, 0);
             }
             // if too low, no more negative power.
-            if (currentAngle < lowerLimitInDegrees.get()) {
+            if (currentAngle < getLowerLimitInDegrees()) {
                 power = MathUtils.constrainDouble(power, 0, 1);
             }
 
             getLeaderMotor().set(power);
         }
+    }
+
+    public boolean isAboveUpperLimit() {
+        return getArmPositionInDegrees() > getUpperLimitInDegrees();
+    }
+
+    public boolean isBelowLowerLimit() {
+        return getArmPositionInDegrees() < getLowerLimitInDegrees();
+    }
+
+    public void setPitchCompensation(boolean enabled) {
+        this.usePitchCompensationProp.set(enabled);
     }
 
     public double getArmPositionFromAbsoluteEncoderInDegrees() {
@@ -88,11 +113,18 @@ public abstract class ArmSegment implements DataFrameRefreshable {
     }
 
     public double getArmPositionInDegrees() {
+        double sensorPosition;
         if (useAbsoluteEncoderProp.get()) {
-            return getArmPositionFromAbsoluteEncoderInDegrees();
+            sensorPosition = getArmPositionFromAbsoluteEncoderInDegrees();
         } else {
-            return getArmPositionFromMotorEncoderInDegrees();
+            sensorPosition = getArmPositionFromMotorEncoderInDegrees();
         }
+
+        if (usePitchCompensationProp.get() == true) {
+            return sensorPosition - (pose.getRobotPitch() * (invertPitchCompensationProp.get() ? -1.0 : 1.0));
+        }
+
+        return sensorPosition;
     }
 
     public double getArmPositionInRadians() {
@@ -107,8 +139,8 @@ public abstract class ArmSegment implements DataFrameRefreshable {
                 // we are potentially offset. So we need to figure out our actual degree target, then divide by
                 // degrees per motor rotation to get something the SparkMAX can understand.
 
-                double upperLimitInRotations = (upperLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
-                double lowerLimitInRotations = (lowerLimitInDegrees.get() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
+                double upperLimitInRotations = (getUpperLimitInDegrees() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
+                double lowerLimitInRotations = (getLowerLimitInDegrees() + motorEncoderOffsetInDegrees) / getDegreesPerMotorRotation();
                 log.info(prefix + ", UpperLimitRotations:"+upperLimitInRotations+", LowerLimitRotation:"+lowerLimitInRotations);
                 configSoftLimit(upperLimitInRotations, lowerLimitInRotations);
             } else {
@@ -131,7 +163,7 @@ public abstract class ArmSegment implements DataFrameRefreshable {
 
         // Coerce angle to a safe angle
         double targetAngleDegrees =
-                MathUtils.constrainDouble(angle.getDegrees(), lowerLimitInDegrees.get(), upperLimitInDegrees.get());
+                MathUtils.constrainDouble(angle.getDegrees(), getLowerLimitInDegrees(), getUpperLimitInDegrees());
 
         // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
         // controller will be using its internal encoder, so we need to translate from one to the other.
@@ -142,7 +174,7 @@ public abstract class ArmSegment implements DataFrameRefreshable {
         // 4) Add the delta to the current position to get a goal position in units the motor controller understands
 
         if (isAbsoluteEncoderReady() && isMotorReady()) {
-            double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionFromAbsoluteEncoderInDegrees()).getDegrees();
+            double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionInDegrees()).getDegrees();
             double deltaInMotorRotations = delta / getDegreesPerMotorRotation();
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();
             getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
@@ -160,11 +192,18 @@ public abstract class ArmSegment implements DataFrameRefreshable {
         }
     }
     public void periodic() {
+        if (isAbsoluteEncoderReady()) {
+            org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                    prefix + "/AbsoluteEncoderPosition", getArmPositionFromAbsoluteEncoderInDegrees());
+        }
+        if (isMotorReady()) {
+            org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                    prefix + "/NeoPosition", getLeaderMotor().getPosition());
+            org.littletonrobotics.junction.Logger.getInstance().recordOutput(
+                    prefix + "/NeoPositionInDegrees", getArmPositionFromMotorEncoderInDegrees());
+        }
+
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
-                prefix+"/AbsoluteEncoderPosition", getArmPositionFromAbsoluteEncoderInDegrees());
-        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
-                prefix+"/NeoPosition", getLeaderMotor().getPosition());
-        org.littletonrobotics.junction.Logger.getInstance().recordOutput(
-                prefix+"/NeoPositionInDegrees", getArmPositionFromMotorEncoderInDegrees());
+                prefix + "/ArmPositionInDegrees", getArmPositionInDegrees());
     }
 }

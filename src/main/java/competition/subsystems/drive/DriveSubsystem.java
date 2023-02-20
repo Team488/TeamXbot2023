@@ -1,5 +1,6 @@
 package competition.subsystems.drive;
 
+
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.FrontLeftDrive;
 import competition.injection.swerve.FrontRightDrive;
@@ -23,6 +24,7 @@ import xbot.common.math.PIDManager.PIDManagerFactory;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
+import xbot.common.properties.XPropertyManager;
 import xbot.common.subsystems.drive.BaseDriveSubsystem;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
@@ -47,10 +49,15 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     private final PIDManager positionalPidManager;
     private final PIDManager headingPidManager;
 
+    private double velocityMaintainerXTarget;
+    private double positionMaintainerXTarget;
+
     private XYPair lastCommandedDirection;
     private double lastCommandedRotation;
 
     private double desiredHeading;
+
+    private boolean activateBrakeOverride = false;
 
     public enum SwerveModuleLocation {
         FRONT_LEFT,
@@ -59,6 +66,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         REAR_RIGHT;
 
         private static final SwerveModuleLocation[] values = values();
+
         public SwerveModuleLocation next() {
             return values[(this.ordinal() + 1) % values.length];
         }
@@ -67,7 +75,8 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     private SwerveModuleLocation activeModule = SwerveModuleLocation.FRONT_LEFT;
 
     @Inject
-    public DriveSubsystem(PIDManagerFactory pidFactory, ElectricalContract contract, PropertyFactory pf,
+
+    public DriveSubsystem(PIDManagerFactory pidFactory, XPropertyManager propManager, ElectricalContract contract, PropertyFactory pf,
                           @FrontLeftDrive SwerveComponent frontLeftSwerve, @FrontRightDrive SwerveComponent frontRightSwerve,
                           @RearLeftDrive SwerveComponent rearLeftSwerve, @RearRightDrive SwerveComponent rearRightSwerve) {
         log.info("Creating DriveSubsystem");
@@ -79,10 +88,10 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         this.rearRightSwerveModuleSubsystem = rearRightSwerve.swerveModuleSubsystem();
 
         this.swerveDriveKinematics = new SwerveDriveKinematics(
-            this.frontLeftSwerveModuleSubsystem.getModuleTranslation(),
-            this.frontRightSwerveModuleSubsystem.getModuleTranslation(),
-            this.rearLeftSwerveModuleSubsystem.getModuleTranslation(),
-            this.rearRightSwerveModuleSubsystem.getModuleTranslation()
+                this.frontLeftSwerveModuleSubsystem.getModuleTranslation(),
+                this.frontRightSwerveModuleSubsystem.getModuleTranslation(),
+                this.rearLeftSwerveModuleSubsystem.getModuleTranslation(),
+                this.rearRightSwerveModuleSubsystem.getModuleTranslation()
         );
 
         this.maxTargetSpeed = pf.createPersistentProperty("MaxTargetSpeedInchesPerSecond", 120.0);
@@ -99,7 +108,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
         positionalPidManager = pidFactory.create(this.getPrefix() + "PositionPID", 0.018, 0, 0.1, 0.6, -0.6);
         headingPidManager = pidFactory.create(this.getPrefix() + "HeadingPID", 0.015, 0.0000001, 0.045, 0.75, -0.75);
-        
+
         headingPidManager.setTimeThreshold(0.2);
         headingPidManager.setErrorThreshold(2);
         headingPidManager.setEnableErrorThreshold(true);
@@ -135,16 +144,16 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     }
 
     public void fieldOrientedDrive(
-        XYPair translation, 
-        double rotation, 
-        double currentHeading,
-        XYPair centerOfRotationInches) {
+            XYPair translation,
+            double rotation,
+            double currentHeading,
+            XYPair centerOfRotationInches) {
         // rotate the translation vector into the robot coordinate frame
         XYPair fieldRelativeVector = translation.clone();
-        
+
         // 90 degrees is the defined "forward" direction for a driver
         fieldRelativeVector.rotate(-currentHeading);
-        
+
         // send the rotated vector to be driven
         move(fieldRelativeVector, rotation, centerOfRotationInches);
     }
@@ -201,8 +210,9 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
     /**
      * Set the target movement speed and rotation, rotating around the center of the robot.
+     *
      * @param translate The translation velocity.
-     * @param rotate The rotation velocity.
+     * @param rotate    The rotation velocity.
      */
     @Override
     public void move(XYPair translate, double rotate) {
@@ -211,8 +221,9 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
     /**
      * Set the target movement speed and rotation, with an arbitrary center of rotation.
-     * @param translate The translation velocity.
-     * @param rotate The rotation velocity.
+     *
+     * @param translate              The translation velocity.
+     * @param rotate                 The rotation velocity.
      * @param centerOfRotationInches The center of rotation.
      */
     public void move(XYPair translate, double rotate, XYPair centerOfRotationInches) {
@@ -220,13 +231,17 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         org.littletonrobotics.junction.Logger.getInstance().recordOutput("TranslationIntentX", translate.x);
         org.littletonrobotics.junction.Logger.getInstance().recordOutput("TranslationIntentY", translate.y);
 
+        if (activateBrakeOverride) {
+            this.setWheelsToXMode();
+            return;
+        }
+
         // First, we need to check if we've been asked to move at all. If not, we should look at the last time we were given a commanded direction
         // and keep the wheels pointed that way. That prevents the wheels from returning to "0" degrees when the driver has gone back to 
         // neutral joystick position.
         boolean isNotMoving = translate.getMagnitude() < this.minTranslateSpeed.get() && Math.abs(rotate) < this.minRotationalSpeed.get();
 
-        if (isNotMoving)
-        {
+        if (isNotMoving) {
             translate = lastCommandedDirection;
             rotate = lastCommandedRotation;
         }
@@ -274,8 +289,8 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
         // One optional step - we can choose to rotate around a specific point, rather than the center of the robot.
         Translation2d centerOfRotationTranslationMeters = new Translation2d(
-            centerOfRotationInches.x / BasePoseSubsystem.INCHES_IN_A_METER,
-            centerOfRotationInches.y / BasePoseSubsystem.INCHES_IN_A_METER);
+                centerOfRotationInches.x / BasePoseSubsystem.INCHES_IN_A_METER,
+                centerOfRotationInches.y / BasePoseSubsystem.INCHES_IN_A_METER);
         SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(twistedChassisSpeeds, centerOfRotationTranslationMeters);
 
         // Another potentially optional step - it's possible that in the calculations above, one or more swerve modules could be asked to
@@ -309,7 +324,21 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         if (translate.getMagnitude() > 0.02 || Math.abs(rotate) > 0.02) {
             lastCommandedDirection = translate;
             lastCommandedRotation = rotate;
-        }        
+        }
+    }
+
+    public void setActivateBrakeOverride(boolean activateBrakeOverride) {
+        this.activateBrakeOverride = activateBrakeOverride;
+    }
+
+    public void setWheelsToXMode() {
+        SwerveModuleState frontLeft = new SwerveModuleState(0, new Rotation2d(+45));
+        SwerveModuleState frontRight = new SwerveModuleState(0, new Rotation2d(-45));
+        this.getFrontLeftSwerveModuleSubsystem().setTargetState(frontLeft);
+        this.getFrontRightSwerveModuleSubsystem().setTargetState(frontRight);
+        this.getRearLeftSwerveModuleSubsystem().setTargetState(frontRight);
+        this.getRearRightSwerveModuleSubsystem().setTargetState(frontLeft);
+
     }
 
     /***
@@ -359,6 +388,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     /**
      * Meant to be used alongside methods such as {@link #controlOnlyActiveSwerveModuleSubsystem(double, double)} )}.
      * Has no effect when the robot is in normal, "Maintainer" operation.
+     *
      * @param activeModule Which module to set as the active module.
      */
     public void setActiveModule(SwerveModuleLocation activeModule) {
@@ -395,7 +425,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     private SwerveModuleSubsystem getActiveSwerveModuleSubsystem() {
         return this.getSwerveModuleSubsystem(this.activeModule);
     }
-    
+
     private void stopInactiveModules() {
         SwerveModuleLocation[] values = SwerveModuleLocation.values();
         for (SwerveModuleLocation value : values) {
@@ -407,7 +437,7 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
 
     public void setDesiredHeading(double heading) {
         desiredHeading = heading;
-        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix()+"DesiredHeading", getDesiredHeading());
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix() + "DesiredHeading", getDesiredHeading());
     }
 
     public double getDesiredHeading() {
@@ -417,7 +447,8 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     /**
      * Controls the drive power and steering power of the active module. Stops all other modules.
      * Intended for use when you want to investigate a single module without moving all the others.
-     * @param drivePower -1 to 1 power to apply to the drive component.
+     *
+     * @param drivePower    -1 to 1 power to apply to the drive component.
      * @param steeringPower -1 to 1 power to apply to the steering component.
      */
     public void controlOnlyActiveSwerveModuleSubsystem(double drivePower, double steeringPower) {
@@ -426,12 +457,28 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     }
 
     private SwerveModuleState[] getSwerveModuleStates() {
-        return new SwerveModuleState[] {
+        return new SwerveModuleState[]{
                 getFrontLeftSwerveModuleSubsystem().getCurrentState(),
                 getFrontRightSwerveModuleSubsystem().getCurrentState(),
                 getRearLeftSwerveModuleSubsystem().getCurrentState(),
                 getRearRightSwerveModuleSubsystem().getCurrentState()
         };
+    }
+
+    public double getVelocityMaintainerXTarget() {
+        return velocityMaintainerXTarget;
+    }
+
+    public void setVelocityMaintainerXTarget(double velocityMaintainerXTarget) {
+        this.velocityMaintainerXTarget = (velocityMaintainerXTarget);
+    }
+
+    public double getPositionMaintainerXTarget() {
+        return positionMaintainerXTarget;
+    }
+
+    public void setPositionMaintainerXTarget(double positionMaintainerXTarget) {
+        this.positionMaintainerXTarget = positionMaintainerXTarget;
     }
 
     public void refreshDataFrame() {
@@ -440,6 +487,8 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         rearLeftSwerveModuleSubsystem.refreshDataFrame();
         rearRightSwerveModuleSubsystem.refreshDataFrame();
 
-        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix()+"CurrentSwerveState", getSwerveModuleStates());
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix() + "CurrentSwerveState", getSwerveModuleStates());
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix() + "PositionMaintainerXTarget", positionMaintainerXTarget);
+        org.littletonrobotics.junction.Logger.getInstance().recordOutput(this.getPrefix() + "VelocityMaintainerXTarget", velocityMaintainerXTarget);
     }
 }

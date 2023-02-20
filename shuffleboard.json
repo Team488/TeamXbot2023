@@ -1,0 +1,2076 @@
+{
+  "tabPane": [
+    {
+      "title": "Swerve",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_title": "/SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,0": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Drive PID",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Preferences/SwerveDriveSubsystem/PID/P",
+                  "_title": "P",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Preferences/SwerveDriveSubsystem/PID/I",
+                  "_title": "I",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Preferences/SwerveDriveSubsystem/PID/D",
+                  "_title": "D",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Preferences/SwerveSteeringSubsystem/PowerScaleFactor",
+              "_title": "Steering scale",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Front Left",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/FrontLeftDrive/CurrentModuleHeading",
+                  "_title": "CurrentModuleHeading",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/FrontLeftDrive/TargetRotation",
+                  "_title": "TargetRotation",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/TargetVelocity",
+                  "_title": "TargetVelocity",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Front Right",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/FrontRightDrive/CurrentModuleHeading",
+                  "_title": "CurrentModuleHeading",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/FrontRightDrive/TargetRotation",
+                  "_title": "TargetRotation",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontRightDrive/TargetVelocity",
+                  "_title": "TargetVelocity",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Rear Left",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/RearLeftDrive/CurrentModuleHeading",
+                  "_title": "CurrentModuleHeading",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/RearLeftDrive/TargetRotation",
+                  "_title": "TargetRotation",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/TargetVelocity",
+                  "_title": "TargetVelocity",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "6,2": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Rear Right",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/RearRightDrive/CurrentModuleHeading",
+                  "_title": "CurrentModuleHeading",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/RearRightDrive/TargetRotation",
+                  "_title": "TargetRotation",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearRightDrive/TargetVelocity",
+                  "_title": "TargetVelocity",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Target Movement",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/DriveSubsystem/TranslationXMetersPerSecond",
+                  "_title": "TranslationXMetersPerSecond",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/DriveSubsystem/TranslationYMetersPerSecond",
+                  "_title": "TranslationYMetersPerSecond",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/DriveSubsystem/RotationTargetRadians",
+                  "_title": "RotationTargetRadians",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/PID/P",
+              "_title": "SmartDashboard/SwerveSteeringSubsystem/PID/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/PID/D",
+              "_title": "SmartDashboard/SwerveSteeringSubsystem/PID/D",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveWithJoysticksCommand/Power Factor",
+              "_title": "SmartDashboard/SwerveDriveWithJoysticksCommand/Power Factor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveWithJoysticksCommand/Input Exponent",
+              "_title": "SmartDashboard/SwerveDriveWithJoysticksCommand/Input Exponent",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveWithJoysticksCommand/Turn Power Factor",
+              "_title": "/SmartDashboard/SwerveDriveWithJoysticksCommand/Turn Power Factor",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/OperatorInterface/Driver Deadband",
+              "_title": "SmartDashboard/OperatorInterface/Driver Deadband",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveWithJoysticksCommand/Absolute Orientation Mode",
+              "_title": "SmartDashboard/SwerveDriveWithJoysticksCommand/Absolute Orientation Mode",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveWithJoysticksCommand/Min Magnitude For Absolute Heading",
+              "_title": "SmartDashboard/SwerveDriveWithJoysticksCommand/Min Magnitude For Absolute Heading",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/VelocityMaintainerXTarget",
+              "_title": "SmartDashboard/DriveSubsystem/VelocityMaintainerXTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/BalanceState",
+              "_title": "SmartDashboard/AutoBalanceCommand/BalanceState",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveVelocity/P",
+              "_title": "SmartDashboard/DriveVelocity/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current pitch",
+              "_title": "SmartDashboard/PoseSubsystem/Current pitch",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Swerve Details",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/TargetVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/TargetVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontRightDrive/TargetVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontRightDrive/TargetVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/TargetVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/TargetVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearRightDrive/TargetVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearRightDrive/TargetVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/DriveNeo/Voltage",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/DriveNeo/Voltage",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearRightDrive/DriveNeo/Voltage",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearRightDrive/DriveNeo/Voltage",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/DriveNeo/Voltage",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/DriveNeo/Voltage",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearRightDrive/DriveNeo/Voltage",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearRightDrive/DriveNeo/Voltage",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Arduino",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/ArduinoState",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/ArduinoState",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/ArduinoBinaryString",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/ArduinoBinaryString",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/DIO0",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/DIO0",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/DIO1",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/DIO1",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/DIO2",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/DIO2",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/DIO3",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/DIO3",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/AllianceDIO",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/AllianceDIO",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ArduinoCommunicationSubsystem/AnalogOutput",
+              "_title": "/SmartDashboard/ArduinoCommunicationSubsystem/AnalogOutput",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Odometry",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_title": "SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Total distance X",
+              "_title": "SmartDashboard/PoseSubsystem/Total distance X",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Total distance Y",
+              "_title": "SmartDashboard/PoseSubsystem/Total distance Y",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/CurrentVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/CurrentVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontRightDrive/CurrentVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontRightDrive/CurrentVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/CurrentVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearLeftDrive/CurrentVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/RearRightDrive/CurrentVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/RearRightDrive/CurrentVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveToPointCommand/Direction to target",
+              "_title": "SmartDashboard/SwerveToPointCommand/Direction to target",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Swerve To Point Debug",
+              "_title": "/SmartDashboard/Swerve To Point Debug",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/OperatorCommandMap/OI/SwerveToPointTargetAngle",
+              "_title": "/SmartDashboard/OperatorCommandMap/OI/SwerveToPointTargetAngle",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/OperatorCommandMap/OI/SwerveToPointTargetX",
+              "_title": "/SmartDashboard/OperatorCommandMap/OI/SwerveToPointTargetX",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/OperatorCommandMap/OI/SwerveToPointTargetY",
+              "_title": "/SmartDashboard/OperatorCommandMap/OI/SwerveToPointTargetY",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              6,
+              4
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Field",
+              "_title": "/SmartDashboard/Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "A2023_Charged_Up",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "RotationalPIDs",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/P",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/D",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/D",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/Min Output",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/Min Output",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_title": "SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/Max Output",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/Max Output",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/Enable error threshold",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/Enable error threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/Error threshold",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/Error threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/OffTargetReason",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/OffTargetReason",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/Enable time threshold",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/Enable time threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/HeadingPID/Time threshold",
+              "_title": "SmartDashboard/DriveSubsystem/HeadingPID/Time threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/CurrentVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/CurrentVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/TargetVelocity",
+              "_title": "SmartDashboard/SwerveDriveSubsystem/FrontLeftDrive/TargetVelocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "TranslationalPIDs",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/P",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/D",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/D",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/Max Output",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/Max Output",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/Min Output",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/Min Output",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/OffTargetReason",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/OffTargetReason",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/Enable error threshold",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/Enable error threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/Enable time threshold",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/Enable time threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/Time threshold",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/Time threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveSubsystem/PositionPID/Error threshold",
+              "_title": "SmartDashboard/DriveSubsystem/PositionPID/Error threshold",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Steering Motor Controller PID",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "1,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Motor controller PID values",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kP",
+                  "_title": "P",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kI",
+                  "_title": "I",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kD",
+                  "_title": "D",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kFF",
+                  "_title": "FF",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kMinOutput",
+                  "_title": "MinOutput",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kMaxOutput",
+                  "_title": "MaxOutput",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringMotorPidSubsystem/kClosedLoopRampRate",
+                  "_title": "SmartDashboard/SwerveSteeringMotorPidSubsystem/kClosedLoopRampRate",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "3,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Auto calibrate motor encoder",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Toggle Switch",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/FrontLeftDrive/SwerveSteeringMaintainerCommand/EnableAutomaticMotorControllerCalibration",
+                  "_title": "Enable Front Left",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Toggle Switch",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/FrontRightDrive/SwerveSteeringMaintainerCommand/EnableAutomaticMotorControllerCalibration",
+                  "_title": "Enable Front Right",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Toggle Switch",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/RearLeftDrive/SwerveSteeringMaintainerCommand/EnableAutomaticMotorControllerCalibration",
+                  "_title": "Enable Rear Left",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Toggle Switch",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/RearRightDrive/SwerveSteeringMaintainerCommand/EnableAutomaticMotorControllerCalibration",
+                  "_title": "Enable Rear Right",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/MaxEncoderDriftDegrees",
+                  "_title": "Max acceptable drift degrees",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              ]
+            }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/Commit steering pid values/running",
+              "_title": "SmartDashboard/Commit steering pid values/running",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/SwerveSteeringSubsystem/UseMotorControllerPID",
+              "_title": "Use Motor Controller PID",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Collection",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/ejectPower",
+              "_title": "SmartDashboard/CollectorSubsystem/ejectPower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/intakePower",
+              "_title": "SmartDashboard/CollectorSubsystem/intakePower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorStage2/Forward Power",
+              "_title": "SmartDashboard/CollectorStage2/Forward Power",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorStage2/Reverse Power",
+              "_title": "SmartDashboard/CollectorStage2/Reverse Power",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ConveyerSubsystem/Forward Power",
+              "_title": "SmartDashboard/ConveyerSubsystem/Forward Power",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ConveyerSubsystem/Reverse Power",
+              "_title": "SmartDashboard/ConveyerSubsystem/Reverse Power",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
+              "_title": "/SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Shooting",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/CurrentRPM",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/CurrentRPM",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/SafePower",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/SafePower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/TrimRPM",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/TrimRPM",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kP",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kP",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kI",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kI",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kD",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kD",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/TargetRPM",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/TargetRPM",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/SafeRpm",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/SafeRpm",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/NearShotRpm",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/NearShotRpm",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/DistanceShotRpm",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/DistanceShotRpm",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/HotDogRpm",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/HotDogRpm",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
+              "_title": "SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Within Tolerance",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Within Tolerance",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Is Time Stable",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Is Time Stable",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Subsystem Ready",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Subsystem Ready",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Tolerance",
+              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Tolerance",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Autonomous",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_title": "SmartDashboard/PoseSubsystem/CurrentHeading",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Total distance X",
+              "_title": "SmartDashboard/PoseSubsystem/Total distance X",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Total distance Y",
+              "_title": "SmartDashboard/PoseSubsystem/Total distance Y",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBasicMobilityPoints",
+              "_title": "SmartDashboard/AutoPrograms/SetBasicMobilityPoints",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Auto Program State",
+              "_title": "SmartDashboard/Auto Program State",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Current autonomous command name",
+              "_title": "SmartDashboard/Current autonomous command name",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Rumble Warning",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
+              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
+              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
+              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
+              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Arm",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/P",
+              "_title": "SmartDashboard/AutoBalanceCommand/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current pitch",
+              "_title": "SmartDashboard/PoseSubsystem/Current pitch",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current roll",
+              "_title": "SmartDashboard/PoseSubsystem/Current roll",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/D",
+              "_title": "SmartDashboard/AutoBalanceCommand/D",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Calibrated",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/Calibrated",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/RightMotor/kP",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/RightMotor/kP",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/RightMotor/kMaxOutput",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/RightMotor/kMaxOutput",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/RightMotor/kMinOutput",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/RightMotor/kMinOutput",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kP",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kP",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kMaxOutput",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kMaxOutput",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kMinOutput",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kMinOutput",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/AbsoluteEncoderPosition",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/AbsoluteEncoderPosition",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/AbsoluteEncoderPosition",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/AbsoluteEncoderPosition",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/UpperLimitInDegrees",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/UpperLimitInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/usePitchCompensation",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/usePitchCompensation",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/invertPitchCompensation",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/invertPitchCompensation",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/invertPitchCompensation",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/invertPitchCompensation",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/UpperLimitInDegrees",
+              "_title": "/SmartDashboard/UnifiedArmSubsystem/LowerArm/UpperLimitInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/LowerLimitInDegrees",
+              "_title": "/SmartDashboard/UnifiedArmSubsystem/LowerArm/LowerLimitInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -7.199999809265137,
+    "y": -7.199999809265137,
+    "width": 1550.4000244140625,
+    "height": 830.4000244140625
+  }
+}
