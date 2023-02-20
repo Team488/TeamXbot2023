@@ -2,8 +2,8 @@ package competition.subsystems.arm.commands;
 
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import edu.wpi.first.math.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xbot.common.command.BaseSetpointCommand;
 
 import javax.inject.Inject;

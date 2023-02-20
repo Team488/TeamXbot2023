@@ -36,6 +36,9 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
     public void testArmsGoForward(){
         // Check arms are not moving
         checkArmPowers(0,0);
+        ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(90/360.0);
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(0/360.0);
+        arms.refreshDataFrame();
 
         controlArmsWithJoyStickCommand.initialize();
 

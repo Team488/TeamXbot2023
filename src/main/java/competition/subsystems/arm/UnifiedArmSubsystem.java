@@ -92,6 +92,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
         pf.setPrefix(this);
         calibratedProp = pf.createEphemeralProperty("Calibrated", false);
         targetPosition = getCurrentValue();
+        areBrakesEngaged = true;
     }
 
     public XYPair getKeyArmCoordinates(KeyArmPosition keyArmPosition, RobotFacing facing){
@@ -224,7 +225,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
      */
     @Override
     public void setPower(XYPair power) {
-        if (areBrakesEngaged.get()) {
+        if (areBrakesEngaged) {
             lowerArm.setPower(0);
         } else {
             lowerArm.setPower(power.x);
@@ -233,7 +234,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        if (areBrakesEngaged.get()) {
+        if (areBrakesEngaged) {
             lowerArm.setPower(0);
         } else {
             lowerArm.setArmToAngle(lowerArmAngle);
@@ -287,7 +288,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
     }
 
     public boolean areBrakesEngaged() {
-        return areBrakesEngaged.get();
+        return areBrakesEngaged;
     }
 
     public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {

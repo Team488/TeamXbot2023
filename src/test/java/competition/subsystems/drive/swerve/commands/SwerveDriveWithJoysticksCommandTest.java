@@ -1,11 +1,8 @@
 package competition.subsystems.drive.swerve.commands;
 
 import competition.subsystems.drive.DriveSubsystem;
-<<<<<<< HEAD
-=======
 import competition.subsystems.pose.MockPoseSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
->>>>>>> main
 import org.junit.Test;
 
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;

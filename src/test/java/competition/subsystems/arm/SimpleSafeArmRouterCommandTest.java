@@ -34,7 +34,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         // -------------------------------------------
         // Going to first transition point
         // -------------------------------------------
-
+        arms.refreshDataFrame();
         routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
         routerCommand.initialize();
@@ -55,10 +55,12 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
 
         // Now move the arm to the transition point.
         setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Forward);
+        arms.refreshDataFrame();
         maintainer.execute();
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
         assertFalse(arms.isMaintainerAtGoal());
         timer.advanceTimeInSecondsBy(10);
+        arms.refreshDataFrame();
         maintainer.execute();
         assertTrue(arms.isMaintainerAtGoal());
 
@@ -71,13 +73,16 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
         assertFalse(routerCommand.isFinished());
 
+        arms.refreshDataFrame();
         maintainer.execute();
         // Now move the arm to the high goal point.
         setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
+        arms.refreshDataFrame();
         maintainer.execute();
         assertFalse(arms.isMaintainerAtGoal());
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
         timer.advanceTimeInSecondsBy(10);
+        arms.refreshDataFrame();
         maintainer.execute();
         assertTrue(arms.isMaintainerAtGoal());
 
@@ -91,7 +96,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
     public void testCrossFacingRoute() {
         // Same facing, just going from neutral state to high state.
         setArmAngles(85, -90);
-
+        arms.refreshDataFrame();
         // -------------------------------------------
         // Going to first transition point (forward)
         // -------------------------------------------
@@ -106,6 +111,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Forward);
         assertFalse(routerCommand.isFinished());
 
+        arms.refreshDataFrame();
         maintainer.initialize();
         maintainer.execute();
 
@@ -116,10 +122,12 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
 
         // Now move the arm to the transition point.
         setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Forward);
+        arms.refreshDataFrame();
         maintainer.execute();
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
         assertFalse(arms.isMaintainerAtGoal());
         timer.advanceTimeInSecondsBy(10);
+        arms.refreshDataFrame();
         maintainer.execute();
         assertTrue(arms.isMaintainerAtGoal());
 
@@ -132,13 +140,16 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Backward);
         assertFalse(routerCommand.isFinished());
 
+        arms.refreshDataFrame();
         maintainer.execute();
         // Now move the arm to the transition point.
         setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Backward);
+        arms.refreshDataFrame();
         maintainer.execute();
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
         assertFalse(arms.isMaintainerAtGoal());
         timer.advanceTimeInSecondsBy(10);
+        arms.refreshDataFrame();
         maintainer.execute();
         assertTrue(arms.isMaintainerAtGoal());
 
@@ -151,12 +162,15 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Backward);
         assertFalse(routerCommand.isFinished());
 
+        arms.refreshDataFrame();
         maintainer.execute();
         // Now move the arm to the high goal point.
         setArmAnglesFromKeyArmPositionAndFacing(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Backward);
+        arms.refreshDataFrame();
         maintainer.execute();
         // We'll need to advance time and maintain again to get the "is at target" flag to be set.
         timer.advanceTimeInSecondsBy(10);
+        arms.refreshDataFrame();
         maintainer.execute();
         assertTrue(arms.isMaintainerAtGoal());
 

@@ -59,11 +59,11 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         arms.setBrake(true);
         // The brakes are engaged by default, which means they are the "de-energized" state on
         // the actual solenoid.
-        assertTrue(arms.areBrakesEngaged.get());
+        assertTrue(arms.areBrakesEngaged);
         assertFalse(arms.lowerArmBrakeSolenoid.getAdjusted());
 
         arms.setBrake(false);
-        assertTrue(!arms.areBrakesEngaged.get());
+        assertTrue(!arms.areBrakesEngaged);
         assertTrue(arms.lowerArmBrakeSolenoid.getAdjusted());
     }
 
