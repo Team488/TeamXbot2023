@@ -43,7 +43,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final Latch useVisionToUpdateGyroLatch;
     private final BooleanProperty allianceAwareFieldProp;
     private final BooleanProperty useVisionForPoseProp;
-    private final Latch useVisionToUpdateGyroLatch;
 
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
@@ -84,9 +83,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
                this.setCurrentPoseInMeters(getVisionAssistedPositionInMeters());
            }
         });
-        // creating matchtime doubleProperty
-        matchTime = propManager.createEphemeralProperty("Time", DriverStation.getMatchTime());
-
     }
 
     /**
