@@ -51,17 +51,34 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair highGoalPosition = new XYPair(4*12, 3*12);
 
     // Key angles for the lower and upper arms (in degrees)
-    public static XYPair fullyRetractedAngles = new XYPair(90, -90);
-    public static XYPair lowerGoalCubeAngles = new XYPair(67.1 , -69.5);
-    public static XYPair midGoalCubeAngles = new XYPair(75.6, -20);
-    public static XYPair highGoalCubeAngles = new XYPair(47.2, 16.85);
-    public static XYPair lowerGoalConeAngles = new XYPair(67.1,-69.5);
-    public static XYPair midGoalConeAngles = new XYPair(80.2,0.35);
-    public static XYPair highGoalConeAngles = new XYPair(47.5,29.8);
+    public static XYPair fullyRetractedAngles = new XYPair(90, 0);
+    // TODO: Replace these with new direct measurements (since the arm geometry is changing anyway)
+    public static XYPair lowerGoalCubeAngles = new XYPair(
+            67.1 ,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1, -69.5));
+    public static XYPair midGoalCubeAngles = new XYPair(
+            75.6,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75.6,-20));
 
+    public static XYPair highGoalCubeAngles = new XYPair(
+            47.2,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.2,16.85));
+    public static XYPair lowerGoalConeAngles = new XYPair(
+            67.1,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1,-69.5));
+    public static XYPair midGoalConeAngles = new XYPair(
+            80.2,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(80.2, 0.35));
+    public static XYPair highGoalConeAngles = new XYPair(
+            47.5,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.5,29.8));
 
-    public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
-    public static XYPair safeExternalTransitionAngles = new XYPair(100, -10);
+    public static XYPair acquireFromCollectorAngles = new XYPair(
+            75,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75,-90));
+    public static XYPair safeExternalTransitionAngles = new XYPair(
+            100,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(100,-10));
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 

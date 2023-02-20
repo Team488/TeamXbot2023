@@ -93,4 +93,11 @@ public class ArmPositionSolver {
     public static double getUpperArmAngleNeededToAchieveRobotFrameAngle(double lowerArmRadians, double desiredRobotFrameRadians) {
         return desiredRobotFrameRadians - (lowerArmRadians + MathUtils.Tau/2.0);
     }
+
+    public static double convertOldArmAngleToNewArmAngle(double oldLowerArmAngle, double oldUpperArmAngle) {
+        return getUpperArmAngleNeededToAchieveRobotFrameAngle(
+                oldLowerArmAngle / 180.0 * Math.PI,
+                oldUpperArmAngle / 180.0 * Math.PI
+        );
+    }
 }
