@@ -50,7 +50,7 @@ public class OperatorCommandMap {
 
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
-            SetRobotHeadingCommand resetHeading,
+            Provider<SetRobotHeadingCommand> headingProvider,
             DriveSubsystem drive,
             PoseSubsystem pose,
             DebuggingSwerveWithJoysticksCommand debugSwerve,
@@ -60,12 +60,20 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
+        SetRobotHeadingCommand resetHeading = headingProvider.get();
+        SetRobotHeadingCommand forwardHeading = headingProvider.get();
+        SetRobotHeadingCommand backwardHeading = headingProvider.get();
         resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        resetHeading.includeOnSmartDashboard("Robot Start Heading");
 
+
+        forwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        backwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
+        forwardHeading.includeOnSmartDashboard("setHeadingForward");
+        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
-
         StartEndCommand enableVisionRotation = new StartEndCommand(
                 () -> drive.setRotateToHubActive(true),
                 () -> drive.setRotateToHubActive(false));
@@ -76,6 +84,7 @@ public class OperatorCommandMap {
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
+
 
         NamedInstantCommand enableCollectorRotation =
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
