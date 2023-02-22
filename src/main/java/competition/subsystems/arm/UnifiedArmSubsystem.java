@@ -36,7 +36,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         HighGoal,
         FullyRetracted,
         AcquireFromCollector,
-        SafeExternalTransition
+        SafeExternalTransition,
+        StartingPosition
     }
 
     public enum RobotFacing {
@@ -62,6 +63,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
     public static XYPair safeExternalTransitionAngles = new XYPair(110, -20);
+    public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -118,6 +120,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             case FullyRetracted:
                 candidate = fullyRetractedPosition;
                 break;
+
             default:
                 break;
         }
@@ -165,6 +168,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                 break;
             case SafeExternalTransition:
                 candidate = safeExternalTransitionAngles;
+                break;
+            case StartingPosition:
+                candidate = startingPositionAngles;
                 break;
             default:
                 break;

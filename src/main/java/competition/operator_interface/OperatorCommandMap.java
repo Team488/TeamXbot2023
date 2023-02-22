@@ -161,7 +161,8 @@ public class OperatorCommandMap {
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
-            ClawSubsystem claw) {
+            ClawSubsystem claw,
+            Provider<SetArmsToPositionCommand> armPositionCommandProvider) {
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -176,6 +177,11 @@ public class OperatorCommandMap {
                     log.info("Setting cone mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
                 });
+
+        // Include on SmartDashboard only, since this is only expected to be used in pit
+        SetArmsToPositionCommand armToStartingPosition = armPositionCommandProvider.get();
+        armToStartingPosition.setTargetPosition(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
+        armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setCubeMode);
