@@ -66,10 +66,11 @@ public class OperatorCommandMap {
         resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         resetHeading.includeOnSmartDashboard("Robot Start Heading");
 
-        SetRobotHeadingCommand setForward = new SetRobotHeadingCommand("Set Heading Forward",() -> forwardHeading.setHeadingToApply(0) );
-        SetRobotHeadingCommand setBackward = new SetRobotHeadingCommand("Set Heading Backward",() -> backwardHeading.setHeadingToApply(180));
-        setForward.includeOnSmartDashboard("setHeadingForward");
-        setBackward.includeOnSmartDashboard("setHeadingBackward");
+
+        forwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        backwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
+        forwardHeading.includeOnSmartDashboard("setHeadingForward");
+        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
