@@ -61,9 +61,15 @@ public class OperatorCommandMap {
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
         SetRobotHeadingCommand resetHeading = headingProvider.get();
+        SetRobotHeadingCommand forwardHeading = headingProvider.get();
+        SetRobotHeadingCommand backwardHeading = headingProvider.get();
         resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         resetHeading.includeOnSmartDashboard("Robot Start Heading");
 
+        SetRobotHeadingCommand setForward = new SetRobotHeadingCommand("Set Heading Forward",() -> forwardHeading.setHeadingToApply(0) );
+        SetRobotHeadingCommand setBackward = new SetRobotHeadingCommand("Set Heading Backward",() -> backwardHeading.setHeadingToApply(180));
+        setForward.includeOnSmartDashboard("setHeadingForward");
+        setBackward.includeOnSmartDashboard("setHeadingBackward");
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
