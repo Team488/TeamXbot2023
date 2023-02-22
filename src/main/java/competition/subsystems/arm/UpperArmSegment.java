@@ -30,13 +30,13 @@ public class UpperArmSegment extends ArmSegment {
     @Inject
     public UpperArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory, PoseSubsystem pose){
-        super("UnifiedArmSubsystem/UpperArm", propFactory, pose, 90, -270);
+        super("UnifiedArmSubsystem/UpperArm", propFactory, pose, 180, -180);
         String prefix = "UnifiedArmSubsystem/UpperArm";
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -200);
-        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 20);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -120);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 120);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
