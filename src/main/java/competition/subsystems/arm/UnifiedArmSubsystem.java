@@ -269,7 +269,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public void setPitchCompensation(boolean enabled) {
         this.lowerArm.setPitchCompensation(enabled);
-        this.upperArm.setPitchCompensation(enabled);
+        // No need to pitch compensate the upper arm now that it's linked to the lower arm
+        // (no longer a four-bar)
     }
 
     public void setIsCalibrated(boolean isCalibrated) {
