@@ -29,7 +29,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
     @Test
     public void testSimpleRoute() {
         // Same facing, just going from neutral state to high state.
-        setArmAngles(85, -90);
+        setArmAngles(85, 15);
 
         // -------------------------------------------
         // Going to first transition point
@@ -89,8 +89,8 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
 
     @Test
     public void testCrossFacingRoute() {
-        // Same facing, just going from neutral state to high state.
-        setArmAngles(85, -90);
+        // Cross facing, going from neutral state on the front to high state on the reverse side.
+        setArmAngles(85, 15);
 
         // -------------------------------------------
         // Going to first transition point (forward)
@@ -168,7 +168,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
 
     @Test
     public void testSafeExternalTransitionAsGoal() {
-        setArmAngles(85, -90);
+        setArmAngles(85, 15);
         routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Backward);
         routerCommand.initialize();
 
