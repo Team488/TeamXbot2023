@@ -40,8 +40,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     public enum ArduinoStateMessage {
         RobotNotBooted(0),
         RobotDisabled(1),
-        RobotEnabled(2),
-        ShooterAtSpeed(4);
+        RobotEnabled(2);
 
         private int value;
 
