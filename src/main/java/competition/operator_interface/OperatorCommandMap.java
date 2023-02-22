@@ -3,7 +3,7 @@ package competition.operator_interface;
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.arm.commands.SetArmsToPositionCommand;
+import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
@@ -162,7 +162,7 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
-            Provider<SetArmsToPositionCommand> armPositionCommandProvider) {
+            Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider) {
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -179,8 +179,8 @@ public class OperatorCommandMap {
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
-        SetArmsToPositionCommand armToStartingPosition = armPositionCommandProvider.get();
-        armToStartingPosition.setTargetPosition(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
+        SimpleSafeArmRouterCommand armToStartingPosition = armPositionCommandProvider.get();
+        armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
