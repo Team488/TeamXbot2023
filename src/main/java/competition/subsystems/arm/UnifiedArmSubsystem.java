@@ -61,7 +61,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1, -69.5));
     public static XYPair midGoalCubeAngles = new XYPair(
             75.6,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75.6,-20));
+            45.0);
 
     public static XYPair highGoalCubeAngles = new XYPair(
             47.2,
@@ -71,7 +71,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1,-69.5));
     public static XYPair midGoalConeAngles = new XYPair(
             80.2,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(80.2, 0.35));
+            70.0);
     public static XYPair highGoalConeAngles = new XYPair(
             47.5,
             ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.5,29.8));
@@ -81,7 +81,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             ArmPositionSolver.convertOldArmAngleToNewArmAngle(75,-90));
     public static XYPair safeExternalTransitionAngles = new XYPair(
             100,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(100,-10));
+            90);
     // :todo add correct values for all the angles
     public static XYPair groundAngle = new XYPair(90,0);
     public static XYPair loadingTrayAngle = new XYPair(90,0);
@@ -220,8 +220,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public static XYPair mirrorArmAngles(XYPair angles) {
         // The lower arm needs to be mirrored around 90 degrees.
-        // The upper arm needs to be mirrored around -90 degrees.
-        return new XYPair(180 - angles.x, -180 - angles.y);
+        // The upper arm needs to be mirrored around 0 degrees.
+        return new XYPair(180 - angles.x, -angles.y);
     }
 
     @Override

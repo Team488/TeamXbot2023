@@ -60,7 +60,7 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
-        resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
@@ -162,7 +162,8 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
-            Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider) {
+            Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
+            SimpleSafeArmRouterCommand router) {
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -190,26 +191,29 @@ public class OperatorCommandMap {
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting first test position");
-                    arm.setTargetValue(new XYPair(47.2, 16.85));
+                    arm.setTargetValue(new XYPair(90.0, 0));
                 });
 
         InstantCommand secondTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting second test position");
-                    arm.setTargetValue(new XYPair(75.6, -20.1));
+                    arm.setTargetValue(new XYPair(90.0, 90));
                 });
 
         InstantCommand thirdTestPosition = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting third test position");
-                    arm.setTargetValue(new XYPair(67.1, -69.5));
+                    arm.setTargetValue(new XYPair(70, 70));
                 });
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(firstTestPosition);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(secondTestPosition);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(thirdTestPosition);
+
+        router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(router);
 
         oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
