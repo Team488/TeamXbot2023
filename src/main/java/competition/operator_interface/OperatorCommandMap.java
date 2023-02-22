@@ -139,8 +139,15 @@ public class OperatorCommandMap {
                 () -> drive.setIsRobotOrientedDrive(true),
                 () -> drive.setIsRobotOrientedDrive(false));
 
+        StartEndCommand activatePrecisionTranslation = new StartEndCommand(
+                () -> drive.setPrecisionTranslationActive(true),
+                () -> drive.setPrecisionTranslationActive(false)
+        );
+
+        ParallelCommandGroup activatePrecisionRotAndTrans = new ParallelCommandGroup(activatePrecisionRotation, activatePrecisionTranslation);
+
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
-        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotAndTrans);
     }
 
     @Inject
