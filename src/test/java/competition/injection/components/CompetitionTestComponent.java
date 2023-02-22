@@ -16,6 +16,7 @@ import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParamete
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.swerve.SwerveSteeringMotorPidSubsystem;
+import competition.subsystems.lights.LightsCommunicationSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import dagger.Component;
 import xbot.common.injection.modules.MockControlsModule;
@@ -30,7 +31,7 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
 
     public abstract ElectricalContract electricalContract();
 
-    public abstract VisionSubsystem visionSubsystem();
+    public abstract LightsCommunicationSubsystem lightsCommunicationSubsystem();
 
     public abstract SwerveDriveWithJoysticksCommand swerveDriveWithJoysticksCommand();
 
