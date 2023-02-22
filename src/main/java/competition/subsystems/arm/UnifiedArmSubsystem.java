@@ -31,12 +31,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         Cube,
     }
     public enum KeyArmPosition {
+        Ground,
+        LoadingTray,
         LowGoal,
         MidGoal,
         HighGoal,
         FullyRetracted,
         AcquireFromCollector,
-        SafeExternalTransition
+        SafeExternalTransition,
+        StartingPosition
     }
 
     public enum RobotFacing {
@@ -79,6 +82,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair safeExternalTransitionAngles = new XYPair(
             100,
             ArmPositionSolver.convertOldArmAngleToNewArmAngle(100,-10));
+
+    // :todo add correct values for all the angles
+    public static XYPair groundAngle = new XYPair(90,0);
+    public static XYPair loadingTrayAngle = new XYPair(90,0);
+    public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -135,6 +143,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             case FullyRetracted:
                 candidate = fullyRetractedPosition;
                 break;
+
             default:
                 break;
         }
@@ -173,6 +182,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                 }
                 break;
 
+            case Ground:
+                candidate = groundAngle;
+                break;
+            case LoadingTray:
+                candidate = loadingTrayAngle;
+                break;
 
             case FullyRetracted:
                 candidate = fullyRetractedAngles;
@@ -182,6 +197,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                 break;
             case SafeExternalTransition:
                 candidate = safeExternalTransitionAngles;
+                break;
+            case StartingPosition:
+                candidate = startingPositionAngles;
                 break;
             default:
                 break;
