@@ -21,6 +21,7 @@ import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -198,6 +199,33 @@ public class OperatorCommandMap {
                 }
         );
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
+
+        //turn on soft limits
+        InstantCommand setSoftLimits = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Turning on soft limits");
+                    arm.setSoftLimits(true);
+                }
+        );
+        SmartDashboard.putData("EnableSoftLimits", setSoftLimits);
+
+        //disable soft limits
+        InstantCommand disableSoftLimits = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Turning off soft limits");
+                    arm.setSoftLimits(false);
+                }
+        );
+        SmartDashboard.putData("Turn off soft limits", disableSoftLimits);
+        //engage brake
+        InstantCommand engageBrake = new InstantCommand(()-> arm.setBrake(true));
+        SmartDashboard.putData("EngageBreak",engageBrake);
+        //disable brake
+        InstantCommand disableBreak = new InstantCommand(()-> arm.setBrake(false));
+        SmartDashboard.putData("DisableBreak",disableBreak);
+
         //open claw using left bumper
         InstantCommand openClaw = new InstantCommand(
                 () -> {
