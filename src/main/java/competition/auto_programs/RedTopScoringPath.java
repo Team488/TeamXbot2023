@@ -46,14 +46,16 @@ public class RedTopScoringPath extends SequentialCommandGroup{
         turn180AndGoToCommunitySideMidCheckpoint.setFieldRelativeMotion();
         turn180AndGoToCommunitySideMidCheckpoint.setMaxPower(0.5);
         turn180AndGoToCommunitySideMidCheckpoint.setMaxTurningPower(0.5);
-        turn180AndGoToCommunitySideMidCheckpoint.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        turn180AndGoToCommunitySideMidCheckpoint.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         var goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint = swerveToPointProvider.get();
         redPose = converter.convertBluetoRed(landmarks.blueUpperGamePieceSideMidCheckpoint);
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setFieldRelativeMotion();
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setMaxPower(0.5);
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setMaxTurningPower(0.5);
-        goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         this.addCommands(turn180AndGoToCommunitySideMidCheckpoint);
 

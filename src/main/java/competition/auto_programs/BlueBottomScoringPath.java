@@ -9,21 +9,24 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import xbot.common.math.XYPair;
 
-public class BlueBottomScoringPath extends SequentialCommandGroup{
+public class BlueBottomScoringPath extends SequentialCommandGroup {
     @Inject
-    BlueBottomScoringPath(Provider<SwerveToPointCommand> swerveToPointProvider,PoseSubsystem pose, AutoLandmarks landmarks)
-    {
-        InstantCommand resetPosition = new InstantCommand(() -> pose.setCurrentPosition(landmarks.blueScoringPositionOne.getX(), landmarks.blueScoringPositionOne.getY()));
+    BlueBottomScoringPath(Provider<SwerveToPointCommand> swerveToPointProvider, PoseSubsystem pose, AutoLandmarks landmarks) {
+        InstantCommand resetPosition = new InstantCommand(
+                () -> pose.setCurrentPosition(landmarks.blueScoringPositionOne.getX(), landmarks.blueScoringPositionOne.getY()));
         this.addCommands(resetPosition);
 
-        InstantCommand setHeading = new InstantCommand(() -> pose.setCurrentHeading(landmarks.blueScoringPositionOne.getRotation().getDegrees()));
+        InstantCommand setHeading = new InstantCommand(
+                () -> pose.setCurrentHeading(landmarks.blueScoringPositionOne.getRotation().getDegrees()));
         this.addCommands(setHeading);
 
         var turn180AndGoToGamePiece = swerveToPointProvider.get();
         turn180AndGoToGamePiece.setFieldRelativeMotion();
         turn180AndGoToGamePiece.setMaxPower(0.5);
         turn180AndGoToGamePiece.setMaxTurningPower(0.5);
-        turn180AndGoToGamePiece.setTargetPosition(new XYPair(landmarks.blueGamePieceLower.getX(), landmarks.blueGamePieceLower.getY()), landmarks.blueGamePieceLower.getRotation().getDegrees());
+        turn180AndGoToGamePiece.setTargetPosition(
+                new XYPair(landmarks.blueGamePieceLower.getX(), landmarks.blueGamePieceLower.getY()),
+                landmarks.blueGamePieceLower.getRotation().getDegrees());
 
         this.addCommands(turn180AndGoToGamePiece);
 
@@ -31,7 +34,9 @@ public class BlueBottomScoringPath extends SequentialCommandGroup{
         returnToScoringZone.setFieldRelativeMotion();
         returnToScoringZone.setMaxPower(0.5);
         returnToScoringZone.setMaxTurningPower(0.5);
-        returnToScoringZone.setTargetPosition(new XYPair(landmarks.blueScoringPositionTwo.getX(), landmarks.blueScoringPositionTwo.getY()), landmarks.blueScoringPositionTwo.getRotation().getDegrees());
+        returnToScoringZone.setTargetPosition(
+                new XYPair(landmarks.blueScoringPositionTwo.getX(),landmarks.blueScoringPositionTwo.getY()),
+                landmarks.blueScoringPositionTwo.getRotation().getDegrees());
 
         this.addCommands(returnToScoringZone);
 
@@ -39,7 +44,9 @@ public class BlueBottomScoringPath extends SequentialCommandGroup{
         turn180AndGoToCommunitySideMidCheckpoint.setFieldRelativeMotion();
         turn180AndGoToCommunitySideMidCheckpoint.setMaxPower(0.5);
         turn180AndGoToCommunitySideMidCheckpoint.setMaxTurningPower(0.5);
-        turn180AndGoToCommunitySideMidCheckpoint.setTargetPosition(new XYPair(landmarks.blueLowerCommunitySideMidCheckpoint.getX(),landmarks.blueLowerCommunitySideMidCheckpoint.getY()), landmarks.blueLowerCommunitySideMidCheckpoint.getRotation().getDegrees());
+        turn180AndGoToCommunitySideMidCheckpoint.setTargetPosition(
+                new XYPair(landmarks.blueLowerCommunitySideMidCheckpoint.getX(), landmarks.blueLowerCommunitySideMidCheckpoint.getY()),
+                landmarks.blueLowerCommunitySideMidCheckpoint.getRotation().getDegrees());
 
         this.addCommands(turn180AndGoToCommunitySideMidCheckpoint);
 
@@ -47,15 +54,19 @@ public class BlueBottomScoringPath extends SequentialCommandGroup{
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setFieldRelativeMotion();
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setMaxPower(0.5);
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setMaxTurningPower(0.5);
-        goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setTargetPosition(new XYPair(landmarks.blueLowerGamePieceSideMidCheckpoint.getX(),landmarks.blueLowerGamePieceSideMidCheckpoint.getY()), landmarks.blueLowerGamePieceSideMidCheckpoint.getRotation().getDegrees());
+        goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setTargetPosition(
+                new XYPair(landmarks.blueLowerGamePieceSideMidCheckpoint.getX(), landmarks.blueLowerGamePieceSideMidCheckpoint.getY()),
+                landmarks.blueLowerGamePieceSideMidCheckpoint.getRotation().getDegrees());
 
         this.addCommands(goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint);
-        
+
         var goFromMidCheckpointToGamePiece = swerveToPointProvider.get();
         goFromMidCheckpointToGamePiece.setFieldRelativeMotion();
         goFromMidCheckpointToGamePiece.setMaxPower(0.5);
         goFromMidCheckpointToGamePiece.setMaxTurningPower(0.5);
-        goFromMidCheckpointToGamePiece.setTargetPosition(new XYPair(landmarks.blueGamePieceSecondLower.getX(),landmarks.blueGamePieceSecondLower.getY()), landmarks.blueGamePieceSecondLower.getRotation().getDegrees());
+        goFromMidCheckpointToGamePiece.setTargetPosition(
+                new XYPair(landmarks.blueGamePieceSecondLower.getX(), landmarks.blueGamePieceSecondLower.getY()),
+                landmarks.blueGamePieceSecondLower.getRotation().getDegrees());
 
         this.addCommands(goFromMidCheckpointToGamePiece);
 
@@ -63,7 +74,9 @@ public class BlueBottomScoringPath extends SequentialCommandGroup{
         goFromGamePieceToMidCheckpoint.setFieldRelativeMotion();
         goFromGamePieceToMidCheckpoint.setMaxPower(0.5);
         goFromGamePieceToMidCheckpoint.setMaxTurningPower(0.5);
-        goFromGamePieceToMidCheckpoint.setTargetPosition(new XYPair(landmarks.blueLowerGamePieceSideMidCheckpoint.getX(),landmarks.blueLowerGamePieceSideMidCheckpoint.getY()), landmarks.blueLowerGamePieceSideMidCheckpoint.getRotation().getDegrees());
+        goFromGamePieceToMidCheckpoint.setTargetPosition(
+                new XYPair(landmarks.blueLowerGamePieceSideMidCheckpoint.getX(), landmarks.blueLowerGamePieceSideMidCheckpoint.getY()),
+                landmarks.blueLowerGamePieceSideMidCheckpoint.getRotation().getDegrees());
 
         this.addCommands(goFromGamePieceToMidCheckpoint);
 
@@ -71,7 +84,9 @@ public class BlueBottomScoringPath extends SequentialCommandGroup{
         goFromMidCheckpointToOtherMidCheckpoint.setFieldRelativeMotion();
         goFromMidCheckpointToOtherMidCheckpoint.setMaxPower(0.5);
         goFromMidCheckpointToOtherMidCheckpoint.setMaxTurningPower(0.5);
-        goFromMidCheckpointToOtherMidCheckpoint.setTargetPosition(new XYPair(landmarks.blueLowerCommunitySideMidCheckpoint.getX(),landmarks.blueLowerCommunitySideMidCheckpoint.getY()), landmarks.blueLowerCommunitySideMidCheckpoint.getRotation().getDegrees());
+        goFromMidCheckpointToOtherMidCheckpoint.setTargetPosition(
+                new XYPair(landmarks.blueLowerCommunitySideMidCheckpoint.getX(), landmarks.blueLowerCommunitySideMidCheckpoint.getY()),
+                landmarks.blueLowerCommunitySideMidCheckpoint.getRotation().getDegrees());
 
         this.addCommands(goFromMidCheckpointToOtherMidCheckpoint);
 
@@ -79,7 +94,9 @@ public class BlueBottomScoringPath extends SequentialCommandGroup{
         finalReturnToScoringZone.setFieldRelativeMotion();
         finalReturnToScoringZone.setMaxPower(0.5);
         finalReturnToScoringZone.setMaxTurningPower(0.5);
-        finalReturnToScoringZone.setTargetPosition(new XYPair(landmarks.blueScoringPositionThree.getX(),landmarks.blueScoringPositionThree.getY()), landmarks.blueScoringPositionThree.getRotation().getDegrees());
+        finalReturnToScoringZone.setTargetPosition(
+                new XYPair(landmarks.blueScoringPositionThree.getX(), landmarks.blueScoringPositionThree.getY()),
+                landmarks.blueScoringPositionThree.getRotation().getDegrees());
 
         this.addCommands(finalReturnToScoringZone);
     }

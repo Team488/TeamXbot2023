@@ -46,14 +46,16 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
         turn180AndGoToCommunitySideMidCheckpoint.setFieldRelativeMotion();
         turn180AndGoToCommunitySideMidCheckpoint.setMaxPower(0.5);
         turn180AndGoToCommunitySideMidCheckpoint.setMaxTurningPower(0.5);
-        turn180AndGoToCommunitySideMidCheckpoint.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        turn180AndGoToCommunitySideMidCheckpoint.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         var goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint = swerveToPointProvider.get();
         redPose = converter.convertBluetoRed(landmarks.blueLowerGamePieceSideMidCheckpoint);
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setFieldRelativeMotion();
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setMaxPower(0.5);
         goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setMaxTurningPower(0.5);
-        goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        goFromCommunitySideMidCheckpointToGamePieceSideCheckpoint.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         this.addCommands(turn180AndGoToCommunitySideMidCheckpoint);
 
@@ -62,7 +64,8 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
         goFromMidCheckpointToGamePiece.setFieldRelativeMotion();
         goFromMidCheckpointToGamePiece.setMaxPower(0.5);
         goFromMidCheckpointToGamePiece.setMaxTurningPower(0.5);
-        goFromMidCheckpointToGamePiece.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        goFromMidCheckpointToGamePiece.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         this.addCommands(goFromMidCheckpointToGamePiece);
 
@@ -71,7 +74,8 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
         goFromGamePieceToMidCheckpoint.setFieldRelativeMotion();
         goFromGamePieceToMidCheckpoint.setMaxPower(0.5);
         goFromGamePieceToMidCheckpoint.setMaxTurningPower(0.5);
-        goFromGamePieceToMidCheckpoint.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        goFromGamePieceToMidCheckpoint.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         this.addCommands(goFromGamePieceToMidCheckpoint);
 
@@ -80,7 +84,8 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
         goFromMidCheckpointToOtherMidCheckpoint.setFieldRelativeMotion();
         goFromMidCheckpointToOtherMidCheckpoint.setMaxPower(0.5);
         goFromMidCheckpointToOtherMidCheckpoint.setMaxTurningPower(0.5);
-        goFromMidCheckpointToOtherMidCheckpoint.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        goFromMidCheckpointToOtherMidCheckpoint.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         this.addCommands(goFromMidCheckpointToOtherMidCheckpoint);
 
@@ -89,7 +94,8 @@ public class RedBottomScoringPath extends SequentialCommandGroup{
         finalReturnToScoringZone.setFieldRelativeMotion();
         finalReturnToScoringZone.setMaxPower(0.5);
         finalReturnToScoringZone.setMaxTurningPower(0.5);
-        finalReturnToScoringZone.setTargetPosition(new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
+        finalReturnToScoringZone.setTargetPosition(
+                new XYPair(redPose.getX(), redPose.getY()), redPose.getRotation().getDegrees());
 
         this.addCommands(finalReturnToScoringZone);
     }
