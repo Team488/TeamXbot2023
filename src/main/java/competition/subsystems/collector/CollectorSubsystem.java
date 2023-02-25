@@ -1,6 +1,8 @@
 package competition.subsystems.collector;
 
 import competition.electrical_contract.ElectricalContract;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XSolenoid;
@@ -24,6 +26,15 @@ public class CollectorSubsystem extends BaseSubsystem {
         Retracted
     }
 
+    public enum CollectionState {
+        Safe,
+        Collecting,
+        Holding,
+        Ejecting
+    }
+
+    private CollectionState currentCollectionState = CollectionState.Safe;
+
     @Inject
     public CollectorSubsystem(XCANSparkMax.XCANSparkMaxFactory sparkMaxFactory, PropertyFactory pf,
                               XSolenoid.XSolenoidFactory xSolenoidFactory,
@@ -38,6 +49,14 @@ public class CollectorSubsystem extends BaseSubsystem {
         intakePower = pf.createPersistentProperty("intakePower",1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
 
+    }
+
+    public void setCollectionState(CollectionState state) {
+        currentCollectionState = state;
+    }
+
+    public CollectionState getCollectionState() {
+        return currentCollectionState;
     }
 
     private void changeCollector(CollectorState state){
@@ -77,5 +96,29 @@ public class CollectorSubsystem extends BaseSubsystem {
         setMotorPower(0);
     }
 
+    public Command getCollectThenRetractCommand() {
+        return Commands.startEnd(
+                () -> {
+                    log.info("Collecting");
+                    this.intake();
+                    this.extend();
+                },
+                () -> {
+                    this.retract();
+                },
+                this);
+    }
 
+    public Command getEjectThenStopCommand() {
+        return Commands.startEnd(
+                () -> {
+                    log.info("Ejecting");
+                    this.retract();
+                    this.eject();
+                },
+                () -> {
+                    this.stop();
+                },
+                this);
+    }
 }
