@@ -38,7 +38,14 @@ public class UnifiedArmMaintainerTest extends BaseCompetitionTest {
         arms.setTargetValue(new XYPair(maintainer.getLowerArmErrorThresholdToEngageBrake() - 0.1, -90));
         maintainer.execute();
 
-        // Since we are very close to our target, the brake should engage.
+        // Since we are very close to our target, but this is just the first time we've been close, the brakes should not engage.
+        assertFalse(arms.areBrakesEngaged());
+
+        // Wait a while
+        timer.advanceTimeInSecondsBy(2);
+
+        // Now that we've been close for a while, the brakes should engage.
+        maintainer.execute();
         assertTrue(arms.areBrakesEngaged());
 
         // To test hysterisis, move the position just outside the threshold.
