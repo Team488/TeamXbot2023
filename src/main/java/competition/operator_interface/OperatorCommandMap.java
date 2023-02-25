@@ -16,10 +16,12 @@ import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
+import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -42,6 +44,8 @@ import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Maps operator interface buttons to commands
@@ -55,6 +59,7 @@ public class OperatorCommandMap {
 
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
+            SetRobotHeadingCommand resetHeadingCube,
             Provider<SetRobotHeadingCommand> headingProvider,
             DriveSubsystem drive,
             PoseSubsystem pose,
@@ -66,6 +71,7 @@ public class OperatorCommandMap {
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
 
+        resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
         SetRobotHeadingCommand backwardHeading = headingProvider.get();
         SetRobotHeadingCommand resetHeading = headingProvider.get();
@@ -78,11 +84,19 @@ public class OperatorCommandMap {
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
 
+        NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
+                () -> pose.setCurrentPosition(70, 102));
+        ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
+
+        StartEndCommand enableVisionRotation = new StartEndCommand(
+                () -> drive.setRotateToHubActive(true),
+                () -> drive.setRotateToHubActive(false));
+
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
+
         oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
-
 
         NamedInstantCommand enableCollectorRotation =
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
@@ -161,7 +175,8 @@ public class OperatorCommandMap {
     public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
-                                        BasicMobilityPoints basicMobilityPoints) {
+                                        BasicMobilityPoints basicMobilityPoints,
+                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -169,6 +184,27 @@ public class OperatorCommandMap {
         var setBasicMobilityPoints = setAutonomousCommandProvider.get();
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
+
+        swerveSimpleTrajectoryCommand.setMaxPower(0.66);
+        swerveSimpleTrajectoryCommand.setMaxTurningPower(0.4);
+        XbotSwervePoint backAwayFromGoal = new XbotSwervePoint(76, 102, -180, 0.5);
+        XbotSwervePoint finishBackAway = new XbotSwervePoint(82, 102, 0, 0.5);
+        XbotSwervePoint goSouth = new XbotSwervePoint(82, 30, 0, 1.0);
+        XbotSwervePoint goEast = new XbotSwervePoint(220, 30, 0, 2.0);
+        XbotSwervePoint goNorth = new XbotSwervePoint(220, 102, 0, 1.0);
+        XbotSwervePoint mantleChargePad = new XbotSwervePoint(160, 102, 0, 1.0);
+
+        swerveSimpleTrajectoryCommand.setKeyPoints(
+                new ArrayList<>(List.of(
+                        backAwayFromGoal,
+                        finishBackAway,
+                        goSouth,
+                        goEast,
+                        goNorth,
+                        mantleChargePad
+                )));
+
+        oi.driverGamepad.getPovIfAvailable(90).onTrue(swerveSimpleTrajectoryCommand);
     }
 
     @Inject
