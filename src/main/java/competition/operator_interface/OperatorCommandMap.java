@@ -224,6 +224,8 @@ public class OperatorCommandMap {
         setHigh.setTarget(KeyArmPosition.HighGoal, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setRetract = armPositionCommandProvider.get();
         setRetract.setTarget(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setGround = armPositionCommandProvider.get();
+        setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
@@ -285,7 +287,7 @@ public class OperatorCommandMap {
                 }
         );
         //Use left of dpad to retract collector
-        oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
+        //oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
 
         InstantCommand extend = new InstantCommand(
                 () ->{
@@ -295,7 +297,7 @@ public class OperatorCommandMap {
                 }
         );
         //Use right of dpad to extend collector
-        oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
+        //oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
 
         //Use right trigger to collect game piece
         InstantCommand collect = new InstantCommand(
