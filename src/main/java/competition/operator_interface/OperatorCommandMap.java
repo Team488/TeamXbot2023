@@ -3,6 +3,7 @@ package competition.operator_interface;
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.auto_programs.BlueCommunitySideToChargeStation;
+import competition.auto_programs.BlueMoveOutToFieldAndOntoChargePad;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
@@ -178,7 +179,8 @@ public class OperatorCommandMap {
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
                                         SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand,
-                                        BlueCommunitySideToChargeStation blueCommunitySideToChargeStation) {
+                                        BlueCommunitySideToChargeStation blueCommunitySideToChargeStation,
+                                        BlueMoveOutToFieldAndOntoChargePad blueMoveOutToFieldAndOntoChargePad) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -190,6 +192,10 @@ public class OperatorCommandMap {
         var setBlueCommunitySideToChargeStation = setAutonomousCommandProvider.get();
         setBlueCommunitySideToChargeStation.setAutoCommand(blueCommunitySideToChargeStation);
         setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueCommunitySideToChargeStation");
+
+        var setBlueMoveOutToFieldAndOntoChargePad = setAutonomousCommandProvider.get();
+        setBlueMoveOutToFieldAndOntoChargePad.setAutoCommand(blueMoveOutToFieldAndOntoChargePad);
+        setBlueMoveOutToFieldAndOntoChargePad.includeOnSmartDashboard("AutoPrograms/SetBlueMoveOutToFieldAndOntoChargePad");
 
 
         swerveSimpleTrajectoryCommand.setMaxPower(0.66);
