@@ -7,11 +7,12 @@ import competition.subsystems.drive.commands.XbotSwervePoint;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
-
 public class BlueMoveOutToFieldAndOntoChargePad extends SequentialCommandGroup {
+    @Inject
     BlueMoveOutToFieldAndOntoChargePad(Provider<AutoBalanceCommand> autoBalanceCommandProvider, SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand, AutoLandmarks landmarks, UnifiedArmSubsystem armSubsystem){
         InstantCommand setPitchCompensation = new InstantCommand(() -> armSubsystem.setPitchCompensation(true));
         this.addCommands(setPitchCompensation);
