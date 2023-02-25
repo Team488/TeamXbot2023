@@ -2,6 +2,7 @@ package competition.operator_interface;
 
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
+import competition.auto_programs.BlueCommunitySideToChargeStation;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
@@ -176,7 +177,8 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
-                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand) {
+                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand,
+                                        BlueCommunitySideToChargeStation blueCommunitySideToChargeStation) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -184,6 +186,11 @@ public class OperatorCommandMap {
         var setBasicMobilityPoints = setAutonomousCommandProvider.get();
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
+
+        var setBlueCommunitySideToChargeStation = setAutonomousCommandProvider.get();
+        setBlueCommunitySideToChargeStation.setAutoCommand(blueCommunitySideToChargeStation);
+        setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueCommunitySideToChargeStation");
+
 
         swerveSimpleTrajectoryCommand.setMaxPower(0.66);
         swerveSimpleTrajectoryCommand.setMaxTurningPower(0.4);
