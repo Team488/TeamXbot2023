@@ -299,27 +299,8 @@ public class OperatorCommandMap {
         //Use right of dpad to extend collector
         //oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
 
-        //Use right trigger to collect game piece
-        InstantCommand collect = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Collecting");
-                    collector.intake();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(collect);
-
-        //Use left trigger to eject game piece
-        InstantCommand eject = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Ejecting");
-                    collector.eject();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(eject);
-
-
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
     }
 
