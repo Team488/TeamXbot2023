@@ -13,6 +13,7 @@ import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineDeciderFactory;
 import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineMode;
 import xbot.common.logic.Latch;
 import xbot.common.logic.Latch.EdgeType;
+import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
@@ -173,6 +174,19 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get()) {
                 // If the magnitude is greater than the minimum magnitude, we can use the joystick to set the heading.
                 desiredHeading = headingVector.getAngle();
+
+                // Force the desired heading into one of four quadrants:
+                // -45 to 45
+                // 45 to 135
+                // 135 to 225
+                // 225 to 315
+
+                // First, we need to normalize the angle to be between -45 and 315
+                desiredHeading = ContiguousDouble.reboundValue(desiredHeading, -45, 315);
+
+                // Now, we can use the modulus operator to get the quadrant.
+                int quadrant = (int) (desiredHeading / 90);
+                desiredHeading = quadrant * 90;
                 
                 if (pose.getHeadingResetRecently()) {
                     drive.setDesiredHeading(pose.getCurrentHeading().getDegrees());
