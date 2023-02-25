@@ -3,7 +3,12 @@ package competition.auto_programs;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
+import javax.inject.Inject;
+
 public class AutoLandmarks {
+    @Inject
+    public AutoLandmarks() { }
+
     // Every game piece coordinate
     public Pose2d blueGamePieceUpper = new Pose2d(261,182, Rotation2d.fromDegrees(0));
     public Pose2d blueGamePieceSecondUpper = new Pose2d(261,131, Rotation2d.fromDegrees(0));
