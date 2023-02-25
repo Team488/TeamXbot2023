@@ -163,17 +163,17 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public DeviceInfo getArduinoDio0() {
-        return new DeviceInfo(0);
+        return new DeviceInfo(8);
     }
 
     @Override
     public DeviceInfo getArduinoDio1() {
-        return new DeviceInfo(1);
+        return new DeviceInfo(9);
     }
 
     @Override
     public DeviceInfo getArduinoDio2() {
-        return new DeviceInfo(2);
+        return new DeviceInfo(10);
     }
 
     @Override

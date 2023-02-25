@@ -65,25 +65,20 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
-        SetRobotHeadingCommand resetHeading = headingProvider.get();
+
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
         SetRobotHeadingCommand backwardHeading = headingProvider.get();
-        resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
-
-        forwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
-        backwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
+        SetRobotHeadingCommand resetHeading = headingProvider.get();
+        resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
         forwardHeading.includeOnSmartDashboard("setHeadingForward");
         backwardHeading.includeOnSmartDashboard("setHeadingBackward");
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
-        StartEndCommand enableVisionRotation = new StartEndCommand(
-                () -> drive.setRotateToHubActive(true),
-                () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
-
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
@@ -181,8 +176,9 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
-            CollectorSubsystem collector,
-            Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider) {
+            Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
+            SimpleSafeArmRouterCommand router,
+            CollectorSubsystem collector) {
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
         setLow.setTarget(KeyArmPosition.LowGoal, RobotFacing.Forward);
@@ -217,49 +213,13 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        // Calibrate upper arm against the absolute encoder
-        InstantCommand calibrateUpperArm = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("CalibratingArms");
-                    arm.calibrateAgainstAbsoluteEncoders();
-                }
-        );
-        SmartDashboard.putData("Calibrate upper arm", calibrateUpperArm);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
 
-        /*
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setCubeMode);
-        */
+        router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
-        InstantCommand setSoftLimits = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Turning on soft limits");
-                    arm.setSoftLimits(true);
-                }
-        );
-        SmartDashboard.putData("EnableSoftLimits", setSoftLimits);
-
-        //disable soft limits
-        InstantCommand disableSoftLimits = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Turning off soft limits");
-                    arm.setSoftLimits(false);
-                }
-        );
-        SmartDashboard.putData("Turn off soft limits", disableSoftLimits);
-        //engage brake
-        InstantCommand engageBrake = new InstantCommand(()-> arm.setBrake(true));
-        SmartDashboard.putData("EngageBreak",engageBrake);
-        //disable brake
-        InstantCommand disableBreak = new InstantCommand(()-> arm.setBrake(false));
-        SmartDashboard.putData("DisableBreak",disableBreak);
-
-
-        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(arm.createLowerArmTrimCommand(5.0));
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(arm.createLowerArmTrimCommand(-5.0));
 
         InstantCommand openClaw = new InstantCommand(
                 () -> {
