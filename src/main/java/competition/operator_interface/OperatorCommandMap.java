@@ -10,6 +10,7 @@ import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
+import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
@@ -58,18 +59,18 @@ public class OperatorCommandMap {
     }
 
     @Inject
-    public void setupDriveCommands(OperatorInterface oi,
+    public void setupDriveCommands(
+            OperatorInterface oi,
             SetRobotHeadingCommand resetHeadingCube,
             Provider<SetRobotHeadingCommand> headingProvider,
             DriveSubsystem drive,
             PoseSubsystem pose,
-            DebuggingSwerveWithJoysticksCommand debugSwerve,
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
-            VisionSubsystem vision,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
-            VelocityDriveWithJoysticksCommand velocityDrive) {
+            VelocityDriveWithJoysticksCommand velocityDrive,
+            BrakeCommand setWheelsToXMode) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -87,10 +88,6 @@ public class OperatorCommandMap {
         NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
                 () -> pose.setCurrentPosition(70, 102));
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
-
-        StartEndCommand enableVisionRotation = new StartEndCommand(
-                () -> drive.setRotateToHubActive(true),
-                () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
@@ -110,6 +107,8 @@ public class OperatorCommandMap {
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
+
+        oi.driverGamepad.getifAvailable(XboxButton.RightStick).whileTrue(setWheelsToXMode);
     }
 
     @Inject
@@ -224,6 +223,8 @@ public class OperatorCommandMap {
         setHigh.setTarget(KeyArmPosition.HighGoal, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setRetract = armPositionCommandProvider.get();
         setRetract.setTarget(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setGround = armPositionCommandProvider.get();
+        setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
@@ -249,8 +250,8 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
@@ -265,8 +266,8 @@ public class OperatorCommandMap {
                     claw.open();
                 }
         );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(openClaw);
         //close claw using right bumper
+
         InstantCommand closeClaw = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -274,7 +275,8 @@ public class OperatorCommandMap {
                     claw.close();
                 }
         );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw).whileFalse(closeClaw);
+
 
 
         InstantCommand retract = new InstantCommand(
@@ -285,7 +287,7 @@ public class OperatorCommandMap {
                 }
         );
         //Use left of dpad to retract collector
-        oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
+        //oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
 
         InstantCommand extend = new InstantCommand(
                 () ->{
@@ -295,29 +297,10 @@ public class OperatorCommandMap {
                 }
         );
         //Use right of dpad to extend collector
-        oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
+        //oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
 
-        //Use right trigger to collect game piece
-        InstantCommand collect = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Collecting");
-                    collector.intake();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(collect);
-
-        //Use left trigger to eject game piece
-        InstantCommand eject = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Ejecting");
-                    collector.eject();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(eject);
-
-
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
     }
 

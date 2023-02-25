@@ -59,7 +59,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair midGoalCubeAngles = new XYPair(77, 68);
     public static XYPair highGoalCubeAngles = new XYPair(55, 121);
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
-    public static XYPair midGoalConeAngles = new XYPair(82, 77);
+    public static XYPair midGoalConeAngles = new XYPair(82, 80);
     public static XYPair highGoalConeAngles = new XYPair(60, 130);
     public static XYPair acquireFromCollectorAngles = new XYPair(
             75,
@@ -89,7 +89,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         this.upperArm = upperArm;
         this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
-            36.0,
+            44.5,
             33.0,
             Rotation2d.fromDegrees(15.0),
             Rotation2d.fromDegrees(165.0),
@@ -98,7 +98,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         );
         solver = new ArmPositionSolver(armConfig);
         pf.setPrefix(this);
-        calibratedProp = pf.createEphemeralProperty("Calibrated", false);
+        calibratedProp = pf.createEphemeralProperty("Calibrated", true);
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
         areBrakesEngaged = pf.createEphemeralProperty("AreBrakesEngaged", false);
