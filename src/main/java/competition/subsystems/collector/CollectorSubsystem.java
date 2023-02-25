@@ -26,15 +26,6 @@ public class CollectorSubsystem extends BaseSubsystem {
         Retracted
     }
 
-    public enum CollectionState {
-        Safe,
-        Collecting,
-        Holding,
-        Ejecting
-    }
-
-    private CollectionState currentCollectionState = CollectionState.Safe;
-
     @Inject
     public CollectorSubsystem(XCANSparkMax.XCANSparkMaxFactory sparkMaxFactory, PropertyFactory pf,
                               XSolenoid.XSolenoidFactory xSolenoidFactory,
@@ -49,14 +40,6 @@ public class CollectorSubsystem extends BaseSubsystem {
         intakePower = pf.createPersistentProperty("intakePower",1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
 
-    }
-
-    public void setCollectionState(CollectionState state) {
-        currentCollectionState = state;
-    }
-
-    public CollectionState getCollectionState() {
-        return currentCollectionState;
     }
 
     private void changeCollector(CollectorState state){
