@@ -144,7 +144,7 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public DeviceInfo getUpperArmEncoder() {
-        return new DeviceInfo(1, true);
+        return new DeviceInfo(1, false);
     }
 
     public DeviceInfo getClawSolenoid() {return new DeviceInfo(0, false);}
@@ -160,4 +160,29 @@ public class CompetitionContract extends ElectricalContract {
     public boolean isCollectorReady() { return true; }
 
     public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo(2,false);}
+
+    @Override
+    public DeviceInfo getArduinoDio0() {
+        return new DeviceInfo(0);
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio1() {
+        return new DeviceInfo(1);
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio2() {
+        return new DeviceInfo(2);
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio3() {
+        return new DeviceInfo(11); // something on the navX, just out of the way
+    }
+
+    @Override
+    public DeviceInfo getArduinoAllianceDio() {
+        return new DeviceInfo(4);
+    }
 }

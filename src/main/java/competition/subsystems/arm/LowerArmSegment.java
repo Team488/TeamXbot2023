@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 
 import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
+import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
@@ -31,8 +32,8 @@ public class LowerArmSegment extends ArmSegment {
 
     @Inject
     public LowerArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
-                           ElectricalContract eContract, PropertyFactory propFactory){
-        super("UnifiedArmSubsystem/LowerArm", propFactory, 270, -90);
+                           ElectricalContract eContract, PropertyFactory propFactory, PoseSubsystem pose){
+        super("UnifiedArmSubsystem/LowerArm", propFactory, pose, 270, -90);
         String prefix = "UnifiedArmSubsystem/LowerArm";
 
         propFactory.setPrefix(prefix);
@@ -106,6 +107,8 @@ public class LowerArmSegment extends ArmSegment {
     @Override
     public void periodic() {
         super.periodic();
-        rightMotor.periodic();
+        if (isMotorReady()) {
+            rightMotor.periodic();
+        }
     }
 }

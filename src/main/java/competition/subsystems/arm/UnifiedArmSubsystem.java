@@ -18,21 +18,28 @@ import javax.inject.Singleton;
 @Singleton
 public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
-    LowerArmSegment lowerArm;
-    UpperArmSegment upperArm;
+    public LowerArmSegment lowerArm;
+    public UpperArmSegment upperArm;
     public XSolenoid lowerArmBrakeSolenoid;
     private XYPair targetPosition;
     public final ArmPositionSolver solver;
     private final DoubleProperty lowerArmTarget;
     private final DoubleProperty upperArmTarget;
-
+    private GamePieceMode gamePieceMode;
+    public enum GamePieceMode {
+        Cone,
+        Cube,
+    }
     public enum KeyArmPosition {
-        LowerGoal,
+        Ground,
+        LoadingTray,
+        LowGoal,
         MidGoal,
         HighGoal,
         FullyRetracted,
         AcquireFromCollector,
-        SafeExternalTransition
+        SafeExternalTransition,
+        StartingPosition
     }
 
     public enum RobotFacing {
@@ -47,13 +54,38 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair highGoalPosition = new XYPair(4*12, 3*12);
 
     // Key angles for the lower and upper arms (in degrees)
-    // TODO: Replace these with actual values from testing. For now, safe values of perfectly vertical arm.
-    public static XYPair fullyRetractedAngles = new XYPair(90, -90);
-    public static XYPair lowerGoalAngles = new XYPair(45, -45);
-    public static XYPair midGoalAngles = new XYPair(50, -15);
-    public static XYPair highGoalAngles = new XYPair(60, 0);
-    public static XYPair acquireFromCollectorAngles = new XYPair(75, -90);
-    public static XYPair safeExternalTransitionAngles = new XYPair(90, 0);
+    public static XYPair fullyRetractedAngles = new XYPair(90, 0);
+    // TODO: Replace these with new direct measurements (since the arm geometry is changing anyway)
+    public static XYPair lowerGoalCubeAngles = new XYPair(
+            67.1 ,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1, -69.5));
+    public static XYPair midGoalCubeAngles = new XYPair(
+            75.6,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75.6,-20));
+
+    public static XYPair highGoalCubeAngles = new XYPair(
+            47.2,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.2,16.85));
+    public static XYPair lowerGoalConeAngles = new XYPair(
+            67.1,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1,-69.5));
+    public static XYPair midGoalConeAngles = new XYPair(
+            80.2,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(80.2, 0.35));
+    public static XYPair highGoalConeAngles = new XYPair(
+            47.5,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.5,29.8));
+
+    public static XYPair acquireFromCollectorAngles = new XYPair(
+            75,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75,-90));
+    public static XYPair safeExternalTransitionAngles = new XYPair(
+            100,
+            ArmPositionSolver.convertOldArmAngleToNewArmAngle(100,-10));
+    // :todo add correct values for all the angles
+    public static XYPair groundAngle = new XYPair(90,0);
+    public static XYPair loadingTrayAngle = new XYPair(90,0);
+    public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -93,18 +125,24 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getKeyArmCoordinates(KeyArmPosition keyArmPosition, RobotFacing facing){
         XYPair candidate = new XYPair();
         switch (keyArmPosition){
-            case LowerGoal:
+            case LowGoal:
                 candidate = lowerGoalPosition;
                 break;
+
             case MidGoal:
                 candidate = midGoalPosition;
                 break;
+
             case HighGoal:
-                candidate = highGoalPosition;
+                candidate=highGoalPosition;
                 break;
+
+
+
             case FullyRetracted:
                 candidate = fullyRetractedPosition;
                 break;
+
             default:
                 break;
         }
@@ -117,15 +155,39 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getKeyArmAngles(KeyArmPosition keyArmPosition, RobotFacing facing) {
         XYPair candidate = new XYPair();
         switch (keyArmPosition) {
-            case LowerGoal:
-                candidate = lowerGoalAngles;
+            case LowGoal:
+                if(gamePieceMode == GamePieceMode.Cube){
+                    candidate = lowerGoalCubeAngles;
+                }
+                else{
+                    candidate = lowerGoalConeAngles;
+                }
                 break;
+
             case MidGoal:
-                candidate = midGoalAngles;
+                if(gamePieceMode == GamePieceMode.Cube){
+                    candidate = midGoalCubeAngles;
+                }
+                else{
+                    candidate = midGoalConeAngles;
+                }
                 break;
             case HighGoal:
-                candidate = highGoalAngles;
+                if(gamePieceMode == GamePieceMode.Cube){
+                    candidate = highGoalCubeAngles;
+                }
+                else{
+                    candidate = highGoalConeAngles;
+                }
                 break;
+
+            case Ground:
+                candidate = groundAngle;
+                break;
+            case LoadingTray:
+                candidate = loadingTrayAngle;
+                break;
+
             case FullyRetracted:
                 candidate = fullyRetractedAngles;
                 break;
@@ -134,6 +196,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                 break;
             case SafeExternalTransition:
                 candidate = safeExternalTransitionAngles;
+                break;
+            case StartingPosition:
+                candidate = startingPositionAngles;
                 break;
             default:
                 break;
@@ -144,10 +209,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return candidate;
     }
 
-    public RobotFacing getCurrentArmFacing() {
-        if (lowerArm.getArmPositionInDegrees() <= 90) {
+    public RobotFacing getCurrentEndEffectorFacing() {
+        if (getCurrentXZCoordinates().x > 0) {
             return RobotFacing.Forward;
-        } else {
+        }
+        else {
             return RobotFacing.Backward;
         }
     }
@@ -162,8 +228,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair getCurrentValue() {
 
         return new XYPair(
-                lowerArm.getArmPositionFromAbsoluteEncoderInDegrees(),
-                upperArm.getArmPositionFromAbsoluteEncoderInDegrees()
+                lowerArm.getArmPositionInDegrees(),
+                upperArm.getArmPositionInDegrees()
         );
         // Eventually do the smart thing. For now, just do angles.
         /*
@@ -172,6 +238,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             upperArm.getArmPositionInRadians());
 
          */
+    }
+
+    public XYPair getCurrentXZCoordinates() {
+        return solver.getPositionFromRadians(
+            lowerArm.getArmPositionInRadians(),
+            upperArm.getArmPositionInRadians());
     }
 
     @Override
@@ -212,6 +284,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return calibratedProp.get();
     }
 
+    public void setPitchCompensation(boolean enabled) {
+        this.lowerArm.setPitchCompensation(enabled);
+        // No need to pitch compensate the upper arm now that it's linked to the lower arm
+        // (no longer a four-bar)
+    }
+
     public void setIsCalibrated(boolean isCalibrated) {
         calibratedProp.set(isCalibrated);
     }
@@ -220,6 +298,30 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new InstantCommand(() -> {
             log.info("Forcing arms to uncalibrated mode. Only manual operation will be respected.");
             calibratedProp.set(false);
+        });
+    }
+
+    /**
+     * Adjusts the target lower arm angle by some number of degrees.
+     * @param trimAmount The number of degrees to change the target by.
+     * @return A command that changes the target.
+     */
+    public Command createLowerArmTrimCommand(double trimAmount) {
+        return new InstantCommand(() -> {
+            XYPair currentValue = getCurrentValue();
+            setTargetValue(new XYPair(currentValue.x + trimAmount, currentValue.y));
+        });
+    }
+
+    /**
+     * Adjusts the target upper arm angle by some number of degrees.
+     * @param trimAmount The number of degrees to change the target by.
+     * @return A command that changes the target.
+     */
+    public Command createUpperArmTrimCommand(double trimAmount) {
+        return new InstantCommand(() -> {
+            XYPair currentValue = getCurrentValue();
+            setTargetValue(new XYPair(currentValue.x, currentValue.y + trimAmount));
         });
     }
 
@@ -322,5 +424,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
         upperArm.periodic();
         lowerArm.periodic();
+    }
+
+    public void setGamePieceMode(GamePieceMode gamePiece){
+        this.gamePieceMode = gamePiece;
     }
 }
