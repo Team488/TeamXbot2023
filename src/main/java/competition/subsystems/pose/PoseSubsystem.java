@@ -36,6 +36,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private TimeStableValidator healthyPoseValidator = new TimeStableValidator(1);
     private final DoubleProperty suprisingVisionUpdateDistanceInMetersProp;
     private final BooleanProperty isPoseHealthyProp;
+    private final BooleanProperty automaticScoringInversion;
     private TimeStableValidator extremelyConfidentVisionValidator = new TimeStableValidator(10);
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
@@ -88,6 +89,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
         });
         // creating matchtime doubleProperty
         matchTime = propManager.createEphemeralProperty("Time", DriverStation.getMatchTime());
+        automaticScoringInversion = propManager.createPersistentProperty("autoScoringInversion", false);
 
     }
 
@@ -297,6 +299,10 @@ public class PoseSubsystem extends BasePoseSubsystem {
     }
     public DoubleProperty getMatchTime(){
         return matchTime;
+    }
+
+    public BooleanProperty getAutomaticScoringInversion(){
+        return automaticScoringInversion;
     }
 
 }
