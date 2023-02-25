@@ -98,7 +98,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         );
         solver = new ArmPositionSolver(armConfig);
         pf.setPrefix(this);
-        calibratedProp = pf.createEphemeralProperty("Calibrated", false);
+        calibratedProp = pf.createEphemeralProperty("Calibrated", true);
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
         areBrakesEngaged = pf.createEphemeralProperty("AreBrakesEngaged", false);
