@@ -1300,339 +1300,6 @@
       }
     },
     {
-      "title": "Collection",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "3,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/ejectPower",
-              "_title": "SmartDashboard/CollectorSubsystem/ejectPower",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "3,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/intakePower",
-              "_title": "SmartDashboard/CollectorSubsystem/intakePower",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/CollectorStage2/Forward Power",
-              "_title": "SmartDashboard/CollectorStage2/Forward Power",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/CollectorStage2/Reverse Power",
-              "_title": "SmartDashboard/CollectorStage2/Reverse Power",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ConveyerSubsystem/Forward Power",
-              "_title": "SmartDashboard/ConveyerSubsystem/Forward Power",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ConveyerSubsystem/Reverse Power",
-              "_title": "SmartDashboard/ConveyerSubsystem/Reverse Power",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
-              "_title": "/SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          }
-        }
-      }
-    },
-    {
-      "title": "Shooting",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "8,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/CurrentRPM",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/CurrentRPM",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/SafePower",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/SafePower",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/TrimRPM",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/TrimRPM",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "4,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kP",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kP",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kI",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kI",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kD",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterMaster/kD",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/TargetRPM",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/TargetRPM",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/SafeRpm",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/SafeRpm",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/NearShotRpm",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/NearShotRpm",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "8,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/DistanceShotRpm",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/DistanceShotRpm",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/HotDogRpm",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/HotDogRpm",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
-              "_title": "SmartDashboard/PrepareToFireCommand/Conveyor Reverse Time",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Within Tolerance",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Within Tolerance",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "8,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Is Time Stable",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Is Time Stable",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "6,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Subsystem Ready",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Subsystem Ready",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "5,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Tolerance",
-              "_title": "SmartDashboard/ShooterWheelSubsystem/ShooterWheelMaintainerCommand/Error Tolerance",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          }
-        }
-      }
-    },
-    {
       "title": "Autonomous",
       "autoPopulate": false,
       "autoPopulatePrefix": "",
@@ -2059,6 +1726,124 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/LowerLimitInDegrees",
               "_title": "/SmartDashboard/UnifiedArmSubsystem/LowerArm/LowerLimitInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Debug Commands",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "8,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Arm to starting position",
+              "_title": "SmartDashboard/Arm to starting position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Calibrate upper arm",
+              "_title": "SmartDashboard/Calibrate upper arm",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/DisableBreak",
+              "_title": "SmartDashboard/DisableBreak",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/EnableSoftLimits",
+              "_title": "SmartDashboard/EnableSoftLimits",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/EngageBreak",
+              "_title": "SmartDashboard/EngageBreak",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Turn off soft limits",
+              "_title": "SmartDashboard/Turn off soft limits",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/setHeadingBackward",
+              "_title": "SmartDashboard/setHeadingBackward",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/setHeadingForward",
+              "_title": "SmartDashboard/setHeadingForward",
               "_glyph": 148,
               "_showGlyph": false
             }
