@@ -55,27 +55,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     // Key angles for the lower and upper arms (in degrees)
     public static XYPair fullyRetractedAngles = new XYPair(90, 0);
-    // TODO: Replace these with new direct measurements (since the arm geometry is changing anyway)
-    public static XYPair lowerGoalCubeAngles = new XYPair(
-            67.1 ,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1, -69.5));
-    public static XYPair midGoalCubeAngles = new XYPair(
-            75.6,
-            45.0);
-
-    public static XYPair highGoalCubeAngles = new XYPair(
-            47.2,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.2,16.85));
-    public static XYPair lowerGoalConeAngles = new XYPair(
-            67.1,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(67.1,-69.5));
-    public static XYPair midGoalConeAngles = new XYPair(
-            80.2,
-            70.0);
-    public static XYPair highGoalConeAngles = new XYPair(
-            47.5,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(47.5,29.8));
-
+    public static XYPair lowerGoalCubeAngles = new XYPair(49, 35);
+    public static XYPair midGoalCubeAngles = new XYPair(77, 68);
+    public static XYPair highGoalCubeAngles = new XYPair(55, 121);
+    public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
+    public static XYPair midGoalConeAngles = new XYPair(82, 77);
+    public static XYPair highGoalConeAngles = new XYPair(60, 130);
     public static XYPair acquireFromCollectorAngles = new XYPair(
             75,
             ArmPositionSolver.convertOldArmAngleToNewArmAngle(75,-90));
@@ -83,8 +68,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             100,
             90);
     // :todo add correct values for all the angles
-    public static XYPair groundAngle = new XYPair(90,0);
-    public static XYPair loadingTrayAngle = new XYPair(90,0);
+    public static XYPair groundAngle = new XYPair(45, 28);
+    public static XYPair loadingTrayAngle = new XYPair(103, 60);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
@@ -136,8 +121,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             case HighGoal:
                 candidate=highGoalPosition;
                 break;
-
-
 
             case FullyRetracted:
                 candidate = fullyRetractedPosition;
