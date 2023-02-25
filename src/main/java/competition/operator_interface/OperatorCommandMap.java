@@ -268,7 +268,7 @@ public class OperatorCommandMap {
                     claw.open();
                 }
         );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(openClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(openClaw);
         //close claw using right bumper
         InstantCommand closeClaw = new InstantCommand(
                 () -> {
@@ -277,7 +277,7 @@ public class OperatorCommandMap {
                     claw.close();
                 }
         );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onFalse(closeClaw);
 
 
         InstantCommand retract = new InstantCommand(
