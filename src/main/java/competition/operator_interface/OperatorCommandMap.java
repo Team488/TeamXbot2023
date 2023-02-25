@@ -10,6 +10,7 @@ import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
+import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
@@ -59,17 +60,16 @@ public class OperatorCommandMap {
 
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
-            SetRobotHeadingCommand resetHeadingCube,
-            Provider<SetRobotHeadingCommand> headingProvider,
-            DriveSubsystem drive,
-            PoseSubsystem pose,
-            DebuggingSwerveWithJoysticksCommand debugSwerve,
-            GoToNextActiveSwerveModuleCommand nextModule,
-            SwerveDriveWithJoysticksCommand regularSwerve,
-            VisionSubsystem vision,
-            PositionMaintainerCommand positionMaintainer,
-            PositionDriveWithJoysticksCommand positionDrive,
-            VelocityDriveWithJoysticksCommand velocityDrive) {
+                                   SetRobotHeadingCommand resetHeadingCube,
+                                   Provider<SetRobotHeadingCommand> headingProvider,
+                                   DriveSubsystem drive,
+                                   PoseSubsystem pose,
+                                   GoToNextActiveSwerveModuleCommand nextModule,
+                                   SwerveDriveWithJoysticksCommand regularSwerve,
+                                   PositionMaintainerCommand positionMaintainer,
+                                   PositionDriveWithJoysticksCommand positionDrive,
+                                   VelocityDriveWithJoysticksCommand velocityDrive,
+                                   BrakeCommand setWheelsToXMode) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -87,10 +87,6 @@ public class OperatorCommandMap {
         NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
                 () -> pose.setCurrentPosition(70, 102));
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
-
-        StartEndCommand enableVisionRotation = new StartEndCommand(
-                () -> drive.setRotateToHubActive(true),
-                () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
@@ -110,6 +106,8 @@ public class OperatorCommandMap {
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
+
+        oi.driverGamepad.getifAvailable(XboxButton.RightStick).whileTrue(setWheelsToXMode);
     }
 
     @Inject
