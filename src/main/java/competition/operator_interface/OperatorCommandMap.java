@@ -264,8 +264,8 @@ public class OperatorCommandMap {
                     claw.open();
                 }
         );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(openClaw);
         //close claw using right bumper
+
         InstantCommand closeClaw = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -273,7 +273,8 @@ public class OperatorCommandMap {
                     claw.close();
                 }
         );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw).whileFalse(closeClaw);
+
 
 
         InstantCommand retract = new InstantCommand(
