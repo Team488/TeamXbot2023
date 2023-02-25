@@ -3,8 +3,11 @@ package competition.operator_interface;
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
+import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
@@ -21,12 +24,14 @@ import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.command.NamedInstantCommand;
+import xbot.common.command.SmartDashboardCommandPutter;
 import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -64,8 +69,6 @@ public class OperatorCommandMap {
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
         SetRobotHeadingCommand backwardHeading = headingProvider.get();
         resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
-        resetHeading.includeOnSmartDashboard("Robot Start Heading");
-
 
         forwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         backwardHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
@@ -178,7 +181,22 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
+            CollectorSubsystem collector,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider) {
+
+        SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
+        setLow.setTarget(KeyArmPosition.LowGoal, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setMid = armPositionCommandProvider.get();
+        setMid.setTarget(KeyArmPosition.MidGoal, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setHigh = armPositionCommandProvider.get();
+        setHigh.setTarget(KeyArmPosition.HighGoal, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setRetract = armPositionCommandProvider.get();
+        setRetract.setTarget(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
+
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -199,44 +217,49 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
+        // Calibrate upper arm against the absolute encoder
+        InstantCommand calibrateUpperArm = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("CalibratingArms");
+                    arm.calibrateAgainstAbsoluteEncoders();
+                }
+        );
+        SmartDashboard.putData("Calibrate upper arm", calibrateUpperArm);
+
+        /*
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setCubeMode);
+        */
 
-        InstantCommand firstTestPosition = new InstantCommand(
+        InstantCommand setSoftLimits = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting first test position");
-                    arm.setTargetValue(new XYPair(47.2, 16.85));
-                });
+                    log.info("Turning on soft limits");
+                    arm.setSoftLimits(true);
+                }
+        );
+        SmartDashboard.putData("EnableSoftLimits", setSoftLimits);
 
-        InstantCommand secondTestPosition = new InstantCommand(
+        //disable soft limits
+        InstantCommand disableSoftLimits = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting second test position");
-                    arm.setTargetValue(new XYPair(75.6, -20.1));
-                });
+                    log.info("Turning off soft limits");
+                    arm.setSoftLimits(false);
+                }
+        );
+        SmartDashboard.putData("Turn off soft limits", disableSoftLimits);
+        //engage brake
+        InstantCommand engageBrake = new InstantCommand(()-> arm.setBrake(true));
+        SmartDashboard.putData("EngageBreak",engageBrake);
+        //disable brake
+        InstantCommand disableBreak = new InstantCommand(()-> arm.setBrake(false));
+        SmartDashboard.putData("DisableBreak",disableBreak);
 
-        InstantCommand thirdTestPosition = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting third test position");
-                    arm.setTargetValue(new XYPair(67.1, -69.5));
-                });
-
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(firstTestPosition);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(secondTestPosition);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(thirdTestPosition);
 
         oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
-
-        InstantCommand engageBrakes = new InstantCommand(() -> arm.setBrake(true));
-        InstantCommand disableBrakes = new InstantCommand(() -> arm.setBrake(false));
-
-        //turn breaks on
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(engageBrakes);
-        //turn breaks off
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(disableBrakes);
 
         InstantCommand openClaw = new InstantCommand(
                 () -> {
@@ -245,8 +268,8 @@ public class OperatorCommandMap {
                     claw.open();
                 }
         );
-        oi.operatorGamepad.getPovIfAvailable(0).onTrue(openClaw);
-
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(openClaw);
+        //close claw using right bumper
         InstantCommand closeClaw = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -254,7 +277,51 @@ public class OperatorCommandMap {
                     claw.close();
                 }
         );
-        oi.operatorGamepad.getPovIfAvailable(180).onTrue(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(closeClaw);
+
+
+        InstantCommand retract = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Retracting");
+                    collector.retract();
+                }
+        );
+        //Use left of dpad to retract collector
+        oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
+
+        InstantCommand extend = new InstantCommand(
+                () ->{
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Extending");
+                    collector.extend();
+                }
+        );
+        //Use right of dpad to extend collector
+        oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
+
+        //Use right trigger to collect game piece
+        InstantCommand collect = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Collecting");
+                    collector.intake();
+                }
+        );
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(collect);
+
+        //Use left trigger to eject game piece
+        InstantCommand eject = new InstantCommand(
+                () -> {
+                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
+                    log.info("Ejecting");
+                    collector.eject();
+                }
+        );
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(eject);
+
+
+
     }
 
 }
