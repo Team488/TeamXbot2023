@@ -59,7 +59,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair midGoalCubeAngles = new XYPair(77, 68);
     public static XYPair highGoalCubeAngles = new XYPair(55, 121);
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
-    public static XYPair midGoalConeAngles = new XYPair(82, 77);
+    public static XYPair midGoalConeAngles = new XYPair(82, 80);
     public static XYPair highGoalConeAngles = new XYPair(60, 130);
     public static XYPair acquireFromCollectorAngles = new XYPair(
             75,
