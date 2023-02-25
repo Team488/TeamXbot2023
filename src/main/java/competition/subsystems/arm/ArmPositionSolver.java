@@ -1,6 +1,7 @@
 package competition.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 
 public class ArmPositionSolver {
@@ -68,11 +69,35 @@ public class ArmPositionSolver {
     }
 
     public XYPair getPositionFromRadians(double lowerArmAngleRadians, double upperArmAngleRadians) {
+        // Once the four bar on the arm was removed, the upper arm angle is now effectively coupled to the lower arm
+        // angle, so the effective angle needs to be adjusted. For example, if the lower arm is at 45 degrees, and the
+        // upper arm is at 45 degrees, the lower arm's true angle is 225 (or -90), which is pointed into the ground.
+
+        double adjustedUpperArmAngleRadians = upperArmAngleRadians + (lowerArmAngleRadians + MathUtils.Tau/2.0);
+
         return new XYPair(
                 Math.cos(lowerArmAngleRadians)*configuration.getLowerArmLength()
-                +Math.cos(upperArmAngleRadians)*configuration.getUpperArmLength(),
+                +Math.cos(adjustedUpperArmAngleRadians)*configuration.getUpperArmLength(),
                 Math.sin(lowerArmAngleRadians)*configuration.getLowerArmLength()
-                + Math.sin(upperArmAngleRadians)*configuration.getUpperArmLength()
+                + Math.sin(adjustedUpperArmAngleRadians)*configuration.getUpperArmLength()
+        );
+    }
+
+    /**
+     * If we wanted to do something like hold the upper arm horizontal while the lower arm was moving around,
+     * we would need to know what angle to set the upper arm to in order to achieve an arbitrary "robot frame" angle.
+     * @param lowerArmRadians The current angle of the lower arm
+     * @param desiredRobotFrameRadians The desired angle of the upper arm (with respect to the robot frame)
+     * @return The upper arm angle (with respect to the lower arm) needed to achieve the desired robot frame angle
+     */
+    public static double getUpperArmAngleNeededToAchieveRobotFrameAngle(double lowerArmRadians, double desiredRobotFrameRadians) {
+        return desiredRobotFrameRadians - (lowerArmRadians + MathUtils.Tau/2.0);
+    }
+
+    public static double convertOldArmAngleToNewArmAngle(double oldLowerArmAngle, double oldUpperArmAngle) {
+        return getUpperArmAngleNeededToAchieveRobotFrameAngle(
+                oldLowerArmAngle / 180.0 * Math.PI,
+                oldUpperArmAngle / 180.0 * Math.PI
         );
     }
 }
