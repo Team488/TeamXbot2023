@@ -28,18 +28,19 @@ public class ScoreCubeHigh extends SequentialCommandGroup {
 
         this.addCommands(moveArmToHigh);
 
-        //open claw and retract arm
+        //open claw and close claw
         var openClaw = openClawProvider.get();
+        var closeClaw = closeClawProvider.get();
+
+        var openClawThenClose = new ParallelRaceGroup(
+                new ParallelCommandGroup(openClaw,new WaitCommand(1), closeClaw),
+                new WaitCommand(5));
+        this.addCommands(openClawThenClose);
+    
+        //retract arm
         var retractArm = setArmPosProvider.get();
         retractArm.setTargetPosition(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted, UnifiedArmSubsystem.RobotFacing.Backward);
-
-        var openClawAndRetract = new ParallelRaceGroup(
-                new ParallelCommandGroup(openClaw,retractArm));
-        this.addCommands(openClawAndRetract);
-    
-        //close claw
-        var closeClaw = closeClawProvider.get();
-        this.addCommands(closeClaw);
+        this.addCommands(retractArm);
 
         //drive out of community zone
         var moveOutOfCommunity = swerveToPointProvider.get();
