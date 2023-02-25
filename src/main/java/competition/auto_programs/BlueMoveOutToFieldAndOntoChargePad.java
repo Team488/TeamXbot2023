@@ -13,13 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 public class BlueMoveOutToFieldAndOntoChargePad extends SequentialCommandGroup {
     @Inject
-    BlueMoveOutToFieldAndOntoChargePad(Provider<AutoBalanceCommand> autoBalanceCommandProvider, SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand, AutoLandmarks landmarks, UnifiedArmSubsystem armSubsystem){
+    BlueMoveOutToFieldAndOntoChargePad(Provider<AutoBalanceCommand> autoBalanceCommandProvider,
+                                       SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand,
+                                       AutoLandmarks landmarks,
+                                       UnifiedArmSubsystem armSubsystem){
         InstantCommand setPitchCompensation = new InstantCommand(() -> armSubsystem.setPitchCompensation(true));
         this.addCommands(setPitchCompensation);
         // Swerve points are X, Y, degrees, and seconds spent going to that point.
-        XbotSwervePoint turnAroundTowardsGoal = new XbotSwervePoint(landmarks.blueLowerGamePieceSideMidCheckpoint.getX(), landmarks.blueLowerGamePieceSideMidCheckpoint.getY(), -180, 0.5);
-        XbotSwervePoint moveTowardsFieldSideCheckpoint = new XbotSwervePoint(landmarks.blueToUpperAndLowerFieldCheckpoint.getX(), landmarks.blueToUpperAndLowerFieldCheckpoint.getY(), -180, 0.5);
-        XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint(landmarks.blueChargeStation.getX(), landmarks.blueChargeStation.getY(), -180, 1.0);
+        XbotSwervePoint turnAroundTowardsGoal = new XbotSwervePoint
+                (landmarks.blueLowerGamePieceSideMidCheckpoint.getX(), landmarks.blueLowerGamePieceSideMidCheckpoint.getY(), -180, 0.5);
+        XbotSwervePoint moveTowardsFieldSideCheckpoint = new XbotSwervePoint
+                (landmarks.blueToUpperAndLowerFieldCheckpoint.getX(), landmarks.blueToUpperAndLowerFieldCheckpoint.getY(), -180, 0.5);
+        XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint
+                (landmarks.blueChargeStation.getX(), landmarks.blueChargeStation.getY(), -180, 1.0);
 
         swerveSimpleTrajectoryCommand.setKeyPoints(
                 new ArrayList<>(List.of(

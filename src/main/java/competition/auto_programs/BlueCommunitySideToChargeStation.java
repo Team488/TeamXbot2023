@@ -14,13 +14,18 @@ import java.util.List;
 
 public class BlueCommunitySideToChargeStation extends SequentialCommandGroup {
     @Inject
-    BlueCommunitySideToChargeStation(Provider<AutoBalanceCommand> autoBalanceCommandProvider, SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand, AutoLandmarks landmarks, UnifiedArmSubsystem armSubsystem){
+    BlueCommunitySideToChargeStation(Provider<AutoBalanceCommand> autoBalanceCommandProvider,
+                                     SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand,
+                                     AutoLandmarks landmarks, UnifiedArmSubsystem armSubsystem){
         InstantCommand setPitchCompensation = new InstantCommand(() -> armSubsystem.setPitchCompensation(true));
         this.addCommands(setPitchCompensation);
         // Swerve points are X, Y, degrees, and seconds spent going to that point.
-        XbotSwervePoint backAwayFromGoal = new XbotSwervePoint(landmarks.blueToUpperAndLowerCommunityCheckpoint.getX(), landmarks.blueToUpperAndLowerCommunityCheckpoint.getY(), -180, 0.5);
-        XbotSwervePoint turnAroundTowardsChargeStation = new XbotSwervePoint(landmarks.blueToUpperAndLowerCommunityCheckpoint.getX(), landmarks.blueToUpperAndLowerCommunityCheckpoint.getY(), 0, 0.5);
-        XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint(landmarks.blueChargeStation.getX(), landmarks.blueChargeStation.getY(), 0, 1.0);
+        XbotSwervePoint backAwayFromGoal = new XbotSwervePoint
+                (landmarks.blueToUpperAndLowerCommunityCheckpoint.getX(), landmarks.blueToUpperAndLowerCommunityCheckpoint.getY(), -180, 0.5);
+        XbotSwervePoint turnAroundTowardsChargeStation = new XbotSwervePoint
+                (landmarks.blueToUpperAndLowerCommunityCheckpoint.getX(), landmarks.blueToUpperAndLowerCommunityCheckpoint.getY(), 0, 0.5);
+        XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint
+                (landmarks.blueChargeStation.getX(), landmarks.blueChargeStation.getY(), 0, 1.0);
 
         swerveSimpleTrajectoryCommand.setKeyPoints(
                 new ArrayList<>(List.of(
