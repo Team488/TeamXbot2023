@@ -213,14 +213,13 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setConeMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setCubeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(router);
 
-        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(arm.createLowerArmTrimCommand(5.0));
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(arm.createLowerArmTrimCommand(-5.0));
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(arm.createLowerArmTrimCommand(5.0));
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(arm.createLowerArmTrimCommand(-5.0));
 
         InstantCommand openClaw = new InstantCommand(
                 () -> {
