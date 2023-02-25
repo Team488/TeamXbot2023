@@ -34,8 +34,9 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
     @Override
     public void initialize() {
         log.info("Initializing");
-        UnifiedArmSubsystem.RobotFacing currentArmFacing = arms.getCurrentArmFacing();
-
+        UnifiedArmSubsystem.RobotFacing currentArmFacing = arms.getCurrentEndEffectorFacing();
+        log.info("Current arm facing: " + currentArmFacing);
+        armPosesToVisit = new ArrayList<>();
         // Some basic rules:
         // 1) As long as we are on the same side, it should always be safe go to the SafeExternalTransition point.
         // 2) If we need to swap sides, we need to go to SafeExternalTransition on one side, then the other, before
@@ -47,6 +48,7 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
         // the side we are on, and then (if necessary) go to the SafeExternalTransition point for the other side,
         // before going to our final target point.
 
+        log.info("Adding SafeExternalTransition for current side");
         armPosesToVisit.add(new Pair<>(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, currentArmFacing));
         if (currentArmFacing != targetRobotFacing) {
             log.info("Need to switch sides; adding a SafeExternalTransition for the other side");
@@ -56,6 +58,7 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
         // If our goal is to go to the SafeExternalTransition point, then we don't need to add it to the list - it
         // was added by default!
         if (targetArmPosition != UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition) {
+            log.info("Adding target arm position to list");
             armPosesToVisit.add(new Pair<>(targetArmPosition, targetRobotFacing));
         }
 
@@ -97,6 +100,12 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
 
     private void setTargetFromFirstEntryInList() {
         log.info("Setting target to " + armPosesToVisit.get(0).getFirst() + " " + armPosesToVisit.get(0).getSecond());
+        var angles = arms.getKeyArmAngles(
+                armPosesToVisit.get(0).getFirst(), // KeyArmPosition
+                armPosesToVisit.get(0).getSecond() // RobotFacing
+        );
+        log.info("LowerAngle:" + angles.x + " UpperAngle:" + angles.y);
+
         arms.setTargetValue(
                 arms.getKeyArmAngles(
                         armPosesToVisit.get(0).getFirst(), // KeyArmPosition
@@ -107,6 +116,10 @@ public class SimpleSafeArmRouterCommand extends BaseSetpointCommand {
 
     @Override
     public boolean isFinished() {
-        return armPosesToVisit.size() == 0;
+        if (armPosesToVisit.size() == 0) {
+            log.info("Finished because there are no more targets to visit");
+            return true;
+        }
+        return false;
     }
 }

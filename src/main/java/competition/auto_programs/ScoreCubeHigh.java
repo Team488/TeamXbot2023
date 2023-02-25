@@ -1,3 +1,4 @@
+
 package competition.auto_programs;
 
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -21,7 +22,7 @@ public class ScoreCubeHigh extends SequentialCommandGroup {
                   Provider<CloseClawCommand> closeClawProvider,
                   Provider<SetArmsToPositionCommand> setArmPosProvider,
                   Provider<SwerveToPointCommand> swerveToPointProvider,
-                  DriveSubsystem drive){
+                  DriveSubsystem drive) {
         //move arm to high
         var moveArmToHigh = setArmPosProvider.get();
         moveArmToHigh.setTargetPosition(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Backward);
@@ -33,10 +34,10 @@ public class ScoreCubeHigh extends SequentialCommandGroup {
         var closeClaw = closeClawProvider.get();
 
         var openClawThenClose = new ParallelRaceGroup(
-                new ParallelCommandGroup(openClaw,new WaitCommand(1), closeClaw),
+                new ParallelCommandGroup(openClaw, new WaitCommand(1), closeClaw),
                 new WaitCommand(5));
         this.addCommands(openClawThenClose);
-    
+
         //retract arm
         var retractArm = setArmPosProvider.get();
         retractArm.setTargetPosition(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted, UnifiedArmSubsystem.RobotFacing.Backward);
@@ -46,7 +47,7 @@ public class ScoreCubeHigh extends SequentialCommandGroup {
         var moveOutOfCommunity = swerveToPointProvider.get();
         moveOutOfCommunity.setFieldRelativeMotion();
         moveOutOfCommunity.setMaxPower(0.5);
-        moveOutOfCommunity.setTargetPosition(new XYPair(185,176),0);
+        moveOutOfCommunity.setTargetPosition(new XYPair(185, 176), 0);
 
         var driveOut = new ParallelRaceGroup(
                 moveOutOfCommunity,

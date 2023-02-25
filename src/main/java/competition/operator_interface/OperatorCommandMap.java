@@ -1,8 +1,11 @@
 package competition.operator_interface;
 
+import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.arm.commands.SetArmsToPositionCommand;
+import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
+import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
+import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
@@ -21,12 +24,14 @@ import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.command.NamedInstantCommand;
+import xbot.common.command.SmartDashboardCommandPutter;
 import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -50,33 +55,34 @@ public class OperatorCommandMap {
 
     @Inject
     public void setupDriveCommands(OperatorInterface oi,
-            SetRobotHeadingCommand resetHeading,
+            Provider<SetRobotHeadingCommand> headingProvider,
             DriveSubsystem drive,
             PoseSubsystem pose,
             DebuggingSwerveWithJoysticksCommand debugSwerve,
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
             VisionSubsystem vision,
-            VelocityMaintainerCommand velocityMaintainer,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive) {
-        resetHeading.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
 
+        SetRobotHeadingCommand forwardHeading = headingProvider.get();
+        SetRobotHeadingCommand backwardHeading = headingProvider.get();
+        SetRobotHeadingCommand resetHeading = headingProvider.get();
+        resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
+        backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
+        forwardHeading.includeOnSmartDashboard("setHeadingForward");
+        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
 
-        StartEndCommand enableVisionRotation = new StartEndCommand(
-                () -> drive.setRotateToHubActive(true),
-                () -> drive.setRotateToHubActive(false));
-
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        //oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(enableVisionRotation);
-
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
+
 
         NamedInstantCommand enableCollectorRotation =
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
@@ -86,16 +92,20 @@ public class OperatorCommandMap {
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
-        
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
     }
 
     @Inject
-    public void setupAutonomousDriveCommands(OperatorInterface oi, AutoBalanceCommand balanceCommand) {
+    public void setupAutonomousDriveCommands(
+            OperatorInterface oi,
+            VelocityMaintainerCommand velocityMaintainer,
+            AutoBalanceCommand balanceCommand) {
         oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
+        oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
+        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject
@@ -136,16 +146,29 @@ public class OperatorCommandMap {
                 () -> drive.setIsRobotOrientedDrive(true),
                 () -> drive.setIsRobotOrientedDrive(false));
 
+        StartEndCommand activatePrecisionTranslation = new StartEndCommand(
+                () -> drive.setPrecisionTranslationActive(true),
+                () -> drive.setPrecisionTranslationActive(false)
+        );
+
+        ParallelCommandGroup activatePrecisionRotAndTrans = new ParallelCommandGroup(activatePrecisionRotation, activatePrecisionTranslation);
+
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
-        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotAndTrans);
     }
 
     @Inject
     public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
                                         OperatorInterface oi,
-                                        BlueBottomScoringPath bluebottom) {
+                                        BlueBottomScoringPath blueBottom,
+                                        BasicMobilityPoints basicMobilityPoints) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
-        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueButtomScoring");
+        setBlueBottomScoring.setAutoCommand(blueBottom);
+        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
+
+        var setBasicMobilityPoints = setAutonomousCommandProvider.get();
+        setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
+        setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
     }
 
     @Inject
@@ -153,51 +176,51 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
-            CollectorSubsystem collector,
-            SetArmsToPositionCommand setHigh,
-            SetArmsToPositionCommand setMid,
-            SetArmsToPositionCommand setLow,
-            SetArmsToPositionCommand setRetract) {
-        /*
+            Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
+            SimpleSafeArmRouterCommand router,
+            CollectorSubsystem collector) {
+
+        SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
+        setLow.setTarget(KeyArmPosition.LowGoal, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setMid = armPositionCommandProvider.get();
+        setMid.setTarget(KeyArmPosition.MidGoal, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setHigh = armPositionCommandProvider.get();
+        setHigh.setTarget(KeyArmPosition.HighGoal, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setRetract = armPositionCommandProvider.get();
+        setRetract.setTarget(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
+
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
-        */
-        InstantCommand setNeg90 = new InstantCommand(
+
+        InstantCommand setCubeMode = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting neg 90");
-                    arm.setTargetValue(new XYPair(75, -20));
+                    log.info("Setting cube mode");
+                    arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
                 });
 
-        InstantCommand setNeg45 = new InstantCommand(
+        InstantCommand setConeMode = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting neg 45");
-                    arm.setTargetValue(new XYPair(-45, 0));
+                    log.info("Setting cone mode");
+                    arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
                 });
 
-        InstantCommand setNeg135 = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Setting neg 135");
-                    arm.setTargetValue(new XYPair(-45, -60));
-                });
+        // Include on SmartDashboard only, since this is only expected to be used in pit
+        SimpleSafeArmRouterCommand armToStartingPosition = armPositionCommandProvider.get();
+        armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
+        armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setNeg90);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setNeg45);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setNeg135);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
 
-        // Calibrate upper arm against the absolute encoder
-        InstantCommand calibrateUpperArm = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("CalibratingArms");
-                    arm.calibrateAgainstAbsoluteEncoders();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(calibrateUpperArm);
+        router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
+
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(arm.createLowerArmTrimCommand(5.0));
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(arm.createLowerArmTrimCommand(-5.0));
+
         //open claw using left bumper
         InstantCommand openClaw = new InstantCommand(
                 () -> {

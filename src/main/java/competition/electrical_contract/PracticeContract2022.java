@@ -91,4 +91,19 @@ public class PracticeContract2022 extends CompetitionContract {
     public boolean isLowerArmReady() {
         return false;
     }
+
+    @Override
+    public boolean isUpperArmEncoderReady() {
+        return false;
+    }
+
+    @Override
+    public boolean isLowerArmEncoderReady() {
+        return false;
+    }
+
+    @Override
+    public boolean isCollectorReady() {
+        return false;
+    }
 }
