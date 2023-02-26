@@ -6,6 +6,7 @@ import competition.injection.modules.CompetitionTestModule;
 import competition.subsystems.arm.LowerArmSegment;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UpperArmSegment;
+import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
 import competition.subsystems.claw.ClawSubsystem;
@@ -44,7 +45,9 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
 
     public abstract UpperArmSegment upperArmSegment();
 
-    public  abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
+    public abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
+
+    public abstract ControlEndEffectorPositionCommand controlEndEffectorPositionCommand();
 
     public abstract UnifiedArmSubsystem unifiedArmSubsystem();
 

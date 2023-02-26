@@ -6,6 +6,7 @@ import competition.auto_programs.ScoreCubeHighThenLeaveCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
+import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.collector.CollectorSubsystem;
@@ -192,6 +193,7 @@ public class OperatorCommandMap {
             UnifiedArmSubsystem arm,
             ClawSubsystem claw,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
+            Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             SimpleSafeArmRouterCommand router,
             ScoreCubeHighThenLeaveCommandGroup scoreCubeHigh,
             CollectorSubsystem collector) {
@@ -284,6 +286,20 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
         SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
+
+        ControlEndEffectorPositionCommand moveUp = endEffectorPositionCommandProvider.get();
+        moveUp.setDirection(new XYPair(0, 1));
+        ControlEndEffectorPositionCommand moveForward = endEffectorPositionCommandProvider.get();
+        moveForward.setDirection(new XYPair(1, 0));
+        ControlEndEffectorPositionCommand moveBack = endEffectorPositionCommandProvider.get();
+        moveBack.setDirection(new XYPair(-1, 0));
+        ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
+        moveDown.setDirection(new XYPair(0, -1));
+
+        oi.experimentalGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        oi.experimentalGamepad.getPovIfAvailable(90).whileTrue(moveForward);
+        oi.experimentalGamepad.getPovIfAvailable(180).whileTrue(moveDown);
+        oi.experimentalGamepad.getPovIfAvailable(270).whileTrue(moveBack);
     }
 
 }
