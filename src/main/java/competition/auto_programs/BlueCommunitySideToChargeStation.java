@@ -12,6 +12,9 @@ import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Drives straight at the charge pad and attempts to balance
+ */
 public class BlueCommunitySideToChargeStation extends SequentialCommandGroup {
     @Inject
     BlueCommunitySideToChargeStation(Provider<AutoBalanceCommand> autoBalanceCommandProvider,

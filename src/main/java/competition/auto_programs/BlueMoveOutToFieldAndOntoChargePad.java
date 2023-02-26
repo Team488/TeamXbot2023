@@ -11,6 +11,10 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Drives out of the community (to get Park points) then drives to the charge pad and attempts to balance
+ */
 public class BlueMoveOutToFieldAndOntoChargePad extends SequentialCommandGroup {
     @Inject
     BlueMoveOutToFieldAndOntoChargePad(Provider<AutoBalanceCommand> autoBalanceCommandProvider,
