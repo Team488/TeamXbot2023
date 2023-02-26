@@ -206,11 +206,14 @@ public class OperatorCommandMap {
         setRetract.setTarget(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setGround = armPositionCommandProvider.get();
         setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
+        setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
