@@ -3,6 +3,7 @@ package competition.subsystems.drive.commands;
 import javax.inject.Inject;
 
 import competition.operator_interface.OperatorInterface;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
@@ -30,6 +31,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
     final DriveSubsystem drive;
     final PoseSubsystem pose;
+    final UnifiedArmSubsystem arms;
     final OperatorInterface oi;
     final VisionSubsystem vision;
     final DoubleProperty input_exponent;
@@ -45,12 +47,15 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
     DriverStation.Alliance alliance;
 
     @Inject
-    public SwerveDriveWithJoysticksCommand(DriveSubsystem drive, PoseSubsystem pose, OperatorInterface oi,
-            PropertyFactory pf, HumanVsMachineDeciderFactory hvmFactory, HeadingModuleFactory headingModuleFactory, VisionSubsystem vision) {
+    public SwerveDriveWithJoysticksCommand(
+            DriveSubsystem drive, PoseSubsystem pose, OperatorInterface oi,
+            PropertyFactory pf, HumanVsMachineDeciderFactory hvmFactory, HeadingModuleFactory headingModuleFactory, VisionSubsystem vision,
+            UnifiedArmSubsystem arms) {
         this.drive = drive;
         this.oi = oi;
         this.pose = pose;
         this.vision = vision;
+        this.arms = arms;
         pf.setPrefix(this);
         this.input_exponent = pf.createPersistentProperty("Input Exponent", 1);
         this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 1);
@@ -259,7 +264,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         // Check if we need a different center of rotation
         XYPair centerOfRotationInches = new XYPair(0,0);
         if (drive.isCollectorRotationActive()) {
-            centerOfRotationInches = new XYPair(36, 0);
+            centerOfRotationInches = new XYPair(arms.getCurrentXZCoordinates().x, 0);
         }
 
         // Rumble based on camera state
