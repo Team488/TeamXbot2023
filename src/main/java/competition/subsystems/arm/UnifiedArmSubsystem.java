@@ -30,6 +30,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     private final DoubleProperty currentZPosition;
     private final DoubleProperty maximumXPosition;
     private final DoubleProperty maximumZPosition;
+    private final DoubleProperty minimumZPosition;
     private GamePieceMode gamePieceMode;
     public enum GamePieceMode {
         Cone,
@@ -119,6 +120,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         // measurements are to the clamp on the end effector.
         maximumXPosition = pf.createPersistentProperty("Maximum X Position", 15 + 48 - 2);
         maximumZPosition = pf.createPersistentProperty("Maximum Z Position", 78 - 8 - 2);
+        minimumZPosition = pf.createPersistentProperty("Minimum Z Position", -2);
 
         areBrakesEngaged.set(true);
     }
@@ -248,11 +250,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public XYPair constrainXZPosition(XYPair targetPosition) {
         double maximumX = maximumXPosition.get();
         double maximumZ = maximumZPosition.get();
-        return new XYPair(MathUtils.constrainDouble(targetPosition.x, -maximumX, maximumX), MathUtils.constrainDouble(targetPosition.y, 0, maximumZ));
-    }
-
-    public XYPair getXZLimits() {
-        return new XYPair(maximumXPosition.get(), maximumZPosition.get());
+        double minimumZ = minimumZPosition.get();
+        return new XYPair(
+                MathUtils.constrainDouble(targetPosition.x, -maximumX, maximumX),
+                MathUtils.constrainDouble(targetPosition.y, minimumZ, maximumZ));
     }
 
     @Override
