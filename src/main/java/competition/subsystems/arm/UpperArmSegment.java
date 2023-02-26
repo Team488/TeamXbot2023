@@ -8,6 +8,7 @@ import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.pose.PoseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
+import xbot.common.controls.actuators.XCANSparkMaxPIDProperties;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -34,14 +35,24 @@ public class UpperArmSegment extends ArmSegment {
         String prefix = "UnifiedArmSubsystem/UpperArm";
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
-        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -120);
-        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 120);
+        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 172.1);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -125);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 125);
+
+        XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
+                0.06,
+                0.0,
+                0,
+                0,
+                0,
+                0.75,
+                -0.75
+        );
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
-            this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor");
+            this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor", motorPidDefaults);
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
 

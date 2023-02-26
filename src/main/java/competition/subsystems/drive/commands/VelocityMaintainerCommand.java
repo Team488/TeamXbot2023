@@ -24,7 +24,7 @@ public class VelocityMaintainerCommand extends BaseCommand {
         this.addRequirements(drive);
         this.drive = drive;
         this.pose = pose;
-        this.xPIDManager = pidFactory.create("DriveVelocity", 0, 0, 0);
+        this.xPIDManager = pidFactory.create("DriveVelocity", 0.15, 0, 0);
     }
 
     public void initialize() {
