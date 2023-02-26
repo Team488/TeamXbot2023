@@ -41,6 +41,25 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     }
 
     @Test
+    public void openClawTestWithSafety() {
+        setCloseClaw();
+        openClaw.initialize();
+        openClaw.execute();
+        timer.advanceTimeInSecondsBy(1);
+        openClaw.execute();
+        checkClawState(true);
+        setUpperArmAngles(0);
+        openClaw.execute();
+        checkClawState(false);
+        setUpperArmAngles(90);
+        openClaw.execute();
+        checkClawState(false);
+        timer.advanceTimeInSecondsBy(1);
+        openClaw.execute();
+        checkClawState(true);
+    }
+
+    @Test
     public void closeClawTest() {
         setOpenClaw();
         closeClaw.initialize();
