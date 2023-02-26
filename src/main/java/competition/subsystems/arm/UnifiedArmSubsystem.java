@@ -412,4 +412,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public void setGamePieceMode(GamePieceMode gamePiece){
         this.gamePieceMode = gamePiece;
     }
+
+    public Command createSetGamePieceModeCommand(GamePieceMode gamePiece){
+        return new InstantCommand(() -> setGamePieceMode(gamePiece));
+    }
 }
