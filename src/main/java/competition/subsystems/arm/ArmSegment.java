@@ -52,7 +52,7 @@ public abstract class ArmSegment {
 
     protected void configureCommonMotorProperties() {
         getLeaderMotor().setOpenLoopRampRate(0.05);
-        getLeaderMotor().setClosedLoopRampRate(0.05);
+        getLeaderMotor().setClosedLoopRampRate(1.00);
         getLeaderMotor().setIdleMode(CANSparkMax.IdleMode.kBrake);
         getFollowerMotor().setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
