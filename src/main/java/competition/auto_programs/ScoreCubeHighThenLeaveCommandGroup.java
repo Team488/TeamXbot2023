@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import xbot.common.math.FieldPose;
 import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
@@ -22,6 +23,18 @@ public class ScoreCubeHighThenLeaveCommandGroup extends SequentialCommandGroup {
                                        SwerveToPointCommand moveOutOfCommunity,
                                        DriveSubsystem drive,
                                        PoseSubsystem pose) {
+
+        // Set pose to specific location (eventually, ask the camera if it already has a good idea of where we are)
+        // We will start facing away from the driver station.
+        var forcePosition = new InstantCommand(
+                () -> {
+                    var translation =
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight)
+                                    .getTranslation();
+                    var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0));
+                }
+        );
+        this.addCommands(forcePosition);
 
         scoreGamepieceCommandGroup.setGamePieceModeSupplier(() -> UnifiedArmSubsystem.GamePieceMode.Cube);
         scoreGamepieceCommandGroup.setArmPositionSupplier(() -> UnifiedArmSubsystem.KeyArmPosition.HighGoal);
