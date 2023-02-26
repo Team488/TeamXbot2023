@@ -115,18 +115,34 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         // Probably not a huge priority, Since as soon as we move once the robot remembers the last commanded direction.
         lastCommandedDirection = new XYPair(0, 90);
 
-        positionalPidManager = pidFactory.create(this.getPrefix() + "PositionPID", 0.018, 0, 0.1, 0.6, -0.6);
-        headingPidManager = pidFactory.create(this.getPrefix() + "HeadingPID", 0.015, 0.0000001, 0.045, 0.75, -0.75);
-        
-        headingPidManager.setTimeThreshold(0.2);
-        headingPidManager.setErrorThreshold(2);
+        positionalPidManager = pidFactory.create(
+                this.getPrefix() + "PositionPID",
+                0.018,
+                0,
+                0.1,
+                0.0,
+                0.6,
+                -0.6,
+                2.0,
+                0.2,
+                0.2);
+        positionalPidManager.setEnableErrorThreshold(true);
+        positionalPidManager.setEnableTimeThreshold(true);
+
+        headingPidManager = pidFactory.create(
+                this.getPrefix() + "HeadingPID",
+                0.015,
+                0.0000001,
+                0.045,
+                0.0,
+                0.75,
+                -0.75,
+                2.0,
+                0.2,
+                0.2);
         headingPidManager.setEnableErrorThreshold(true);
         headingPidManager.setEnableTimeThreshold(true);
 
-        positionalPidManager.setErrorThreshold(2);
-        positionalPidManager.setTimeThreshold(0.2);
-        positionalPidManager.setEnableErrorThreshold(true);
-        positionalPidManager.setEnableTimeThreshold(true);
     }
 
     public SwerveDriveKinematics getSwerveDriveKinematics() {
