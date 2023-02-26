@@ -40,13 +40,13 @@ public class UpperArmSegment extends ArmSegment {
         upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 125);
 
         XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
-                0.06,
-                0.0,
-                0,
-                0,
-                0,
-                0.75,
-                -0.75
+                0.06, // P
+                0.0, // I
+                0, // D
+                0, // IZone
+                0, // FF
+                0.75, // MaxOutput
+                -0.75 // MinOutput
         );
 
         this.contract = eContract;

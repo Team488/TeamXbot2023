@@ -117,29 +117,29 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
         positionalPidManager = pidFactory.create(
                 this.getPrefix() + "PositionPID",
-                0.018,
-                0,
-                0.1,
-                0.0,
-                0.6,
-                -0.6,
-                2.0,
-                0.2,
-                0.2);
+                0.018, // P
+                0, // I
+                0.1, // D
+                0.0, // F
+                0.6, // Max output
+                -0.6, // Min output
+                2.0, // Error threshold
+                0.2, // Derivative threshold
+                0.2); // Time threshold
         positionalPidManager.setEnableErrorThreshold(true);
         positionalPidManager.setEnableTimeThreshold(true);
 
         headingPidManager = pidFactory.create(
                 this.getPrefix() + "HeadingPID",
-                0.015,
-                0.0000001,
-                0.045,
-                0.0,
-                0.75,
-                -0.75,
-                2.0,
-                0.2,
-                0.2);
+                0.015, // P
+                0.0000001, // I
+                0.045, // D
+                0.0, // F
+                0.75, // Max output
+                -0.75, // Min output
+                2.0, // Error threshold
+                0.2, // Derivative threshold
+                0.2); // Time threshold
         headingPidManager.setEnableErrorThreshold(true);
         headingPidManager.setEnableTimeThreshold(true);
 

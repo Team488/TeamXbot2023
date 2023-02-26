@@ -42,11 +42,11 @@ public class AutoBalanceCommand extends BaseCommand {
         this.pose = pose;
         this.pidManager = pidFactory.create(
                 this.getPrefix(),
-                0.01,
-                0,
-                0,
-                0.25,
-                -0.25);
+                0.01,// P
+                0, // I
+                0, // D
+                0.25, // Max Output
+                -0.25); // Min Output
         pf.setPrefix(this);
 
         balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");
