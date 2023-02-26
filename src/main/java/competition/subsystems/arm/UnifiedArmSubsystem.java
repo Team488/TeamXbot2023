@@ -57,7 +57,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     // Key angles for the lower and upper arms (in degrees)
     public static XYPair fullyRetractedAngles = new XYPair(90, 0);
-    public static XYPair lowerGoalCubeAngles = new XYPair(49, 35);
+    public static XYPair lowerGoalCubeAngles = new XYPair(66, 33);
     public static XYPair midGoalCubeAngles = new XYPair(77, 68);
     public static XYPair highGoalCubeAngles = new XYPair(55, 121);
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
@@ -71,7 +71,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             90);
     // :todo add correct values for all the angles
     public static XYPair groundAngle = new XYPair(45, 28);
-    public static XYPair loadingTrayAngle = new XYPair(103, 60);
+    public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
