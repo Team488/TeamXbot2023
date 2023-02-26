@@ -20,9 +20,9 @@ public class ArmPositionSolverTest extends BaseCompetitionTest {
                 Rotation2d.fromDegrees(-180), Rotation2d.fromDegrees(180));
         ArmPositionSolver solver = new ArmPositionSolver(configuration);
 
-        ArmPositionState calculatedGoal = solver.solveArmJointPositions(2, 0);
+        ArmPositionState calculatedGoal = solver.solveArmJointPositions(new XYPair(2, 0), new XYPair(90, 0));
         assertEquals(Rotation2d.fromDegrees(0), calculatedGoal.getLowerJointRotation());
-        assertEquals(Rotation2d.fromDegrees(0), calculatedGoal.getUpperJointRotation());
+        assertEquals(Rotation2d.fromDegrees(180), calculatedGoal.getUpperJointRotation());
         assertTrue(calculatedGoal.isSolveable());
     }
 
@@ -34,7 +34,7 @@ public class ArmPositionSolverTest extends BaseCompetitionTest {
                 Rotation2d.fromDegrees(-180), Rotation2d.fromDegrees(180));
         ArmPositionSolver solver = new ArmPositionSolver(configuration);
 
-        ArmPositionState calculatedGoal = solver.solveArmJointPositions(-2, 0);
+        ArmPositionState calculatedGoal = solver.solveArmJointPositions(new XYPair(-2, 0), new XYPair(90, 0));
         assertEquals(Rotation2d.fromDegrees(180), calculatedGoal.getLowerJointRotation());
         assertEquals(Rotation2d.fromDegrees(180), calculatedGoal.getUpperJointRotation());
         assertTrue(calculatedGoal.isSolveable());
@@ -48,9 +48,9 @@ public class ArmPositionSolverTest extends BaseCompetitionTest {
                 Rotation2d.fromDegrees(-180), Rotation2d.fromDegrees(180));
         ArmPositionSolver solver = new ArmPositionSolver(configuration);
 
-        ArmPositionState calculatedGoal = solver.solveArmJointPositions(0, 2);
+        ArmPositionState calculatedGoal = solver.solveArmJointPositions(new XYPair(0, 2), new XYPair(90, 0));
         assertEquals(Rotation2d.fromDegrees(90), calculatedGoal.getLowerJointRotation());
-        assertEquals(Rotation2d.fromDegrees(90), calculatedGoal.getUpperJointRotation());
+        assertEquals(Rotation2d.fromDegrees(180), calculatedGoal.getUpperJointRotation());
         assertTrue(calculatedGoal.isSolveable());
     }
 
@@ -62,9 +62,9 @@ public class ArmPositionSolverTest extends BaseCompetitionTest {
                 Rotation2d.fromDegrees(-180), Rotation2d.fromDegrees(180));
         ArmPositionSolver solver = new ArmPositionSolver(configuration);
 
-        ArmPositionState calculatedGoal = solver.solveArmJointPositions(1, 0);
+        ArmPositionState calculatedGoal = solver.solveArmJointPositions(new XYPair(1, 0), new XYPair(90., 0));
         assertEquals(Rotation2d.fromDegrees(60), calculatedGoal.getLowerJointRotation());
-        assertEquals(Rotation2d.fromDegrees(-60), calculatedGoal.getUpperJointRotation());
+        assertEquals(Rotation2d.fromDegrees(60), calculatedGoal.getUpperJointRotation());
         assertTrue(calculatedGoal.isSolveable());
     }
 
@@ -76,7 +76,7 @@ public class ArmPositionSolverTest extends BaseCompetitionTest {
                 Rotation2d.fromDegrees(-180), Rotation2d.fromDegrees(180));
         ArmPositionSolver solver = new ArmPositionSolver(configuration);
 
-        ArmPositionState calculatedGoal = solver.solveArmJointPositions(3, 0);
+        ArmPositionState calculatedGoal = solver.solveArmJointPositions(new XYPair(3, 0), new XYPair(90, 0));
         assertFalse(calculatedGoal.isSolveable());
     }
 

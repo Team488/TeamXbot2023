@@ -4,30 +4,28 @@ import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.auto_programs.BlueCommunitySideToChargeStation;
 import competition.auto_programs.BlueMoveOutToFieldAndOntoChargePad;
+import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
+import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
-import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
-import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
+import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
-import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
-import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
-import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -35,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.command.NamedInstantCommand;
-import xbot.common.command.SmartDashboardCommandPutter;
 import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -46,8 +43,6 @@ import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Maps operator interface buttons to commands
@@ -60,18 +55,18 @@ public class OperatorCommandMap {
     }
 
     @Inject
-    public void setupDriveCommands(OperatorInterface oi,
+    public void setupDriveCommands(
+            OperatorInterface oi,
             SetRobotHeadingCommand resetHeadingCube,
             Provider<SetRobotHeadingCommand> headingProvider,
             DriveSubsystem drive,
             PoseSubsystem pose,
-            DebuggingSwerveWithJoysticksCommand debugSwerve,
             GoToNextActiveSwerveModuleCommand nextModule,
             SwerveDriveWithJoysticksCommand regularSwerve,
-            VisionSubsystem vision,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
-            VelocityDriveWithJoysticksCommand velocityDrive) {
+            VelocityDriveWithJoysticksCommand velocityDrive,
+            BrakeCommand setWheelsToXMode) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -89,10 +84,6 @@ public class OperatorCommandMap {
         NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
                 () -> pose.setCurrentPosition(70, 102));
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
-
-        StartEndCommand enableVisionRotation = new StartEndCommand(
-                () -> drive.setRotateToHubActive(true),
-                () -> drive.setRotateToHubActive(false));
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
@@ -112,6 +103,8 @@ public class OperatorCommandMap {
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
+
+        oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
     }
 
     @Inject
@@ -120,7 +113,7 @@ public class OperatorCommandMap {
             VelocityMaintainerCommand velocityMaintainer,
             AutoBalanceCommand balanceCommand) {
         oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
-        oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
+        //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
         velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
@@ -178,9 +171,10 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
-                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand,
                                         BlueCommunitySideToChargeStation blueCommunitySideToChargeStation,
-                                        BlueMoveOutToFieldAndOntoChargePad blueMoveOutToFieldAndOntoChargePad) {
+                                        BlueMoveOutToFieldAndOntoChargePad blueMoveOutToFieldAndOntoChargePad,
+                                        ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave) {
+
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -197,36 +191,20 @@ public class OperatorCommandMap {
         setBlueMoveOutToFieldAndOntoChargePad.setAutoCommand(blueMoveOutToFieldAndOntoChargePad);
         setBlueMoveOutToFieldAndOntoChargePad.includeOnSmartDashboard("AutoPrograms/SetBlueMoveOutToFieldAndOntoChargePad");
 
-
-        swerveSimpleTrajectoryCommand.setMaxPower(0.66);
-        swerveSimpleTrajectoryCommand.setMaxTurningPower(0.4);
-        XbotSwervePoint backAwayFromGoal = new XbotSwervePoint(76, 102, -180, 0.5);
-        XbotSwervePoint finishBackAway = new XbotSwervePoint(82, 102, 0, 0.5);
-        XbotSwervePoint goSouth = new XbotSwervePoint(82, 30, 0, 1.0);
-        XbotSwervePoint goEast = new XbotSwervePoint(220, 30, 0, 2.0);
-        XbotSwervePoint goNorth = new XbotSwervePoint(220, 102, 0, 1.0);
-        XbotSwervePoint mantleChargePad = new XbotSwervePoint(160, 102, 0, 1.0);
-
-        swerveSimpleTrajectoryCommand.setKeyPoints(
-                new ArrayList<>(List.of(
-                        backAwayFromGoal,
-                        finishBackAway,
-                        goSouth,
-                        goEast,
-                        goNorth,
-                        mantleChargePad
-                )));
-
-        oi.driverGamepad.getPovIfAvailable(90).onTrue(swerveSimpleTrajectoryCommand);
+        var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
+        setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
     }
 
     @Inject
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
-            ClawSubsystem claw,
+            OpenClawCommand openClaw,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
+            Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             SimpleSafeArmRouterCommand router,
+            ScoreCubeHighThenLeaveProgram scoreCubeHigh,
             CollectorSubsystem collector) {
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
@@ -237,11 +215,16 @@ public class OperatorCommandMap {
         setHigh.setTarget(KeyArmPosition.HighGoal, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setRetract = armPositionCommandProvider.get();
         setRetract.setTarget(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setGround = armPositionCommandProvider.get();
+        setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
+        setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -262,31 +245,12 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
 
-        oi.operatorGamepad.getPovIfAvailable(0).onTrue(arm.createLowerArmTrimCommand(5.0));
-        oi.operatorGamepad.getPovIfAvailable(180).onTrue(arm.createLowerArmTrimCommand(-5.0));
-
-        InstantCommand openClaw = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Opening Claw");
-                    claw.open();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(openClaw);
-        //close claw using right bumper
-        InstantCommand closeClaw = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Closing Claw");
-                    claw.close();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(closeClaw);
 
 
         InstantCommand retract = new InstantCommand(
@@ -297,7 +261,7 @@ public class OperatorCommandMap {
                 }
         );
         //Use left of dpad to retract collector
-        oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
+        //oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
 
         InstantCommand extend = new InstantCommand(
                 () ->{
@@ -307,30 +271,26 @@ public class OperatorCommandMap {
                 }
         );
         //Use right of dpad to extend collector
-        oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
+        //oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
 
-        //Use right trigger to collect game piece
-        InstantCommand collect = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Collecting");
-                    collector.intake();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).onTrue(collect);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
-        //Use left trigger to eject game piece
-        InstantCommand eject = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Ejecting");
-                    collector.eject();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).onTrue(eject);
+        SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
 
+        ControlEndEffectorPositionCommand moveUp = endEffectorPositionCommandProvider.get();
+        moveUp.setDirection(new XYPair(0, 1));
+        ControlEndEffectorPositionCommand moveForward = endEffectorPositionCommandProvider.get();
+        moveForward.setDirection(new XYPair(1, 0));
+        ControlEndEffectorPositionCommand moveBack = endEffectorPositionCommandProvider.get();
+        moveBack.setDirection(new XYPair(-1, 0));
+        ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
+        moveDown.setDirection(new XYPair(0, -1));
 
-
+        oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
+        oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
+        oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
     }
 
 }

@@ -5,6 +5,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
+import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -18,6 +19,8 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     OperatorInterface oi;
     private final DoubleProperty lowerArmErrorThresholdToEngageBrake;
     private final DoubleProperty lowerArmErrorThresholdToDisengageBrake;
+    private final TimeStableValidator lowerArmBrakeValidator;
+
     @Inject
     public UnifiedArmMaintainer(
             UnifiedArmSubsystem subsystemToMaintain,
@@ -30,6 +33,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
         pf.setPrefix(this);
         lowerArmErrorThresholdToEngageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToEngageBrake",2.0);
         lowerArmErrorThresholdToDisengageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToDisengageBrake",4.0);
+        lowerArmBrakeValidator = new TimeStableValidator(1);
     }
 
     @Override
@@ -98,12 +102,16 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     private void changeBrakeStateBasedOnError() {
         double lowerArmError = Math.abs(unifiedArm.getCurrentValue().x - unifiedArm.getTargetValue().x);
 
-        if (lowerArmError < lowerArmErrorThresholdToEngageBrake.get()) {
-            unifiedArm.setBrake(true);
+        if (lowerArmError < lowerArmErrorThresholdToEngageBrake.get() && !unifiedArm.getDisableBrake()) {
+            boolean isStable = lowerArmBrakeValidator.checkStable(true);
+            if (isStable) {
+                unifiedArm.setBrake(true);
+            }
         }
 
-        if (lowerArmError > lowerArmErrorThresholdToDisengageBrake.get()) {
+        if (lowerArmError > lowerArmErrorThresholdToDisengageBrake.get() || unifiedArm.getDisableBrake()) {
             unifiedArm.setBrake(false);
+            lowerArmBrakeValidator.checkStable(false);
         }
     }
 

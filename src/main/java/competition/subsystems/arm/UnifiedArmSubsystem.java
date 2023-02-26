@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XSolenoid;
+import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
@@ -25,6 +26,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public final ArmPositionSolver solver;
     private final DoubleProperty lowerArmTarget;
     private final DoubleProperty upperArmTarget;
+    private final DoubleProperty currentXPosition;
+    private final DoubleProperty currentZPosition;
+    private final DoubleProperty maximumXPosition;
+    private final DoubleProperty maximumZPosition;
+    private final DoubleProperty minimumZPosition;
     private GamePieceMode gamePieceMode;
     public enum GamePieceMode {
         Cone,
@@ -55,11 +61,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     // Key angles for the lower and upper arms (in degrees)
     public static XYPair fullyRetractedAngles = new XYPair(90, 0);
-    public static XYPair lowerGoalCubeAngles = new XYPair(49, 35);
+    public static XYPair lowerGoalCubeAngles = new XYPair(66, 33);
     public static XYPair midGoalCubeAngles = new XYPair(77, 68);
     public static XYPair highGoalCubeAngles = new XYPair(55, 121);
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
-    public static XYPair midGoalConeAngles = new XYPair(82, 77);
+    public static XYPair midGoalConeAngles = new XYPair(82, 80);
     public static XYPair highGoalConeAngles = new XYPair(60, 130);
     public static XYPair acquireFromCollectorAngles = new XYPair(
             75,
@@ -69,7 +75,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             90);
     // :todo add correct values for all the angles
     public static XYPair groundAngle = new XYPair(45, 28);
-    public static XYPair loadingTrayAngle = new XYPair(103, 60);
+    public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
@@ -77,6 +83,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     protected final BooleanProperty calibratedProp;
 
     protected final BooleanProperty areBrakesEngaged;
+
+    protected final BooleanProperty brakeDisabled;
 
     @Inject
     public UnifiedArmSubsystem(
@@ -89,7 +97,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         this.upperArm = upperArm;
         this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
-            36.0,
+            44.5,
             33.0,
             Rotation2d.fromDegrees(15.0),
             Rotation2d.fromDegrees(165.0),
@@ -98,11 +106,21 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         );
         solver = new ArmPositionSolver(armConfig);
         pf.setPrefix(this);
-        calibratedProp = pf.createEphemeralProperty("Calibrated", false);
+        calibratedProp = pf.createEphemeralProperty("Calibrated", true);
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
         areBrakesEngaged = pf.createEphemeralProperty("AreBrakesEngaged", false);
+        brakeDisabled = pf.createEphemeralProperty("Brake disable override", false);
         targetPosition = getCurrentValue();
+        currentXPosition = pf.createEphemeralProperty("Current X Position", 0.0);
+        currentZPosition = pf.createEphemeralProperty("Current Z Position", 0.0);
+
+        // Maximum extents based on frame perimeter being 15in from lower arm joint, joint being 8in above ground.
+        // Rules are: Max height: 6ft6in (78in), max extension 48in. Using 2 inches as buffer space since position
+        // measurements are to the clamp on the end effector.
+        maximumXPosition = pf.createPersistentProperty("Maximum X Position", 15 + 48 - 2);
+        maximumZPosition = pf.createPersistentProperty("Maximum Z Position", 78 - 8 - 2);
+        minimumZPosition = pf.createPersistentProperty("Minimum Z Position", -2);
 
         areBrakesEngaged.set(true);
     }
@@ -229,6 +247,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             upperArm.getArmPositionInRadians());
     }
 
+    public XYPair constrainXZPosition(XYPair targetPosition) {
+        double maximumX = maximumXPosition.get();
+        double maximumZ = maximumZPosition.get();
+        double minimumZ = minimumZPosition.get();
+        return new XYPair(
+                MathUtils.constrainDouble(targetPosition.x, -maximumX, maximumX),
+                MathUtils.constrainDouble(targetPosition.y, minimumZ, maximumZ));
+    }
+
     @Override
     public XYPair getTargetValue() {
         return targetPosition;
@@ -254,7 +281,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        if (areBrakesEngaged.get()) {
+        if (areBrakesEngaged.get() && !getDisableBrake()) {
             lowerArm.setPower(0);
         } else {
             lowerArm.setArmToAngle(lowerArmAngle);
@@ -310,6 +337,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public boolean areBrakesEngaged() {
         return areBrakesEngaged.get();
+    }
+
+    public void setDisableBrake(boolean disabled) {
+        brakeDisabled.set(disabled);
+    }
+
+    public boolean getDisableBrake() {
+        return brakeDisabled.get();
     }
 
     public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {
@@ -407,9 +442,17 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
         upperArm.periodic();
         lowerArm.periodic();
+
+        XYPair currentPosition = getCurrentXZCoordinates();
+        currentXPosition.set(currentPosition.x);
+        currentZPosition.set(currentPosition.y);
     }
 
     public void setGamePieceMode(GamePieceMode gamePiece){
         this.gamePieceMode = gamePiece;
+    }
+
+    public Command createSetGamePieceModeCommand(GamePieceMode gamePiece){
+        return new InstantCommand(() -> setGamePieceMode(gamePiece));
     }
 }
