@@ -6,6 +6,7 @@ import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.claw.OpenClawCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -44,15 +45,22 @@ public class ScoreGamepieceCommandGroup extends SequentialCommandGroup {
         var openClaw = openClawProvider.get();
         var closeClaw = closeClawProvider.get();
 
-        var openClawThenClose = new ParallelRaceGroup(
-                new ParallelCommandGroup(openClaw, new WaitCommand(1), closeClaw),
-                new WaitCommand(5));
-        this.addCommands(openClawThenClose);
+        var openClawAndWait = new ParallelDeadlineGroup(new WaitCommand(0.5), openClaw);
+        this.addCommands(openClawAndWait);
+
+        // close claw while retracting
+        var waitThenCloseClaw = new SequentialCommandGroup(
+                new WaitCommand(0.1),
+                new ParallelRaceGroup(new WaitCommand(1), closeClaw));
+
 
         //retract arm
         var retractArm = setArmPosProvider.get();
         retractArm.setTarget(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted, UnifiedArmSubsystem.RobotFacing.Backward);
-        this.addCommands(retractArm);
+
+        var closeClawAndRetract = new ParallelCommandGroup(waitThenCloseClaw, retractArm);
+
+        this.addCommands(closeClawAndRetract);
     }
 
     public void setGamePieceModeSupplier(Supplier<UnifiedArmSubsystem.GamePieceMode> gamePieceModeSupplier) {
