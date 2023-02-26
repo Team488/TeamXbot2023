@@ -154,7 +154,7 @@ public class CompetitionContract extends ElectricalContract {
         return new DeviceInfo(1, false);
     }
 
-    public DeviceInfo getCollectorMotor(){ return new DeviceInfo(25,false);}
+    public DeviceInfo getCollectorMotor(){ return new DeviceInfo(25,true);}
 
     @Override
     public boolean isCollectorReady() { return true; }
