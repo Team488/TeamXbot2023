@@ -43,6 +43,7 @@ public abstract class ArmSegment {
         this.lowerDegreeReference = lowerDegreeReference;
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", true);
         usePitchCompensationProp = propFactory.createEphemeralProperty("usePitchCompensation", false);
+        usePitchCompensationProp.set(false);
         invertPitchCompensationProp = propFactory.createPersistentProperty("invertPitchCompensation", false);
         absoluteEncoderPositionProp = propFactory.createEphemeralProperty("AbsoluteEncoderPosition", 0.0);
         neoPositionProp = propFactory.createEphemeralProperty("NeoPosition", 0.0);

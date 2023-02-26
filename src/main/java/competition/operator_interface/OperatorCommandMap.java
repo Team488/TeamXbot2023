@@ -107,7 +107,7 @@ public class OperatorCommandMap {
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
-        oi.driverGamepad.getifAvailable(XboxButton.RightStick).whileTrue(setWheelsToXMode);
+        oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
     }
 
     @Inject
@@ -116,7 +116,7 @@ public class OperatorCommandMap {
             VelocityMaintainerCommand velocityMaintainer,
             AutoBalanceCommand balanceCommand) {
         oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
-        oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
+        //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
         velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 

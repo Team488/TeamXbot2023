@@ -40,6 +40,8 @@ public class CollectorSubsystem extends BaseSubsystem {
         intakePower = pf.createPersistentProperty("intakePower",1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
 
+        collectorMotor.setSmartCurrentLimit(5);
+
     }
 
     private void changeCollector(CollectorState state){
