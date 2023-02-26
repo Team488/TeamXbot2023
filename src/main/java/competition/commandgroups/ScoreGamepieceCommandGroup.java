@@ -27,7 +27,8 @@ public class ScoreGamepieceCommandGroup extends SequentialCommandGroup {
             () -> UnifiedArmSubsystem.RobotFacing.Backward;
 
     @Inject
-    ScoreGamepieceCommandGroup(Provider<OpenClawCommand> openClawProvider,
+    ScoreGamepieceCommandGroup(OpenClawCommand openClaw,
+                               CloseClawCommand closeClaw,
                                Provider<SimpleSafeArmRouterCommand> setArmPosProvider,
                                UnifiedArmSubsystem arm) {
 
@@ -39,9 +40,6 @@ public class ScoreGamepieceCommandGroup extends SequentialCommandGroup {
         moveArmToPosition.setTarget(armPositionSupplier.get(), robotFacingSupplier.get());
 
         this.addCommands(moveArmToPosition);
-
-        //open claw and close it again after a second
-        var openClaw = openClawProvider.get();
 
         var openClawAndWait = new ParallelDeadlineGroup(new WaitCommand(0.5), openClaw);
         this.addCommands(openClawAndWait);
