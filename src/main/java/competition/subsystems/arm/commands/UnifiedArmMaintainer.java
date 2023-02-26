@@ -102,14 +102,14 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     private void changeBrakeStateBasedOnError() {
         double lowerArmError = Math.abs(unifiedArm.getCurrentValue().x - unifiedArm.getTargetValue().x);
 
-        if (lowerArmError < lowerArmErrorThresholdToEngageBrake.get()) {
+        if (lowerArmError < lowerArmErrorThresholdToEngageBrake.get() && !unifiedArm.getDisableBrake()) {
             boolean isStable = lowerArmBrakeValidator.checkStable(true);
             if (isStable) {
                 unifiedArm.setBrake(true);
             }
         }
 
-        if (lowerArmError > lowerArmErrorThresholdToDisengageBrake.get()) {
+        if (lowerArmError > lowerArmErrorThresholdToDisengageBrake.get() || unifiedArm.getDisableBrake()) {
             unifiedArm.setBrake(false);
             lowerArmBrakeValidator.checkStable(false);
         }
