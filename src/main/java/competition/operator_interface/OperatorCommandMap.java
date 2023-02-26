@@ -9,6 +9,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
@@ -191,7 +192,7 @@ public class OperatorCommandMap {
     public void setupArmCommands(
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
-            ClawSubsystem claw,
+            OpenClawCommand openClaw,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             SimpleSafeArmRouterCommand router,
@@ -244,24 +245,7 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getPovIfAvailable(0).onTrue(arm.createLowerArmTrimCommand(5.0));
         oi.operatorGamepad.getPovIfAvailable(180).onTrue(arm.createLowerArmTrimCommand(-5.0));
 
-        //open claw using left bumper
-        InstantCommand openClaw = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Opening Claw");
-                    claw.open();
-                }
-        );
-        //close claw using right bumper
-
-        InstantCommand closeClaw = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Closing Claw");
-                    claw.close();
-                }
-        );
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw).whileFalse(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
 
 
 

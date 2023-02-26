@@ -10,6 +10,8 @@ import competition.injection.swerve.RearRightDrive;
 import competition.injection.swerve.SwerveComponent;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
+import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.simple.SimpleSetPowerCommand;
@@ -65,5 +67,10 @@ public class SubsystemDefaultCommandMap {
     @Inject
     public void setupArmSubsystem(UnifiedArmSubsystem arms, UnifiedArmMaintainer maintainer) {
         arms.setDefaultCommand(maintainer);
+    }
+
+    @Inject
+    public void setupClawSubsystem(ClawSubsystem claw, CloseClawCommand closeCommand) {
+        claw.setDefaultCommand(closeCommand);
     }
 }
