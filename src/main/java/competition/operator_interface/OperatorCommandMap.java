@@ -2,6 +2,7 @@ package competition.operator_interface;
 
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
+import competition.auto_programs.ScoreCubeHighThenLeaveCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
@@ -11,7 +12,6 @@ import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
-import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
@@ -24,9 +24,7 @@ import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
-import competition.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -34,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.command.NamedInstantCommand;
-import xbot.common.command.SmartDashboardCommandPutter;
 import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -175,7 +172,7 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
-                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand) {
+                                        ScoreCubeHighThenLeaveCommandGroup scoreCubeHighThenLeave) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -184,26 +181,9 @@ public class OperatorCommandMap {
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
 
-        swerveSimpleTrajectoryCommand.setMaxPower(0.66);
-        swerveSimpleTrajectoryCommand.setMaxTurningPower(0.4);
-        XbotSwervePoint backAwayFromGoal = new XbotSwervePoint(76, 102, -180, 0.5);
-        XbotSwervePoint finishBackAway = new XbotSwervePoint(82, 102, 0, 0.5);
-        XbotSwervePoint goSouth = new XbotSwervePoint(82, 30, 0, 1.0);
-        XbotSwervePoint goEast = new XbotSwervePoint(220, 30, 0, 2.0);
-        XbotSwervePoint goNorth = new XbotSwervePoint(220, 102, 0, 1.0);
-        XbotSwervePoint mantleChargePad = new XbotSwervePoint(160, 102, 0, 1.0);
-
-        swerveSimpleTrajectoryCommand.setKeyPoints(
-                new ArrayList<>(List.of(
-                        backAwayFromGoal,
-                        finishBackAway,
-                        goSouth,
-                        goEast,
-                        goNorth,
-                        mantleChargePad
-                )));
-
-        oi.driverGamepad.getPovIfAvailable(90).onTrue(swerveSimpleTrajectoryCommand);
+        var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
+        setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
     }
 
     @Inject
@@ -213,6 +193,7 @@ public class OperatorCommandMap {
             ClawSubsystem claw,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             SimpleSafeArmRouterCommand router,
+            ScoreCubeHighThenLeaveCommandGroup scoreCubeHigh,
             CollectorSubsystem collector) {
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
@@ -302,6 +283,7 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
+        SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
     }
 
 }
