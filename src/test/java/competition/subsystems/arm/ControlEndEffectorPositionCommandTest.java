@@ -94,6 +94,33 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         assertEquals(-88.89, arm.upperArm.getArmPositionInDegrees(), 0.01);
     }
 
+    @Test
+    public void testMoveArmWithCommandExceedingLimits() {
+        // Starting position is illegal. We will snap to the closest legal position.
+        setArmAngles(20, 170);
+        XYPair currentPosition = arm.getCurrentXZCoordinates();
+        assertEquals(74.31, currentPosition.x, 0.01);
+        assertEquals(20.95, currentPosition.y, 0.01);
+
+        command.setDirection(new XYPair(-1, 0));
+        command.initialize();
+        command.execute();
+
+        setArmAngles(arm.getTargetValue().x, arm.getTargetValue().y);
+        maintainer.execute();
+        timer.advanceTimeInSecondsBy(10);
+        maintainer.execute();
+
+        assertTrue(arm.isMaintainerAtGoal());
+        command.end(false);
+
+        assertEquals(47.32, arm.lowerArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(111.80, arm.upperArm.getArmPositionInDegrees(), 0.01);
+        XYPair newPosition = arm.getCurrentXZCoordinates();
+        assertEquals(61, newPosition.x, 0.01);
+        assertEquals(20.95, newPosition.y, 0.01);
+    }
+
     private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
         ((MockDutyCycleEncoder)arm.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
         ((MockDutyCycleEncoder)arm.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);

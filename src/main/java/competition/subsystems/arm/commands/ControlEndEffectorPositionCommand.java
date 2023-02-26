@@ -40,7 +40,7 @@ public class ControlEndEffectorPositionCommand extends BaseSetpointCommand {
 
     @Override
     public void execute() {
-        position.add(movementVector);
+        position = arm.constrainXZPosition(position.add(movementVector));
 
         ArmPositionState newTargets = arm.solver.solveArmJointPositions(position, arm.getCurrentValue());
         arm.setTargetValue(new XYPair(newTargets.getLowerJointRotation().getDegrees(), newTargets.getUpperJointRotation().getDegrees()));
