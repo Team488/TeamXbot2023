@@ -27,7 +27,6 @@ public class ScoreGamepieceCommandGroup extends SequentialCommandGroup {
 
     @Inject
     ScoreGamepieceCommandGroup(Provider<OpenClawCommand> openClawProvider,
-                               Provider<CloseClawCommand> closeClawProvider,
                                Provider<SimpleSafeArmRouterCommand> setArmPosProvider,
                                UnifiedArmSubsystem arm) {
 
@@ -42,10 +41,9 @@ public class ScoreGamepieceCommandGroup extends SequentialCommandGroup {
 
         //open claw and close it again after a second
         var openClaw = openClawProvider.get();
-        var closeClaw = closeClawProvider.get();
 
-        var openClawThenClose = new ParallelRaceGroup(
-                new ParallelCommandGroup(openClaw, new WaitCommand(1), closeClaw),
+        var openClawThenClose = new SequentialCommandGroup(
+                new ParallelRaceGroup(openClaw, new WaitCommand(1)),
                 new WaitCommand(5));
         this.addCommands(openClawThenClose);
 
