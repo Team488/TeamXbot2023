@@ -25,6 +25,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public final ArmPositionSolver solver;
     private final DoubleProperty lowerArmTarget;
     private final DoubleProperty upperArmTarget;
+    private final DoubleProperty currentXPosition;
+    private final DoubleProperty currentZPosition;
     private GamePieceMode gamePieceMode;
     public enum GamePieceMode {
         Cone,
@@ -78,6 +80,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     protected final BooleanProperty areBrakesEngaged;
 
+    protected final BooleanProperty brakeDisabled;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -102,7 +106,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         upperArmTarget = pf.createEphemeralProperty("UpperArmTarget", 0.0);
         lowerArmTarget = pf.createEphemeralProperty("LowerArmTarget", 0.0);
         areBrakesEngaged = pf.createEphemeralProperty("AreBrakesEngaged", false);
+        brakeDisabled = pf.createEphemeralProperty("Brake disable override", false);
         targetPosition = getCurrentValue();
+        currentXPosition = pf.createEphemeralProperty("Current X Position", 0.0);
+        currentZPosition = pf.createEphemeralProperty("Current Z Position", 0.0);
 
         areBrakesEngaged.set(true);
     }
@@ -254,7 +261,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        if (areBrakesEngaged.get()) {
+        if (areBrakesEngaged.get() && !getDisableBrake()) {
             lowerArm.setPower(0);
         } else {
             lowerArm.setArmToAngle(lowerArmAngle);
@@ -310,6 +317,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public boolean areBrakesEngaged() {
         return areBrakesEngaged.get();
+    }
+
+    public void setDisableBrake(boolean disabled) {
+        brakeDisabled.set(disabled);
+    }
+
+    public boolean getDisableBrake() {
+        return brakeDisabled.get();
     }
 
     public void calibrateAt(double lowerArmAngleInDegrees, double upperArmAngleInDegrees) {
@@ -407,6 +422,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
         upperArm.periodic();
         lowerArm.periodic();
+
+        XYPair currentPosition = getCurrentXZCoordinates();
+        currentXPosition.set(currentPosition.x);
+        currentZPosition.set(currentPosition.y);
     }
 
     public void setGamePieceMode(GamePieceMode gamePiece){
