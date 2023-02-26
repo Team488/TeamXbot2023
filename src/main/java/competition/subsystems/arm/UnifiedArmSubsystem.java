@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XSolenoid;
+import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
@@ -27,6 +28,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     private final DoubleProperty upperArmTarget;
     private final DoubleProperty currentXPosition;
     private final DoubleProperty currentZPosition;
+    private final DoubleProperty maximumXPosition;
+    private final DoubleProperty maximumZPosition;
     private GamePieceMode gamePieceMode;
     public enum GamePieceMode {
         Cone,
@@ -110,6 +113,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         targetPosition = getCurrentValue();
         currentXPosition = pf.createEphemeralProperty("Current X Position", 0.0);
         currentZPosition = pf.createEphemeralProperty("Current Z Position", 0.0);
+
+        // Maximum extents based on frame perimeter being 15in from lower arm joint, joint being 8in above ground.
+        // Rules are: Max height: 6ft6in (78in), max extension 48in. Using 2 inches as buffer space since position
+        // measurements are to the clamp on the end effector.
+        maximumXPosition = pf.createPersistentProperty("Maximum X Position", 15 + 48 - 2);
+        maximumZPosition = pf.createPersistentProperty("Maximum Z Position", 78 - 8 - 2);
 
         areBrakesEngaged.set(true);
     }
@@ -234,6 +243,16 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return solver.getPositionFromRadians(
             lowerArm.getArmPositionInRadians(),
             upperArm.getArmPositionInRadians());
+    }
+
+    public XYPair constrainXZPosition(XYPair targetPosition) {
+        double maximumX = maximumXPosition.get();
+        double maximumZ = maximumZPosition.get();
+        return new XYPair(MathUtils.constrainDouble(targetPosition.x, -maximumX, maximumX), MathUtils.constrainDouble(targetPosition.y, 0, maximumZ));
+    }
+
+    public XYPair getXZLimits() {
+        return new XYPair(maximumXPosition.get(), maximumZPosition.get());
     }
 
     @Override
