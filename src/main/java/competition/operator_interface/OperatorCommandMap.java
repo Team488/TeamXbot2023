@@ -2,13 +2,12 @@ package competition.operator_interface;
 
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
-import competition.auto_programs.ScoreCubeHighThenLeaveCommandGroup;
+import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
-import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
@@ -19,12 +18,10 @@ import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
-import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
-import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,8 +41,6 @@ import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Maps operator interface buttons to commands
@@ -174,7 +169,7 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
-                                        ScoreCubeHighThenLeaveCommandGroup scoreCubeHighThenLeave) {
+                                        ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave) {
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -196,7 +191,7 @@ public class OperatorCommandMap {
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             SimpleSafeArmRouterCommand router,
-            ScoreCubeHighThenLeaveCommandGroup scoreCubeHigh,
+            ScoreCubeHighThenLeaveProgram scoreCubeHigh,
             CollectorSubsystem collector) {
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
@@ -241,10 +236,6 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
-
-        oi.operatorGamepad.getPovIfAvailable(0).onTrue(arm.createLowerArmTrimCommand(5.0));
-        oi.operatorGamepad.getPovIfAvailable(180).onTrue(arm.createLowerArmTrimCommand(-5.0));
-
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
 
 
@@ -283,10 +274,10 @@ public class OperatorCommandMap {
         ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
         moveDown.setDirection(new XYPair(0, -1));
 
-        oi.experimentalGamepad.getPovIfAvailable(0).whileTrue(moveUp);
-        oi.experimentalGamepad.getPovIfAvailable(90).whileTrue(moveForward);
-        oi.experimentalGamepad.getPovIfAvailable(180).whileTrue(moveDown);
-        oi.experimentalGamepad.getPovIfAvailable(270).whileTrue(moveBack);
+        oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
+        oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
+        oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
     }
 
 }
