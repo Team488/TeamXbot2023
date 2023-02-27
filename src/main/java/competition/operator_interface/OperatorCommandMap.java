@@ -2,6 +2,8 @@ package competition.operator_interface;
 
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
+import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
+import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -169,7 +171,10 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
+                                        BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
+                                        BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
                                         ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave) {
+
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
         setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
@@ -177,6 +182,14 @@ public class OperatorCommandMap {
         var setBasicMobilityPoints = setAutonomousCommandProvider.get();
         setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
+
+        var setBlueCommunitySideToChargeStation = setAutonomousCommandProvider.get();
+        setBlueCommunitySideToChargeStation.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
+        setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram");
+
+        var setBlueMoveOutToFieldAndOntoChargePad = setAutonomousCommandProvider.get();
+        setBlueMoveOutToFieldAndOntoChargePad.setAutoCommand(blueExitCommunityAndBalanceProgram);
+        setBlueMoveOutToFieldAndOntoChargePad.includeOnSmartDashboard("AutoPrograms/SetBlueExitCommunityAndBalanceProgram");
 
         var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);

@@ -91,6 +91,15 @@ public class AutoBalanceCommand extends BaseCommand {
                     velocityGoal = -currentAttemptSpeed;
                 }
 
+                // If we're driving against a positive angle and see an even more positive angle, we need
+                // to update our angle to that angle (and the mirror for negative angle).
+                // This could happen if we only are kind of on the leaf of the ramp and then our angle
+                // increases as we leave the leaf and get on the main body of the charge pad.
+                if ((drivingAgainstPositiveAngle && currentAngle > initialAnalyzedAngle)
+                 || (!drivingAgainstPositiveAngle && currentAngle < initialAnalyzedAngle)) {
+                    initialAnalyzedAngle = currentAngle;
+                }
+
                 // If we're driving against the positive angle, see a sudden drop in angle, we need
                 // to advance to FallDetected. Likewise, if we're driving against the negative angle,
                 // and we see a sudden increase in angle, we need to advance to FallDetected.
