@@ -24,6 +24,8 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         arms.setIsCalibrated(true);
         maintainer = getInjectorComponent().unifiedArmMaintainer();
         routerCommand = getInjectorComponent().simpleSafeArmRouterCommand();
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
     }
 
     @Test

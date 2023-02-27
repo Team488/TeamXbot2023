@@ -162,5 +162,7 @@ imgui.ini
 .idea
 .run
 
+# # Xbot Logs
+488Logs/
 
 # End of https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,visualstudiocode

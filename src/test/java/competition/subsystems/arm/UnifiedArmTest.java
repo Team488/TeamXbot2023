@@ -21,6 +21,8 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         super.setUp();
         arms = getInjectorComponent().unifiedArmSubsystem();
         arms.setBrake(false);
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
     }
 
     @Test

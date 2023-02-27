@@ -22,6 +22,7 @@ public abstract class ArmSegment {
     private final BooleanProperty invertPitchCompensationProp;
     private double motorEncoderOffsetInDegrees;
     protected abstract double getAbsoluteEncoderOffsetInDegrees();
+    public abstract void setAbsoluteEncoderOffsetInDegrees(double offset);
     private final DoubleProperty absoluteEncoderPositionProp;
     private final DoubleProperty neoPositionProp;
     private final DoubleProperty neoPositionInDegreesProp;

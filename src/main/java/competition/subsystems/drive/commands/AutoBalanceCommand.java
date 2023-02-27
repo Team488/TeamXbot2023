@@ -40,7 +40,13 @@ public class AutoBalanceCommand extends BaseCommand {
                               PropertyFactory pf) {
         this.drive = drive;
         this.pose = pose;
-        this.pidManager = pidFactory.create(this.getPrefix(), 0.1, 0, 0);
+        this.pidManager = pidFactory.create(
+                this.getPrefix(),
+                0.01,// P
+                0, // I
+                0, // D
+                0.25, // Max Output
+                -0.25); // Min Output
         pf.setPrefix(this);
 
         balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");

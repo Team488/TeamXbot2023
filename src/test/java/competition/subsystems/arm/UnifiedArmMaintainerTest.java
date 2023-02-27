@@ -21,6 +21,9 @@ public class UnifiedArmMaintainerTest extends BaseCompetitionTest {
         maintainer = getInjectorComponent().unifiedArmMaintainer();
         arms = getInjectorComponent().unifiedArmSubsystem();
         arms.setIsCalibrated(true);
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
+
     }
 
     @Test
