@@ -15,9 +15,9 @@ import java.util.List;
 /**
  * Drives out of the community (to get Park points) then drives to the charge pad and attempts to balance
  */
-public class BlueMoveOutToFieldAndOntoChargePad extends SequentialCommandGroup {
+public class BlueExitCommunityAndBalanceProgram extends SequentialCommandGroup {
     @Inject
-    BlueMoveOutToFieldAndOntoChargePad(Provider<AutoBalanceCommand> autoBalanceCommandProvider,
+    BlueExitCommunityAndBalanceProgram(Provider<AutoBalanceCommand> autoBalanceCommandProvider,
                                        SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand,
                                        AutoLandmarks landmarks,
                                        UnifiedArmSubsystem armSubsystem){

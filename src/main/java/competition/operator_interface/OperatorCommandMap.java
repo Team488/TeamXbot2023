@@ -2,8 +2,8 @@ package competition.operator_interface;
 
 import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
-import competition.auto_programs.BlueCommunitySideToChargeStation;
-import competition.auto_programs.BlueMoveOutToFieldAndOntoChargePad;
+import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
+import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -171,8 +171,8 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueBottomScoringPath blueBottom,
                                         BasicMobilityPoints basicMobilityPoints,
-                                        BlueCommunitySideToChargeStation blueCommunitySideToChargeStation,
-                                        BlueMoveOutToFieldAndOntoChargePad blueMoveOutToFieldAndOntoChargePad,
+                                        BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
+                                        BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
                                         ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave) {
 
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
@@ -184,12 +184,12 @@ public class OperatorCommandMap {
         setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
 
         var setBlueCommunitySideToChargeStation = setAutonomousCommandProvider.get();
-        setBlueCommunitySideToChargeStation.setAutoCommand(blueCommunitySideToChargeStation);
-        setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueCommunitySideToChargeStation");
+        setBlueCommunitySideToChargeStation.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
+        setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram");
 
         var setBlueMoveOutToFieldAndOntoChargePad = setAutonomousCommandProvider.get();
-        setBlueMoveOutToFieldAndOntoChargePad.setAutoCommand(blueMoveOutToFieldAndOntoChargePad);
-        setBlueMoveOutToFieldAndOntoChargePad.includeOnSmartDashboard("AutoPrograms/SetBlueMoveOutToFieldAndOntoChargePad");
+        setBlueMoveOutToFieldAndOntoChargePad.setAutoCommand(blueExitCommunityAndBalanceProgram);
+        setBlueMoveOutToFieldAndOntoChargePad.includeOnSmartDashboard("AutoPrograms/SetBlueExitCommunityAndBalanceProgram");
 
         var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
