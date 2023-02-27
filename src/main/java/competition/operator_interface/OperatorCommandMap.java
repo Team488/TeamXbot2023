@@ -147,12 +147,24 @@ public class OperatorCommandMap {
 
         // Precision Commands
         StartEndCommand activatePrecisionDriving = new StartEndCommand(
-                () -> {drive.setExtremePrecisionTranslationActive(true); drive.setPrecisionRotationActive(true);},
-                () -> {drive.setExtremePrecisionTranslationActive(false); drive.setPrecisionRotationActive(false);});
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(true);
+                    drive.setPrecisionRotationActive(true);
+                },
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(false);
+                    drive.setPrecisionRotationActive(false);
+                });
 
         StartEndCommand activateExtremePrecisionDriving = new StartEndCommand(
-                () -> {drive.setExtremePrecisionTranslationActive(true); drive.setPrecisionRotationActive(true);},
-                () -> {drive.setExtremePrecisionTranslationActive(false); drive.setPrecisionRotationActive(false);});
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(true);
+                    drive.setPrecisionRotationActive(true);
+                },
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(false);
+                    drive.setPrecisionRotationActive(false);
+                });
 
         StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
                 () -> drive.setPrecisionRotationActive(true),
@@ -254,7 +266,6 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
 
 
-
         InstantCommand retract = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -266,7 +277,7 @@ public class OperatorCommandMap {
         //oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
 
         InstantCommand extend = new InstantCommand(
-                () ->{
+                () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Extending");
                     collector.extend();
