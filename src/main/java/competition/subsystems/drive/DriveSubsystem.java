@@ -194,14 +194,23 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     boolean precisionTranslationActive;
+    boolean extremePrecisionTranslationActive;
     boolean precisionRotationActive;
 
     public boolean isPrecisionTranslationActive() {
         return precisionTranslationActive;
     }
 
+    public boolean isExtremePrecisionTranslationActive() {
+        return extremePrecisionTranslationActive;
+    }
+
     public void setPrecisionTranslationActive(boolean isActive) {
         precisionTranslationActive = isActive;
+    }
+
+    public void setExtremePrecisionTranslationActive(boolean isActive) {
+        extremePrecisionTranslationActive = isActive;
     }
 
     public boolean isPrecisionRotationActive() {
