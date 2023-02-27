@@ -18,9 +18,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
     UnifiedArmSubsystem arms;
     SimpleTimeInterpolator interpolator;
-    private List<XbotArmPoint> keyPoints;
-    private Supplier<List<XbotArmPoint>> keyPointsProvider;
-
+    private Supplier<XbotArmPoint> keyPointsProvider;
     private ArrayList<Translation2d> pointsToConsider = new ArrayList<>();
     SimpleTimeInterpolator.InterpolationResult lastResult;
 
@@ -31,13 +29,14 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         this.interpolator = new SimpleTimeInterpolator();
     }
 
-    public void setKeyPoints(List<XbotArmPoint> keyPoints) {
-        setKeyPointsProvider(() -> keyPoints);
-    }
-
-    public void setKeyPointsProvider(Supplier<List<XbotArmPoint>> keyPointsProvider) {
+    public void setKeyPointsProvider(Supplier<XbotArmPoint> keyPointsProvider) {
         this.keyPointsProvider = keyPointsProvider;
     }
+
+    public void setKeyPoint(XbotArmPoint keyPoint) {
+        setKeyPointsProvider(() -> keyPoint);
+    }
+
 
     @Override
     public void initialize() {
@@ -49,8 +48,11 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         // Each time we use a safe point, we remove it from consideration, and repeat the process.
         // Whenever the target point is the closest point, we go there and stop building a list of points.
 
-        Translation2d v = new Translation2d(0, 0);
-
+        pointsToConsider = new ArrayList<>();
+        pointsToConsider.add(UnifiedArmSubsystem.lowSafePosition);
+        pointsToConsider.add(UnifiedArmSubsystem.midSafePosition);
+        pointsToConsider.add(UnifiedArmSubsystem.highSafePosition);
+        pointsToConsider.add(keyPointsProvider.get());
 
 
 
