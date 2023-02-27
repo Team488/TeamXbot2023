@@ -23,6 +23,9 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         arm = getInjectorComponent().unifiedArmSubsystem();
         arm.setIsCalibrated(true);
         maintainer = getInjectorComponent().unifiedArmMaintainer();
+
+        arm.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arm.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
     }
 
     @Test

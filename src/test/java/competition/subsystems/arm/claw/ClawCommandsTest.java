@@ -28,6 +28,8 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         arms = getInjectorComponent().unifiedArmSubsystem();
         arms.setIsCalibrated(true);
         setUpperArmAngles(90);
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
     }
 
     @Test

@@ -70,6 +70,11 @@ public class UpperArmSegment extends ArmSegment {
     }
 
     @Override
+    public void setAbsoluteEncoderOffsetInDegrees(double offset) {
+        absoluteEncoderOffsetInDegreesProp.set(offset);
+    }
+
+    @Override
     protected double getDegreesPerMotorRotation() {
         return degreesPerMotorRotationProp.get();
     }

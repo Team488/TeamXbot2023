@@ -83,6 +83,11 @@ public class LowerArmSegment extends ArmSegment {
     }
 
     @Override
+    public void setAbsoluteEncoderOffsetInDegrees(double offset) {
+        absoluteEncoderOffsetInDegreesProp.set(offset);
+    }
+
+    @Override
     protected XCANSparkMax getLeaderMotor() {
         return rightMotor;
     }
