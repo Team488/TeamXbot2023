@@ -29,7 +29,7 @@ public class BlueMoveOutToFieldAndOntoChargePad extends SequentialCommandGroup {
         XbotSwervePoint moveTowardsFieldSideCheckpoint = new XbotSwervePoint
                 (landmarks.blueToUpperAndLowerFieldCheckpoint.getX(), landmarks.blueToUpperAndLowerFieldCheckpoint.getY(), -180, 0.5);
         XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint
-                (landmarks.blueChargeStation.getX(), landmarks.blueChargeStation.getY(), -180, 1.0);
+                (landmarks.blueChargeStationCenter.getX(), landmarks.blueChargeStationCenter.getY(), -180, 1.0);
 
         swerveSimpleTrajectoryCommand.setKeyPoints(
                 new ArrayList<>(List.of(

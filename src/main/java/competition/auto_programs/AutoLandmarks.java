@@ -22,7 +22,9 @@ public class AutoLandmarks {
     public static Pose2d blueUpperCommunitySideMidCheckpoint = new Pose2d(87,178, Rotation2d.fromDegrees(-180));
     public static Pose2d blueUpperGamePieceSideMidCheckpoint = new Pose2d(220,195, Rotation2d.fromDegrees(-180));
     // Charge station checkpoints + charge station coordinate
-    public static Pose2d blueChargeStation = new Pose2d(150,110, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueChargeStationCenter = new Pose2d(150,110, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueChargeStationMantleFromLeft = new Pose2d(140,110, Rotation2d.fromDegrees(-180));
+
     public static Pose2d blueToUpperAndLowerCommunityCheckpoint = new Pose2d(87,110, Rotation2d.fromDegrees(-180));
     public static Pose2d blueToUpperAndLowerFieldCheckpoint = new Pose2d(239,110, Rotation2d.fromDegrees(-180));
 
