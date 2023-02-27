@@ -14,7 +14,7 @@ public class SimpleTimeInterpolator {
     int index;
     double maximumDistanceFromChasePointInInches = 12;
 
-    private List<ProvidesInterpolationData> keyPoints;
+    private List<? extends ProvidesInterpolationData> keyPoints;
 
     Logger log = LogManager.getLogger(SimpleTimeInterpolator.class);
 
@@ -30,7 +30,7 @@ public class SimpleTimeInterpolator {
 
     public SimpleTimeInterpolator() {}
 
-    public void setKeyPoints(List<ProvidesInterpolationData> keyPoints) {
+    public void setKeyPoints(List<? extends ProvidesInterpolationData > keyPoints) {
         this.keyPoints = keyPoints;
     }
 
@@ -45,7 +45,7 @@ public class SimpleTimeInterpolator {
         index = 0;
     }
 
-    public InterpolationResult execute(Translation2d currentLocation) {
+    public InterpolationResult calculateTarget(Translation2d currentLocation) {
         double secondsSinceLastExecute = XTimer.getFPGATimestamp() - previousTimestamp;
         accumulatedProductiveSeconds += secondsSinceLastExecute;
 

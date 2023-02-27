@@ -3,6 +3,7 @@ package competition.subsystems.arm;
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
@@ -77,6 +78,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair groundAngle = new XYPair(45, 28);
     public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
+
+    // Interesting XZ positions;
+    public static Translation2d lowSafePosition = new Translation2d(22, 16);
+    public static Translation2d midSafePosition = new Translation2d(26, 28);
+    public static Translation2d highSafePosition = new Translation2d(30, 40);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -245,6 +251,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return solver.getPositionFromRadians(
             lowerArm.getArmPositionInRadians(),
             upperArm.getArmPositionInRadians());
+    }
+
+    public Translation2d getCurrentXZCoordinatesAsTranslation2d() {
+        XYPair currentXZ = getCurrentXZCoordinates();
+        return new Translation2d(currentXZ.x, currentXZ.y);
     }
 
     public XYPair constrainXZPosition(XYPair targetPosition) {
