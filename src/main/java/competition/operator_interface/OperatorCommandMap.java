@@ -38,6 +38,7 @@ import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.subsystems.autonomous.SetAutonomousCommand;
+import xbot.common.subsystems.compressor.CompressorSubsystem;
 import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 
 import javax.inject.Inject;
@@ -66,7 +67,8 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
-            BrakeCommand setWheelsToXMode) {
+            BrakeCommand setWheelsToXMode,
+            CompressorSubsystem compressor){
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -98,6 +100,12 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+
+        var disableCompressor = new NamedInstantCommand("Disable Compressor", () -> compressor.disable());
+        var enableCompressor = new NamedInstantCommand("Enable Compressor", () -> compressor.enable());
+
+        oi.driverGamepad.getPovIfAvailable(90).onTrue(disableCompressor);
+        oi.driverGamepad.getPovIfAvailable(270).onTrue(enableCompressor);
 
 
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");

@@ -40,4 +40,7 @@ public abstract class ElectricalContract {
     public abstract DeviceInfo getArduinoDio2();
     public abstract DeviceInfo getArduinoDio3();
     public abstract DeviceInfo getArduinoAllianceDio();
+
+    public abstract boolean isClawReady();
+    public abstract boolean isArmBrakeReady();
 }

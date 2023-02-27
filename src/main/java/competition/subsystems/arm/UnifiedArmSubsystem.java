@@ -86,6 +86,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     protected final BooleanProperty brakeDisabled;
 
+    private ElectricalContract contract;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -93,9 +95,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             XSolenoid.XSolenoidFactory xSolenoidFactory,
             ElectricalContract eContract,
             PropertyFactory pf) {
+        this.contract = eContract;
         this.lowerArm = lowerArm;
         this.upperArm = upperArm;
-        this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
+        if (eContract.isArmBrakeReady()) {
+            this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
+        }
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             44.5,
             33.0,
@@ -421,12 +426,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     //set brakes for lower arm
     public void setBrake(boolean on){
-        if(on){
-            lowerArmBrakeSolenoid.setOn(false);
-            areBrakesEngaged.set(true);
-        } else {
-            lowerArmBrakeSolenoid.setOn(true);
-            areBrakesEngaged.set(false);
+        if (contract.isArmBrakeReady()) {
+            if (on) {
+                lowerArmBrakeSolenoid.setOn(false);
+                areBrakesEngaged.set(true);
+            } else {
+                lowerArmBrakeSolenoid.setOn(true);
+                areBrakesEngaged.set(false);
+            }
         }
     }
 

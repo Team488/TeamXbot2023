@@ -157,7 +157,7 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getCollectorMotor(){ return new DeviceInfo(25,true);}
 
     @Override
-    public boolean isCollectorReady() { return true; }
+    public boolean isCollectorReady() { return false; }
 
     public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo(2,false);}
 
@@ -184,5 +184,15 @@ public class CompetitionContract extends ElectricalContract {
     @Override
     public DeviceInfo getArduinoAllianceDio() {
         return new DeviceInfo(4);
+    }
+
+    @Override
+    public boolean isArmBrakeReady() {
+        return false;
+    }
+
+    @Override
+    public boolean isClawReady() {
+        return false;
     }
 }
