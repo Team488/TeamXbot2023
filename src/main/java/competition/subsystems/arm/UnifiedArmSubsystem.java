@@ -284,6 +284,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
 
         // If our absolute encoders have come unplugged, then we are about to have a very bad day.
+        // When they become unplugged, they return a native value of 0. This means that any read of the
+        // robot angle will instead return the negated offset.
+        // So, we can check for very close equality between detected angle and negated offset. This should never
+        // trigger in normal operation, as live robot values have very long tails (e.g. 8.38739834598374858 degrees).
         var reboundedLowerArmAngle = ContiguousDouble.reboundValue(lowerArm.getArmPositionInDegrees(), 0, 360);
         var reboundedNegatedLowerArmOffset = ContiguousDouble.reboundValue(-lowerArm.getAbsoluteEncoderOffsetInDegrees(), 0, 360);
         var reboundedUpperArmAngle = ContiguousDouble.reboundValue(upperArm.getArmPositionInDegrees(), 0, 360);
