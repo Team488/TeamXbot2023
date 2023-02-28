@@ -80,6 +80,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair startingPositionAngles = new XYPair(110, 20);
 
     // Interesting XZ positions;
+    public static Translation2d specialMiddleTransitionPositionForward = new Translation2d(2.26, 11.76);
     public static Translation2d lowSafePosition = new Translation2d(22, 16);
     public static Translation2d midSafePosition = new Translation2d(26, 28);
     public static Translation2d highSafePosition = new Translation2d(30, 40);
@@ -229,6 +230,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         // The lower arm needs to be mirrored around 90 degrees.
         // The upper arm needs to be mirrored around 0 degrees.
         return new XYPair(180 - angles.x, -angles.y);
+    }
+
+    public static Translation2d mirrorXZPoints(Translation2d point) {
+        return new Translation2d(-point.getX(), point.getY());
     }
 
     @Override
@@ -465,5 +470,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public Command createSetGamePieceModeCommand(GamePieceMode gamePiece){
         return new InstantCommand(() -> setGamePieceMode(gamePiece));
+    }
+
+    public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {
+        return solver.getPositionFromDegrees(oldArmAngles.x, oldArmAngles.y).toTranslation2d();
     }
 }

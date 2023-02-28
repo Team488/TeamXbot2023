@@ -93,6 +93,12 @@ public class ArmPositionSolver {
         return lowerArm.add(upperArm);
     }
 
+    public XYPair getPositionFromDegrees(double lowerArmAngleDegrees, double upperArmAngleDegrees) {
+        return getPositionFromRadians(
+                lowerArmAngleDegrees / 180.0 * Math.PI,
+                upperArmAngleDegrees / 180.0 * Math.PI);
+    }
+
     /**
      * If we wanted to do something like hold the upper arm horizontal while the lower arm was moving around,
      * we would need to know what angle to set the upper arm to in order to achieve an arbitrary "robot frame" angle.

@@ -2,7 +2,6 @@ package competition.subsystems.arm.commands;
 
 import competition.subsystems.arm.ArmPositionState;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.trajectory.SimpleTimeInterpolator;
 import competition.trajectory.XbotArmPoint;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,6 +20,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     private Supplier<XbotArmPoint> keyPointsProvider;
     private ArrayList<Translation2d> pointsToConsider = new ArrayList<>();
     SimpleTimeInterpolator.InterpolationResult lastResult;
+    private ArrayList<XbotArmPoint> pointsToInterpolate;
 
     @Inject
     public SimpleXZRouterCommand(UnifiedArmSubsystem arms) {
@@ -37,6 +37,13 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         setKeyPointsProvider(() -> keyPoint);
     }
 
+    public void setKeyPointFromDirectAngles(XYPair keyPoint) {
+        setKeyPointsProvider(
+                () -> new XbotArmPoint(
+                        arms.convertOldArmAnglesToXZPositions(keyPoint),
+                        0)
+        );
+    }
 
     @Override
     public void initialize() {
@@ -52,17 +59,59 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         pointsToConsider.add(UnifiedArmSubsystem.lowSafePosition);
         pointsToConsider.add(UnifiedArmSubsystem.midSafePosition);
         pointsToConsider.add(UnifiedArmSubsystem.highSafePosition);
-        pointsToConsider.add(keyPointsProvider.get());
+        pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.lowSafePosition));
+        pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.midSafePosition));
+        pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.highSafePosition));
+
+        // The transition points need to be handled carefully, as this simple routing algorithm will
+        // always choose the nearest point, and these are just a few inches from each other.
+        // In the routine below, whenever we remove one from consideration, we need to remove the other.
+        var specialPointForward = UnifiedArmSubsystem.specialMiddleTransitionPositionForward;
+        var specialPointBackward = UnifiedArmSubsystem.mirrorXZPoints(specialPointForward);
+        pointsToConsider.add(specialPointForward);
+        pointsToConsider.add(specialPointBackward);
+
+        var targetTranslation = keyPointsProvider.get().getTranslation2d();
+        pointsToConsider.add(targetTranslation);
+
+        var currentArmCoordinates = arms.getCurrentXZCoordinatesAsTranslation2d();
+        var originPoint = currentArmCoordinates;
+
+        // Now, find the next nearest waypoint/final point.
+        Translation2d nearest = new Translation2d();
+
+        ArrayList<XbotArmPoint> waypoints = new ArrayList<>();
+
+        int escape = 0;
+        while (nearest != targetTranslation) {
+            nearest = originPoint.nearest(pointsToConsider);
+
+            // As mentioned above, the special points need to be removed together.
+            if (nearest == specialPointForward || nearest == specialPointBackward) {
+                pointsToConsider.remove(specialPointBackward);
+                pointsToConsider.remove(specialPointForward);
+            } else {
+                pointsToConsider.remove(nearest);
+            }
+            waypoints.add(new XbotArmPoint(nearest, 0.5));
+            originPoint = nearest;
+            escape++;
+            // Just in case we do something very wrong, every while loop needs an escape hatch.
+            // Otherwise, we run the risk of the robot getting stuck in some loop instead of driving around.
+            if (escape > 20) {
+                break;
+            }
+        }
 
 
-
-
-        keyPoints = keyPointsProvider.get();
-        var initialBaseline = arms.getCurrentXZCoordinatesAsTranslation2d();
-
-        interpolator.setKeyPoints(keyPoints);
-        interpolator.initialize(new XbotArmPoint(initialBaseline, 0));
+        pointsToInterpolate = waypoints;
+        interpolator.setKeyPoints(waypoints);
+        interpolator.initialize(new XbotArmPoint(currentArmCoordinates, 0));
         arms.setDisableBrake(true);
+    }
+
+    public List<XbotArmPoint> getPointsToInterpolate() {
+        return pointsToInterpolate;
     }
 
     @Override
