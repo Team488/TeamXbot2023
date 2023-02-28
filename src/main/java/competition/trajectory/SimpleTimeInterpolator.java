@@ -39,6 +39,7 @@ public class SimpleTimeInterpolator {
     }
 
     public void initialize(ProvidesInterpolationData baseline) {
+        log.info("Initializing a SimpleTimeInterpolator");
         this.baseline = baseline;
         accumulatedProductiveSeconds = 0;
         previousTimestamp = XTimer.getFPGATimestamp();
