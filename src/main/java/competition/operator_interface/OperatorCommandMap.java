@@ -10,6 +10,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
+import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
@@ -203,6 +204,7 @@ public class OperatorCommandMap {
             OpenClawCommand openClaw,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
+            Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             SimpleSafeArmRouterCommand router,
             ScoreCubeHighThenLeaveProgram scoreCubeHigh,
             CollectorSubsystem collector) {
@@ -220,8 +222,11 @@ public class OperatorCommandMap {
         SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
         setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
 
+        var setMidXZ = simpleXZRouterCommandProvider.get();
+        setMidXZ.setKeyPointFromDirectAngles(UnifiedArmSubsystem.midGoalCubeAngles);
+
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstation);
