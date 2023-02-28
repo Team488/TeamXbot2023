@@ -89,7 +89,6 @@ public class OperatorCommandMap {
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
 
-        oi.driverGamepad.getifAvailable(XboxButton.X).onTrue(nextModule);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
 
         NamedInstantCommand enableCollectorRotation =
@@ -148,23 +147,38 @@ public class OperatorCommandMap {
         swerveToPoint.setMaxPower(0.35);
 
         // Precision Commands
-        StartEndCommand activatePrecisionRotation = new StartEndCommand(
+        StartEndCommand activatePrecisionDriving = new StartEndCommand(
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(true);
+                    drive.setPrecisionRotationActive(true);
+                },
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(false);
+                    drive.setPrecisionRotationActive(false);
+                });
+
+        StartEndCommand activateExtremePrecisionDriving = new StartEndCommand(
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(true);
+                    drive.setPrecisionRotationActive(true);
+                },
+                () -> {
+                    drive.setExtremePrecisionTranslationActive(false);
+                    drive.setPrecisionRotationActive(false);
+                });
+
+        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
                 () -> drive.setPrecisionRotationActive(true),
                 () -> drive.setPrecisionRotationActive(false));
 
+        // Simple robot oriented drive
         StartEndCommand activateRobotOrientedDrive = new StartEndCommand(
                 () -> drive.setIsRobotOrientedDrive(true),
                 () -> drive.setIsRobotOrientedDrive(false));
 
-        StartEndCommand activatePrecisionTranslation = new StartEndCommand(
-                () -> drive.setPrecisionTranslationActive(true),
-                () -> drive.setPrecisionTranslationActive(false)
-        );
-
-        ParallelCommandGroup activatePrecisionRotAndTrans = new ParallelCommandGroup(activatePrecisionRotation, activatePrecisionTranslation);
-
-        oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateRobotOrientedDrive);
-        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionRotAndTrans);
+        oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateExtremePrecisionDriving);
+        oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
+        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -257,7 +271,6 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
 
 
-
         InstantCommand retract = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
@@ -269,7 +282,7 @@ public class OperatorCommandMap {
         //oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
 
         InstantCommand extend = new InstantCommand(
-                () ->{
+                () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Extending");
                     collector.extend();
