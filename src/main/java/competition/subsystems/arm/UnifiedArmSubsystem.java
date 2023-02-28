@@ -289,8 +289,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         var reboundedUpperArmAngle = ContiguousDouble.reboundValue(upperArm.getArmPositionInDegrees(), 0, 360);
         var reboundedNegatedUpperArmOffset = ContiguousDouble.reboundValue(-upperArm.getAbsoluteEncoderOffsetInDegrees(), 0, 360);
 
-        if (Math.abs(reboundedLowerArmAngle - reboundedNegatedLowerArmOffset) < 0.0001
-        || Math.abs(reboundedUpperArmAngle - reboundedNegatedUpperArmOffset) < 0.0001) {
+        if (Math.abs(reboundedLowerArmAngle - reboundedNegatedLowerArmOffset) < 0.000001
+        || Math.abs(reboundedUpperArmAngle - reboundedNegatedUpperArmOffset) < 0.000001) {
             log.error("One or both absolute encoders have come unplugged. Disabling arm control.");
             setIsCalibrated(false);
             lowerArm.setPower(0);
