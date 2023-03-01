@@ -112,7 +112,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             44.5,
-            33.0,
+            36.0,
             Rotation2d.fromDegrees(15.0),
             Rotation2d.fromDegrees(165.0),
             Rotation2d.fromDegrees(-175),

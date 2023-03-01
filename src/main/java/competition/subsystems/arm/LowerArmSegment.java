@@ -52,8 +52,8 @@ public class LowerArmSegment extends ArmSegment {
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -160.64561);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 25);
-        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 155);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 35);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 145);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){

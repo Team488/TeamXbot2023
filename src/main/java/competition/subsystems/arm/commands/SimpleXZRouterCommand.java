@@ -8,6 +8,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import xbot.common.command.BaseSetpointCommand;
 import xbot.common.math.XYPair;
 
@@ -43,8 +45,18 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
         ghostArm = new Mechanism2d(100, 80);
         var ghostRoot = ghostArm.getRoot("Arm", 50, 20);
-        ghostLowerArm = ghostRoot.append(new MechanismLigament2d("LowerArm", 44.5, 90));
-        ghostUpperArm = ghostLowerArm.append(new MechanismLigament2d("UpperArm", 33.0, 15.0));
+        ghostLowerArm = ghostRoot.append(new MechanismLigament2d(
+                "LowerArm",
+                44.5,
+                90,
+                10,
+                new Color8Bit(Color.kGreen)));
+        ghostUpperArm = ghostLowerArm.append(new MechanismLigament2d(
+                "UpperArm",
+                33.0,
+                15.0,
+                10,
+                new Color8Bit(Color.kGreen)));
 
         SmartDashboard.putData("Mechanisms/GhostArm", ghostArm);
     }
