@@ -236,14 +236,22 @@ public class OperatorCommandMap {
         SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
         setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
 
+        var setlowXZ = simpleXZRouterCommandProvider.get();
+        setlowXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LowGoal, RobotFacing.Forward);
         var setMidXZ = simpleXZRouterCommandProvider.get();
-        setMidXZ.setKeyPointFromDirectAngles(UnifiedArmSubsystem.midGoalCubeAngles);
+        setMidXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.MidGoal, RobotFacing.Forward);
+        var setHighXZ = simpleXZRouterCommandProvider.get();
+        setHighXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.HighGoal, RobotFacing.Forward);
+        var setRetractXZ = simpleXZRouterCommandProvider.get();
+        setRetractXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
+        var setSubstationXZ = simpleXZRouterCommandProvider.get();
+        setSubstationXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setlowXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstation);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHighXZ);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetractXZ);
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstationXZ);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {

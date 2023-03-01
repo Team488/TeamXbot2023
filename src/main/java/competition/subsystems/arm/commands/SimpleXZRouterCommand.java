@@ -33,6 +33,9 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     final MechanismLigament2d ghostLowerArm;
     final MechanismLigament2d ghostUpperArm;
 
+    private UnifiedArmSubsystem.KeyArmPosition targetArmPosition;
+    private UnifiedArmSubsystem.RobotFacing targetRobotFacing;
+
     @Inject
     public SimpleXZRouterCommand(UnifiedArmSubsystem arms) {
         super(arms);
@@ -67,6 +70,12 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
                         arms.convertOldArmAnglesToXZPositions(keyPoint),
                         0)
         );
+    }
+
+    public void setKeyPointFromKeyArmPosition(
+            UnifiedArmSubsystem.KeyArmPosition keyArmPosition,
+            UnifiedArmSubsystem.RobotFacing facing) {
+        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), 0));
     }
 
     @Override

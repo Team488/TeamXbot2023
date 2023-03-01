@@ -132,32 +132,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         areBrakesEngaged.set(true);
     }
 
-    public XYPair getKeyArmCoordinates(KeyArmPosition keyArmPosition, RobotFacing facing){
-        XYPair candidate = new XYPair();
-        switch (keyArmPosition){
-            case LowGoal:
-                candidate = lowerGoalPosition;
-                break;
-
-            case MidGoal:
-                candidate = midGoalPosition;
-                break;
-
-            case HighGoal:
-                candidate=highGoalPosition;
-                break;
-
-            case FullyRetracted:
-                candidate = fullyRetractedPosition;
-                break;
-
-            default:
-                break;
-        }
-        if (facing == RobotFacing.Backward){
-            // TODO: mirror the coordinates
-        }
-        return candidate;
+    public Translation2d getKeyArmXZ(KeyArmPosition keyArmPosition, RobotFacing facing) {
+        XYPair candidate = getKeyArmAngles(keyArmPosition, facing);
+        return convertOldArmAnglesToXZPositions(candidate);
     }
 
     public XYPair getKeyArmAngles(KeyArmPosition keyArmPosition, RobotFacing facing) {

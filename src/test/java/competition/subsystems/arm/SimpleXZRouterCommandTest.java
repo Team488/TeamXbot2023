@@ -52,6 +52,17 @@ public class SimpleXZRouterCommandTest extends BaseCompetitionTest {
         assertEquals(1, points.size(), 0.001);
     }
 
+    @Test
+    public void testSettingTargetKeyPoint() {
+        arms.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
+        routerCommand.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.HighGoal,
+                UnifiedArmSubsystem.RobotFacing.Forward);
+
+        routerCommand.initialize();
+        var points = routerCommand.getPointsToInterpolate();
+    }
+
 
 
     private void setArmAnglesForPoint(Translation2d point) {
