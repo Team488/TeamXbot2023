@@ -87,7 +87,7 @@ public class OperatorCommandMap {
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
+        //oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
 
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
 
@@ -105,6 +105,7 @@ public class OperatorCommandMap {
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
+        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
     }
 
     @Inject
@@ -178,7 +179,7 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateExtremePrecisionDriving);
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
-        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(activateJustPrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -235,11 +236,13 @@ public class OperatorCommandMap {
         setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
         setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setPickupFromCollector = armPositionCommandProvider.get();
+        setPickupFromCollector.setTarget(KeyArmPosition.AcquireFromCollector, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setPickupFromCollector);
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
