@@ -26,39 +26,15 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     private ArrayList<Translation2d> pointsToConsider = new ArrayList<>();
     SimpleTimeInterpolator.InterpolationResult lastResult;
     private ArrayList<XbotArmPoint> pointsToInterpolate;
-
-
-    final Mechanism2d ghostArm;
-
-
-    final MechanismLigament2d ghostLowerArm;
-    final MechanismLigament2d ghostUpperArm;
-
     private UnifiedArmSubsystem.KeyArmPosition targetArmPosition;
     private UnifiedArmSubsystem.RobotFacing targetRobotFacing;
+    private double defaultSegmentTime = 10.0;
 
     @Inject
     public SimpleXZRouterCommand(UnifiedArmSubsystem arms) {
         super(arms);
         this.arms = arms;
         this.interpolator = new SimpleTimeInterpolator();
-
-        ghostArm = new Mechanism2d(100, 80);
-        var ghostRoot = ghostArm.getRoot("Arm", 50, 20);
-        ghostLowerArm = ghostRoot.append(new MechanismLigament2d(
-                "LowerArm",
-                44.5,
-                90,
-                10,
-                new Color8Bit(Color.kGreen)));
-        ghostUpperArm = ghostLowerArm.append(new MechanismLigament2d(
-                "UpperArm",
-                33.0,
-                15.0,
-                10,
-                new Color8Bit(Color.kGreen)));
-
-        SmartDashboard.putData("Mechanisms/GhostArm", ghostArm);
     }
 
     public void setKeyPointsProvider(Supplier<XbotArmPoint> keyPointsProvider) {
@@ -73,14 +49,14 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         setKeyPointsProvider(
                 () -> new XbotArmPoint(
                         arms.convertOldArmAnglesToXZPositions(keyPoint),
-                        0)
+                        defaultSegmentTime)
         );
     }
 
     public void setKeyPointFromKeyArmPosition(
             UnifiedArmSubsystem.KeyArmPosition keyArmPosition,
             UnifiedArmSubsystem.RobotFacing facing) {
-        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), 0));
+        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), defaultSegmentTime));
     }
 
     @Override
@@ -133,7 +109,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
                 pointsToConsider.remove(nearest);
             }
             log.info("Adding point to path: " + nearest);
-            waypoints.add(new XbotArmPoint(nearest, 0.5));
+            waypoints.add(new XbotArmPoint(nearest, defaultSegmentTime));
             originPoint = nearest;
             escape++;
             // Just in case we do something very wrong, every while loop needs an escape hatch.
@@ -145,7 +121,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
         pointsToInterpolate = waypoints;
         interpolator.setKeyPoints(waypoints);
-        interpolator.initialize(new XbotArmPoint(currentArmCoordinates, 0));
+        interpolator.initialize(new XbotArmPoint(currentArmCoordinates, defaultSegmentTime));
         arms.setDisableBrake(true);
     }
 
@@ -164,8 +140,9 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
         ArmPositionState newTargets = arms.solver.solveArmJointPositions(constrainedPosition, arms.getCurrentValue());
 
-        ghostLowerArm.setAngle(newTargets.getLowerJointRotation().getDegrees());
-        ghostUpperArm.setAngle(newTargets.getUpperJointRotation().getDegrees() + 180);
+        arms.setGhostArm(new Translation2d(
+                newTargets.getLowerJointRotation().getDegrees(),
+                newTargets.getUpperJointRotation().getDegrees()));
 
         if (newTargets.isSolveable()) {
             arms.setTargetValue(new XYPair(

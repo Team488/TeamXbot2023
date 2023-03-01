@@ -5,6 +5,7 @@ import competition.auto_programs.BlueBottomScoringPath;
 import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
 import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
+import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
@@ -221,7 +222,8 @@ public class OperatorCommandMap {
             Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             SimpleSafeArmRouterCommand router,
             ScoreCubeHighThenLeaveProgram scoreCubeHigh,
-            CollectorSubsystem collector) {
+            CollectorSubsystem collector,
+            MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup) {
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
         setLow.setTarget(KeyArmPosition.LowGoal, RobotFacing.Forward);
@@ -250,7 +252,7 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setlowXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHighXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetractXZ);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(moveCollectedGamepieceToArmCommandGroup);
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstationXZ);
 
         InstantCommand setCubeMode = new InstantCommand(

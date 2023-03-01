@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
@@ -100,6 +102,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     final MechanismLigament2d realLowerArm;
     final MechanismLigament2d realUpperArm;
 
+    final Mechanism2d ghostArm;
+    final MechanismLigament2d ghostLowerArm;
+    final MechanismLigament2d ghostUpperArm;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -133,6 +139,23 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         var realRoot = currentArm.getRoot("Arm", 50, 20);
         realLowerArm = realRoot.append(new MechanismLigament2d("LowerArm", 44.5, 90));
         realUpperArm = realLowerArm.append(new MechanismLigament2d("UpperArm", 33.0, 15.0));
+
+        ghostArm = new Mechanism2d(100, 80);
+        var ghostRoot = ghostArm.getRoot("Arm", 50, 20);
+        ghostLowerArm = ghostRoot.append(new MechanismLigament2d(
+                "LowerArm",
+                44.5,
+                90,
+                10,
+                new Color8Bit(Color.kGreen)));
+        ghostUpperArm = ghostLowerArm.append(new MechanismLigament2d(
+                "UpperArm",
+                33.0,
+                15.0,
+                10,
+                new Color8Bit(Color.kGreen)));
+
+        SmartDashboard.putData("Mechanisms/GhostArm", ghostArm);
 
         // Maximum extents based on frame perimeter being 15in from lower arm joint, joint being 8in above ground.
         // Rules are: Max height: 6ft6in (78in), max extension 48in. Using 2 inches as buffer space since position
@@ -440,6 +463,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public void setSoftLimits(boolean on) {
         lowerArm.setSoftLimit(on);
         upperArm.setSoftLimit(on);
+    }
+
+    public void setGhostArm(Translation2d ghostArmAngles) {
+        ghostLowerArm.setAngle(ghostArmAngles.getX());
+        ghostUpperArm.setAngle(ghostArmAngles.getY() + 180);
     }
 
     @Override
