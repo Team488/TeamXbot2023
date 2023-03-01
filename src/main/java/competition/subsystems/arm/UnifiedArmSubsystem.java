@@ -162,7 +162,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = lowerGoalConeAngles;
                 }
                 break;
-
             case MidGoal:
                 if(gamePieceMode == GamePieceMode.Cube){
                     candidate = midGoalCubeAngles;
@@ -179,7 +178,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = highGoalConeAngles;
                 }
                 break;
-
             case AcquireFromCollector:
                 if (gamePieceMode == GamePieceMode.Cube) {
                     candidate = pickupCubeFromCollectorAngles;
@@ -188,19 +186,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     // TODO: add cone angles
                     candidate = pickupCubeFromCollectorAngles;
                 }
-
+                break;
             case Ground:
                 candidate = groundAngle;
                 break;
             case LoadingTray:
                 candidate = loadingTrayAngle;
                 break;
-
             case FullyRetracted:
                 candidate = fullyRetractedAngles;
-                break;
-            case AcquireFromCollector:
-                candidate = acquireFromCollectorAngles;
                 break;
             case SafeExternalTransition:
                 candidate = safeExternalTransitionAngles;

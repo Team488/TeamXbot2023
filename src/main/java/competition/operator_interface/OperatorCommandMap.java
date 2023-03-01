@@ -234,13 +234,13 @@ public class OperatorCommandMap {
         setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
         setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
-        SimpleSafeArmRouterCommand setPickupCubeFromCollector = armPositionCommandProvider.get();
-        setPickupCubeFromCollector.setTarget(KeyArmPosition.AcquireFromCollector, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setPickupFromCollector = armPositionCommandProvider.get();
+        setPickupFromCollector.setTarget(KeyArmPosition.AcquireFromCollector, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setLow);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMid);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setRetract);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(setPickupFromCollector);
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
