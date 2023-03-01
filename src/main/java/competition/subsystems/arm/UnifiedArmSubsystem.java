@@ -4,6 +4,9 @@ import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
@@ -93,6 +96,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     protected final BooleanProperty brakeDisabled;
 
+    final Mechanism2d currentArm;
+    final MechanismLigament2d realLowerArm;
+    final MechanismLigament2d realUpperArm;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -122,12 +129,19 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         currentXPosition = pf.createEphemeralProperty("Current X Position", 0.0);
         currentZPosition = pf.createEphemeralProperty("Current Z Position", 0.0);
 
+        currentArm = new Mechanism2d(100, 80);
+        var realRoot = currentArm.getRoot("Arm", 50, 20);
+        realLowerArm = realRoot.append(new MechanismLigament2d("LowerArm", 44.5, 90));
+        realUpperArm = realLowerArm.append(new MechanismLigament2d("UpperArm", 33.0, 15.0));
+
         // Maximum extents based on frame perimeter being 15in from lower arm joint, joint being 8in above ground.
         // Rules are: Max height: 6ft6in (78in), max extension 48in. Using 2 inches as buffer space since position
         // measurements are to the clamp on the end effector.
         maximumXPosition = pf.createPersistentProperty("Maximum X Position", 15 + 48 - 2);
         maximumZPosition = pf.createPersistentProperty("Maximum Z Position", 78 - 8 - 2);
         minimumZPosition = pf.createPersistentProperty("Minimum Z Position", -2);
+
+        SmartDashboard.putData("Mechanisms/RealArm", currentArm);
 
         areBrakesEngaged.set(true);
     }
@@ -439,6 +453,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         XYPair currentPosition = getCurrentXZCoordinates();
         currentXPosition.set(currentPosition.x);
         currentZPosition.set(currentPosition.y);
+
+        var currentAngles = getCurrentValue();
+        realLowerArm.setAngle(currentAngles.x);
+        realUpperArm.setAngle(currentAngles.y + 180);
     }
 
     public void setGamePieceMode(GamePieceMode gamePiece){

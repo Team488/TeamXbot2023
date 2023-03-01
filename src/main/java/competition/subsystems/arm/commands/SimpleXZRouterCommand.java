@@ -25,11 +25,10 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     SimpleTimeInterpolator.InterpolationResult lastResult;
     private ArrayList<XbotArmPoint> pointsToInterpolate;
 
-    final Mechanism2d currentArm;
+
     final Mechanism2d ghostArm;
 
-    final MechanismLigament2d realLowerArm;
-    final MechanismLigament2d realUpperArm;
+
     final MechanismLigament2d ghostLowerArm;
     final MechanismLigament2d ghostUpperArm;
 
@@ -42,17 +41,11 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         this.arms = arms;
         this.interpolator = new SimpleTimeInterpolator();
 
-        currentArm = new Mechanism2d(100, 80);
-        var realRoot = currentArm.getRoot("Arm", 50, 20);
-        realLowerArm = realRoot.append(new MechanismLigament2d("LowerArm", 44.5, 90));
-        realUpperArm = realLowerArm.append(new MechanismLigament2d("UpperArm", 33.0, 15.0));
-
         ghostArm = new Mechanism2d(100, 80);
         var ghostRoot = ghostArm.getRoot("Arm", 50, 20);
         ghostLowerArm = ghostRoot.append(new MechanismLigament2d("LowerArm", 44.5, 90));
         ghostUpperArm = ghostLowerArm.append(new MechanismLigament2d("UpperArm", 33.0, 15.0));
 
-        SmartDashboard.putData("Mechanisms/RealArm", currentArm);
         SmartDashboard.putData("Mechanisms/GhostArm", ghostArm);
     }
 
@@ -152,8 +145,6 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     public void execute() {
 
         var currentAngles = arms.getCurrentValue();
-        realLowerArm.setAngle(currentAngles.x);
-        realUpperArm.setAngle(currentAngles.y);
 
         lastResult = interpolator.calculateTarget(arms.getCurrentXZCoordinatesAsTranslation2d());
         var targetPosition = new XYPair(lastResult.chasePoint.getX(), lastResult.chasePoint.getY());
@@ -162,7 +153,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         ArmPositionState newTargets = arms.solver.solveArmJointPositions(constrainedPosition, arms.getCurrentValue());
 
         ghostLowerArm.setAngle(newTargets.getLowerJointRotation().getDegrees());
-        ghostUpperArm.setAngle(newTargets.getUpperJointRotation().getDegrees());
+        ghostUpperArm.setAngle(newTargets.getUpperJointRotation().getDegrees() + 180);
 
         if (newTargets.isSolveable()) {
             arms.setTargetValue(new XYPair(
