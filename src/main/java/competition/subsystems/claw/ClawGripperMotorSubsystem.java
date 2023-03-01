@@ -2,16 +2,16 @@ package competition.subsystems.claw;
 
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSubsystem;
-import xbot.common.command.NamedInstantCommand;
 import xbot.common.command.NamedRunCommand;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class ClawGripperMotorSubsystem extends BaseSubsystem {
     private final ElectricalContract electricalContract;
 
@@ -41,8 +41,8 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
         }
     }
 
-    public InstantCommand createStopCommand() {
-        return new NamedInstantCommand("Stop claw motors", () -> {
+    public Command createStopCommand() {
+        return new NamedRunCommand("Stop claw motors", () -> {
             this.setStopped();
         }, this);
     }
