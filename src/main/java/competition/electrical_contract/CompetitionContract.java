@@ -150,12 +150,12 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getClawSolenoid() {return new DeviceInfo(0, false);}
 
     @Override
-    public DeviceInfo getClawMotor1() {
+    public DeviceInfo getLeftClawMotor() {
         return new DeviceInfo(33, false, 1);
     }
 
     @Override
-    public DeviceInfo getClawMotor2() {
+    public DeviceInfo getRightClawMotor() {
         return new DeviceInfo(34, false, 1);
     }
 

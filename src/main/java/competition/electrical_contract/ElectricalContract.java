@@ -30,8 +30,8 @@ public abstract class ElectricalContract {
     
     public abstract DeviceInfo getClawSolenoid();
 
-    public abstract DeviceInfo getClawMotor1();
-    public abstract DeviceInfo getClawMotor2();
+    public abstract DeviceInfo getLeftClawMotor();
+    public abstract DeviceInfo getRightClawMotor();
     public abstract boolean areClawMotorsReady();
 
     public abstract DeviceInfo getCollectorSolenoid();
