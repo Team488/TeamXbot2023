@@ -29,6 +29,11 @@ public abstract class ElectricalContract {
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
     
     public abstract DeviceInfo getClawSolenoid();
+
+    public abstract DeviceInfo getClawMotor1();
+    public abstract DeviceInfo getClawMotor2();
+    public abstract boolean areClawMotorsReady();
+
     public abstract DeviceInfo getCollectorSolenoid();
     public abstract DeviceInfo getCollectorMotor();
     public abstract boolean isCollectorReady();

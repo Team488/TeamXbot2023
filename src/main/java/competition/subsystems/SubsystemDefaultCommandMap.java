@@ -10,6 +10,7 @@ import competition.injection.swerve.RearRightDrive;
 import competition.injection.swerve.SwerveComponent;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
+import competition.subsystems.claw.ClawGripperMotorSubsystem;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.drive.DriveSubsystem;
@@ -72,5 +73,9 @@ public class SubsystemDefaultCommandMap {
     @Inject
     public void setupClawSubsystem(ClawSubsystem claw, CloseClawCommand closeCommand) {
         claw.setDefaultCommand(closeCommand);
+    }
+
+    @Inject void setupClawMotorSubsystem(ClawGripperMotorSubsystem claw) {
+        claw.setDefaultCommand(claw.createStopCommand());
     }
 }

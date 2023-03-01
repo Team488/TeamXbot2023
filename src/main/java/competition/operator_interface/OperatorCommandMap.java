@@ -10,6 +10,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
+import competition.subsystems.claw.ClawGripperMotorSubsystem;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
@@ -215,6 +216,7 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             OpenClawCommand openClaw,
+            ClawGripperMotorSubsystem gripperMotorSubsystem,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             SimpleSafeArmRouterCommand router,
@@ -263,7 +265,9 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper)
+                .whileTrue(openClaw)
+                .onFalse(gripperMotorSubsystem.createIntakeCommand());
 
 
         InstantCommand retract = new InstantCommand(
