@@ -117,6 +117,21 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         assertEquals(-45, mirroredFarAway.y, 0.001);
     }
 
+    @Test
+    public void testExcessiveAngles() {
+        arms.setArmsToAngles(Rotation2d.fromDegrees(1000), Rotation2d.fromDegrees(1000));
+
+        assertEquals(
+                arms.upperArm.getUpperLimitInDegrees(),
+                ((MockCANSparkMax)arms.upperArm.rightMotor).getReference() * arms.upperArm.getDegreesPerMotorRotation(),
+                0.001);
+
+        assertEquals(
+                arms.lowerArm.getUpperLimitInDegrees(),
+                ((MockCANSparkMax)arms.lowerArm.rightMotor).getReference() * arms.lowerArm.getDegreesPerMotorRotation(),
+                0.001);
+    }
+
     private void checkArmPowers(double lowerPower, double upperPower) {
         assertEquals(lowerPower, arms.lowerArm.rightMotor.get(), 0.001);
         assertEquals(upperPower, arms.upperArm.rightMotor.get(), 0.001);
