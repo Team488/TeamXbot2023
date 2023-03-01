@@ -75,7 +75,8 @@ public class SubsystemDefaultCommandMap {
         claw.setDefaultCommand(closeCommand);
     }
 
-    @Inject void setupClawMotorSubsystem(ClawGripperMotorSubsystem claw) {
+    @Inject
+    void setupClawMotorSubsystem(ClawGripperMotorSubsystem claw) {
         claw.setDefaultCommand(claw.createStopCommand());
     }
 }
