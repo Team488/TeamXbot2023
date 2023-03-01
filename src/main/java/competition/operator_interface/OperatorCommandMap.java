@@ -266,8 +266,8 @@ public class OperatorCommandMap {
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper)
-                .whileTrue(openClaw)
-                .onFalse(gripperMotorSubsystem.createIntakeCommand());
+                .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
+                .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());
 
 
         InstantCommand retract = new InstantCommand(

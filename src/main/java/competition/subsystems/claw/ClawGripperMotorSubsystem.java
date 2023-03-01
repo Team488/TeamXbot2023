@@ -50,7 +50,11 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
     public Command createIntakeCommand() {
         return new NamedRunCommand("Claw motors to intake", () -> {
             this.setIntake();
-        }, this).withTimeout(intakeDuration.get());
+        }, this);
+    }
+
+    public Command createIntakeBurstCommand() {
+        return createIntakeCommand().withTimeout(intakeDuration.get());
     }
 
     public void setStopped() {
