@@ -67,9 +67,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
     public static XYPair midGoalConeAngles = new XYPair(82, 80);
     public static XYPair highGoalConeAngles = new XYPair(60, 130);
-    public static XYPair acquireFromCollectorAngles = new XYPair(
-            75,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75,-90));
     public static XYPair safeExternalTransitionAngles = new XYPair(
             100,
             90);
@@ -77,6 +74,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair groundAngle = new XYPair(45, 28);
     public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
+    public static XYPair pickupCubeFromCollectorAngles = new XYPair(72, 24.5);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -181,6 +179,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = highGoalConeAngles;
                 }
                 break;
+
+            case AcquireFromCollector:
+                if (gamePieceMode == GamePieceMode.Cube) {
+                    candidate = pickupCubeFromCollectorAngles;
+                }
+                else {
+                    // TODO: add cone angles
+                    candidate = pickupCubeFromCollectorAngles;
+                }
 
             case Ground:
                 candidate = groundAngle;
