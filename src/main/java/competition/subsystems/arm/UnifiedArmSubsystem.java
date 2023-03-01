@@ -73,9 +73,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
     public static XYPair midGoalConeAngles = new XYPair(82, 80);
     public static XYPair highGoalConeAngles = new XYPair(60, 130);
-    public static XYPair acquireFromCollectorAngles = new XYPair(
-            75,
-            ArmPositionSolver.convertOldArmAngleToNewArmAngle(75,-90));
     public static XYPair safeExternalTransitionAngles = new XYPair(
             100,
             90);
@@ -83,6 +80,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair groundAngle = new XYPair(45, 28);
     public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
+    public static XYPair pickupCubeFromCollectorAngles = new XYPair(72, 24.5);
 
     // Interesting XZ positions;
     public static Translation2d specialMiddleTransitionPositionForward = new Translation2d(2.26, 11.76);
@@ -185,7 +183,6 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = lowerGoalConeAngles;
                 }
                 break;
-
             case MidGoal:
                 if(gamePieceMode == GamePieceMode.Cube){
                     candidate = midGoalCubeAngles;
@@ -202,19 +199,23 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = highGoalConeAngles;
                 }
                 break;
-
+            case AcquireFromCollector:
+                if (gamePieceMode == GamePieceMode.Cube) {
+                    candidate = pickupCubeFromCollectorAngles;
+                }
+                else {
+                    // TODO: add cone angles
+                    candidate = pickupCubeFromCollectorAngles;
+                }
+                break;
             case Ground:
                 candidate = groundAngle;
                 break;
             case LoadingTray:
                 candidate = loadingTrayAngle;
                 break;
-
             case FullyRetracted:
                 candidate = fullyRetractedAngles;
-                break;
-            case AcquireFromCollector:
-                candidate = acquireFromCollectorAngles;
                 break;
             case SafeExternalTransition:
                 candidate = safeExternalTransitionAngles;

@@ -12,6 +12,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
+import competition.subsystems.claw.ClawGripperMotorSubsystem;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
@@ -88,7 +89,7 @@ public class OperatorCommandMap {
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
+        //oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
 
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
 
@@ -106,6 +107,7 @@ public class OperatorCommandMap {
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
+        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
     }
 
     @Inject
@@ -179,7 +181,7 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(activateExtremePrecisionDriving);
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
-        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(activateJustPrecisionRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -217,6 +219,7 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             OpenClawCommand openClaw,
+            ClawGripperMotorSubsystem gripperMotorSubsystem,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
@@ -237,6 +240,8 @@ public class OperatorCommandMap {
         setGround.setTarget(KeyArmPosition.Ground, RobotFacing.Forward);
         SimpleSafeArmRouterCommand setSubstation = armPositionCommandProvider.get();
         setSubstation.setTarget(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+        SimpleSafeArmRouterCommand setPickupFromCollector = armPositionCommandProvider.get();
+        setPickupFromCollector.setTarget(KeyArmPosition.AcquireFromCollector, RobotFacing.Forward);
 
         var setlowXZ = simpleXZRouterCommandProvider.get();
         setlowXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LowGoal, RobotFacing.Forward);
@@ -278,7 +283,9 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(openClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper)
+                .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
+                .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());
 
 
         InstantCommand retract = new InstantCommand(
