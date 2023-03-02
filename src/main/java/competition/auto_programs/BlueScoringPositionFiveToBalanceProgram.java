@@ -54,9 +54,10 @@ public class BlueScoringPositionFiveToBalanceProgram extends SequentialCommandGr
                 }
         );
 
+        var mantleWithTimeout = mantleChargePlate.withTimeout(3);
         // TODO: Change this to 1.0 (or something close to it) for competition
         mantleChargePlate.setMaxPower(0.5);
-        this.addCommands(mantleChargePlate);
+        this.addCommands(mantleWithTimeout);
 
 
         // Combine all the commands into one huge sequential command, then deadline that against ~14.5 seconds
@@ -64,7 +65,7 @@ public class BlueScoringPositionFiveToBalanceProgram extends SequentialCommandGr
         var balance = new ParallelRaceGroup(
                 autoBalanceCommandProvider.get(),
                 velocityMaintainer,
-                new WaitCommand(12.5)
+                new WaitCommand(11.5)
         );
         this.addCommands(balance);
         this.addCommands(brake);
