@@ -15,6 +15,7 @@ import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.ClawGripperMotorSubsystem;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
+import competition.subsystems.collector.commands.CollectIfSafeCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
@@ -226,6 +227,7 @@ public class OperatorCommandMap {
             SimpleSafeArmRouterCommand router,
             ScoreCubeHighThenLeaveProgram scoreCubeHigh,
             CollectorSubsystem collector,
+            CollectIfSafeCommand collectIfSafe,
             MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup) {
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
@@ -253,6 +255,8 @@ public class OperatorCommandMap {
         setRetractXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
         var setSubstationXZ = simpleXZRouterCommandProvider.get();
         setSubstationXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+        var setPrepareToPickupFromCollectorXZ = simpleXZRouterCommandProvider.get();
+setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
 
         oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setlowXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
@@ -287,28 +291,9 @@ public class OperatorCommandMap {
                 .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
                 .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());
 
+        var collectionSequence = collectIfSafe.alongWith(setPrepareToPickupFromCollectorXZ);
 
-        InstantCommand retract = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Retracting");
-                    collector.retract();
-                }
-        );
-        //Use left of dpad to retract collector
-        //oi.operatorGamepad.getPovIfAvailable(270).onTrue(retract);
-
-        InstantCommand extend = new InstantCommand(
-                () -> {
-                    Logger log = LogManager.getLogger(OperatorCommandMap.class);
-                    log.info("Extending");
-                    collector.extend();
-                }
-        );
-        //Use right of dpad to extend collector
-        //oi.operatorGamepad.getPovIfAvailable(90).onTrue(extend);
-
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collectionSequence);
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
         SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);

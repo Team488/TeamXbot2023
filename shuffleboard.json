@@ -1768,6 +1768,71 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Current X Position",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/Current X Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Current Z Position",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/Current Z Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArmTarget",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArmTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArmTarget",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArmTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kD",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kD",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

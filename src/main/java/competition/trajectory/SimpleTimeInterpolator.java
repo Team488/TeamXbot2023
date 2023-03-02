@@ -47,7 +47,10 @@ public class SimpleTimeInterpolator {
     }
 
     public InterpolationResult calculateTarget(Translation2d currentLocation) {
-        double secondsSinceLastExecute = XTimer.getFPGATimestamp() - previousTimestamp;
+        double currentTime = XTimer.getFPGATimestamp();
+        double secondsSinceLastExecute = currentTime - previousTimestamp;
+        previousTimestamp = currentTime;
+
         accumulatedProductiveSeconds += secondsSinceLastExecute;
 
         // If we somehow have no points to visit, don't do anything.
@@ -76,10 +79,13 @@ public class SimpleTimeInterpolator {
             // What was our target now becomes our baseline.
             baseline = targetKeyPoint;
             accumulatedProductiveSeconds = 0;
-
+            lerpFraction = 0;
+            log.info("LerpFraction is above one, so advancing to next keypoint");
             index++;
             // And set our new target to the next element of the list
             targetKeyPoint = keyPoints.get(index);
+            log.info("Baseline is now " + baseline.getTranslation2d()
+                    + " and target is now " + targetKeyPoint.getTranslation2d());
         }
 
         // Most of the time, the fraction will be less than one.

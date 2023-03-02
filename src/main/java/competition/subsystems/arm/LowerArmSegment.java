@@ -40,7 +40,7 @@ public class LowerArmSegment extends ArmSegment {
         // TODO: Right now the max/min output is asymmetric (only works for the front side of the machine).
         // This will likely cause bad behavior on the back of the robot.
         XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
-                0.05, // P
+                0.11, // P
                 0.0001, // I
                 0, // D
                 2, // IZone

@@ -169,11 +169,15 @@ public abstract class ArmSegment {
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
     }
 
+    public double coerceAngleWithinLimits(double angle) {
+        return MathUtils.constrainDouble(angle, getLowerLimitInDegrees(), getUpperLimitInDegrees());
+    }
+
     public void setArmToAngle(Rotation2d angle) {
 
-        // Coerce angle to a safe angle
-        double targetAngleDegrees =
-                MathUtils.constrainDouble(angle.getDegrees(), getLowerLimitInDegrees(), getUpperLimitInDegrees());
+        // Coerce angle to a safe angle.
+        // Should already be done by the UnifiedArm, but just in case.
+        double targetAngleDegrees = coerceAngleWithinLimits(angle.getDegrees());
 
         // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
         // controller will be using its internal encoder, so we need to translate from one to the other.

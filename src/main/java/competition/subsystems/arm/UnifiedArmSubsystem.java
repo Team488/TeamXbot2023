@@ -49,6 +49,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         MidGoal,
         HighGoal,
         FullyRetracted,
+        PrepareToAcquireFromCollector,
         AcquireFromCollector,
         SafeExternalTransition,
         StartingPosition
@@ -80,13 +81,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair groundAngle = new XYPair(45, 28);
     public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
-    public static XYPair pickupCubeFromCollectorAngles = new XYPair(72, 24.5);
+    public static XYPair prepareToAcquireFromCollectorAngles = new XYPair(103, 35.5);
+    public static XYPair pickupCubeFromCollectorAngles = new XYPair(74, 17);
+    public static XYPair pickupConeFromCollectorAngles = new XYPair(73.1, 14.4);
 
     // Interesting XZ positions;
     public static Translation2d specialMiddleTransitionPositionForward = new Translation2d(2.26, 11.76);
-    public static Translation2d lowSafePosition = new Translation2d(22, 16);
-    public static Translation2d midSafePosition = new Translation2d(26, 28);
-    public static Translation2d highSafePosition = new Translation2d(30, 40);
+    public static Translation2d lowSafePosition = new Translation2d(14, 13);
+    //public static Translation2d midSafePosition = new Translation2d(26, 28);
+    public static Translation2d highSafePosition = new Translation2d(31, 36);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -199,13 +202,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = highGoalConeAngles;
                 }
                 break;
+            case PrepareToAcquireFromCollector:
+                candidate = prepareToAcquireFromCollectorAngles;
+                break;
             case AcquireFromCollector:
                 if (gamePieceMode == GamePieceMode.Cube) {
                     candidate = pickupCubeFromCollectorAngles;
                 }
                 else {
-                    // TODO: add cone angles
-                    candidate = pickupCubeFromCollectorAngles;
+                    candidate = pickupConeFromCollectorAngles;
                 }
                 break;
             case Ground:
@@ -294,7 +299,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     @Override
     public void setTargetValue(XYPair value) {
-        this.targetPosition = value;
+        // We need to coerce targets within legal ranges; otherwise some commands will never finish.
+        XYPair coercedTarget = new XYPair(
+                lowerArm.coerceAngleWithinLimits(value.x),
+                upperArm.coerceAngleWithinLimits(value.y)
+        );
+        this.targetPosition = coercedTarget;
     }
 
     /**

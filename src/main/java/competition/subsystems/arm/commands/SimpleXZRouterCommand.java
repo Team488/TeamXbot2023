@@ -5,11 +5,6 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.trajectory.SimpleTimeInterpolator;
 import competition.trajectory.XbotArmPoint;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import xbot.common.command.BaseSetpointCommand;
 import xbot.common.math.XYPair;
 
@@ -28,7 +23,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     private ArrayList<XbotArmPoint> pointsToInterpolate;
     private UnifiedArmSubsystem.KeyArmPosition targetArmPosition;
     private UnifiedArmSubsystem.RobotFacing targetRobotFacing;
-    private double defaultSegmentTime = 10.0;
+    private double defaultSegmentTime = 0.5;
 
     @Inject
     public SimpleXZRouterCommand(UnifiedArmSubsystem arms) {
@@ -71,20 +66,24 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         // Whenever the target point is the closest point, we go there and stop building a list of points.
 
         pointsToConsider = new ArrayList<>();
-        pointsToConsider.add(UnifiedArmSubsystem.lowSafePosition);
-        pointsToConsider.add(UnifiedArmSubsystem.midSafePosition);
-        pointsToConsider.add(UnifiedArmSubsystem.highSafePosition);
-        pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.lowSafePosition));
-        pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.midSafePosition));
-        pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.highSafePosition));
+
+        var lowSafe = UnifiedArmSubsystem.lowSafePosition;
+        var highSafe = UnifiedArmSubsystem.highSafePosition;
+
+        pointsToConsider.add(lowSafe);
+        //pointsToConsider.add(UnifiedArmSubsystem.midSafePosition);
+        pointsToConsider.add(highSafe);
+        //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.lowSafePosition));
+        //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.midSafePosition));
+        //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.highSafePosition));
 
         // The transition points need to be handled carefully, as this simple routing algorithm will
         // always choose the nearest point, and these are just a few inches from each other.
         // In the routine below, whenever we remove one from consideration, we need to remove the other.
-        var specialPointForward = UnifiedArmSubsystem.specialMiddleTransitionPositionForward;
-        var specialPointBackward = UnifiedArmSubsystem.mirrorXZPoints(specialPointForward);
-        pointsToConsider.add(specialPointForward);
-        pointsToConsider.add(specialPointBackward);
+        //var specialPointForward = UnifiedArmSubsystem.specialMiddleTransitionPositionForward;
+        //var specialPointBackward = UnifiedArmSubsystem.mirrorXZPoints(specialPointForward);
+        //pointsToConsider.add(specialPointForward);
+        //pointsToConsider.add(specialPointBackward);
 
         var targetTranslation = keyPointsProvider.get().getTranslation2d();
         pointsToConsider.add(targetTranslation);
@@ -101,13 +100,19 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         while (nearest != targetTranslation) {
             nearest = originPoint.nearest(pointsToConsider);
 
+            // Only both going to one safe position
+            if (nearest == lowSafe || nearest == highSafe) {
+                pointsToConsider.remove(lowSafe);
+                pointsToConsider.remove(highSafe);
+            }
+
             // As mentioned above, the special points need to be removed together.
-            if (nearest == specialPointForward || nearest == specialPointBackward) {
+            /*if (nearest == specialPointForward || nearest == specialPointBackward) {
                 pointsToConsider.remove(specialPointBackward);
                 pointsToConsider.remove(specialPointForward);
-            } else {
+            } else {*/
                 pointsToConsider.remove(nearest);
-            }
+            //}
             log.info("Adding point to path: " + nearest);
             waypoints.add(new XbotArmPoint(nearest, defaultSegmentTime));
             originPoint = nearest;
@@ -138,7 +143,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         var targetPosition = new XYPair(lastResult.chasePoint.getX(), lastResult.chasePoint.getY());
         var constrainedPosition = arms.constrainXZPosition(targetPosition);
 
-        ArmPositionState newTargets = arms.solver.solveArmJointPositions(constrainedPosition, arms.getCurrentValue());
+        ArmPositionState newTargets = arms.solver.solveArmJointPositions(constrainedPosition, arms.getCurrentValue(), true);
 
         arms.setGhostArm(new Translation2d(
                 newTargets.getLowerJointRotation().getDegrees(),
@@ -155,7 +160,11 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
     @Override
     public boolean isFinished() {
-        return arms.isMaintainerAtGoal() && lastResult.isOnFinalPoint;
+        if (arms.isMaintainerAtGoal() && lastResult.isOnFinalPoint) {
+            log.info("Finished");
+            return true;
+        }
+        return false;
     }
 
     @Override

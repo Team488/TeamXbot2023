@@ -6,6 +6,7 @@ import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import javax.inject.Inject;
 
@@ -17,6 +18,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
             CloseClawCommand closeClawCommand,
             CollectorSubsystem collector,
             SetArmsToKeyArmPositionCommand setArmsToCollectPositionCommand,
+            SetArmsToKeyArmPositionCommand pullOutGamePieceCommand,
             UnifiedArmSubsystem arms) {
 
         // Open claw and wait
@@ -31,8 +33,17 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
         // Close claw and wait
         this.addCommands(closeClawCommand.withTimeout(0.5));
 
-        // Eject the gamepiece
-        this.addCommands(collector.getEjectThenStopCommand().withTimeout(0.1));
+        // Eject the gamepiece, and move the arm out a bit.
+        pullOutGamePieceCommand.setTargetSupplier(
+                () -> UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
+                () -> UnifiedArmSubsystem.RobotFacing.Forward);
+
+        var waitThenPullArm = new WaitCommand(0.1).andThen(pullOutGamePieceCommand);
+        var pullSequence = collector.getEjectThenStopCommand()
+                .withTimeout(0.25)
+                .alongWith(waitThenPullArm);
+
+        this.addCommands(pullSequence);
 
     }
 }
