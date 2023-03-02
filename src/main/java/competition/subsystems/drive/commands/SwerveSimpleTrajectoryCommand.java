@@ -80,7 +80,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     public void initialize() {
         log.info("Initializing");
         keyPoints = keyPointsProvider.get();
-
+        log.info("Key points size: " + keyPoints.size());
         baselinePoint = new XbotSwervePoint(pose.getCurrentPose2d(), 0);
         previousTimestamp = XTimer.getFPGATimestamp();
         targetIndex = 0;
@@ -184,8 +184,13 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     @Override
     public boolean isFinished() {
-        return drive.getPositionalPid().isOnTarget() && headingModule.isOnTarget()
+        boolean finished = drive.getPositionalPid().isOnTarget() && headingModule.isOnTarget()
                 && targetIndex == keyPoints.size()-1;
+        if (finished) {
+            log.info("Finished");
+            log.info("TargetIndex" + targetIndex + ", KeyPoints Size" + keyPoints.size());
+        }
+        return finished;
     }
 
     @Override

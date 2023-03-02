@@ -34,7 +34,7 @@ public class BlueExitCommunityAndBalanceProgram extends SequentialCommandGroup {
                 () -> {
                     var translation =
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueBelowChargeStation)
-                                    .getTranslation();
+                                    .getTranslation().times(1.0 / PoseSubsystem.INCHES_IN_A_METER);
                     var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180));
                     pose.setCurrentPoseInMeters(new Pose2d(translation, rotation));
                 }
@@ -46,11 +46,11 @@ public class BlueExitCommunityAndBalanceProgram extends SequentialCommandGroup {
         mantleChargePlate.setKeyPointsProvider(
                 () -> {
                     var blueLowerGamePieceSideMidCheckpoint =
-                            AutoLandmarks.convertBlueToRedIfNeeded(landmarks.blueLowerGamePieceSideMidCheckpoint);
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueLowerGamePieceSideMidCheckpoint);
                     var blueToUpperAndLowerFieldCheckpoint =
-                            AutoLandmarks.convertBlueToRedIfNeeded(landmarks.blueToUpperAndLowerFieldCheckpoint);
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint);
                     var blueChargeStationMantleFromRight =
-                            AutoLandmarks.convertBlueToRedIfNeeded(landmarks.blueChargeStationMantleFromRight);
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationMantleFromRight);
 
                     XbotSwervePoint blueLowerGamePieceSideMidCheckpointPoint = new XbotSwervePoint
                             (blueLowerGamePieceSideMidCheckpoint.getX(),

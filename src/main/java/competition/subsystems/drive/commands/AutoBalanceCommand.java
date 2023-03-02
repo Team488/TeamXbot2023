@@ -22,6 +22,7 @@ public class AutoBalanceCommand extends BaseCommand {
     double currentAttemptSpeed = firstAttemptSpeed;
     double lastDetectedFallTime = -1000;
     double initialAnalyzedAngle = 0;
+    double angleThresholdForBalance = 1.5;
 
     public enum BalanceState {
         Analyzing,
@@ -80,7 +81,15 @@ public class AutoBalanceCommand extends BaseCommand {
         double velocityGoal = 0;
         switch (currentBalanceState) {
             case Analyzing:
+                log.info("Analyzing");
                 drivingAgainstPositiveAngle = currentAngle > 0.0;
+
+                if (isRobotLevel()) {
+                    // We're already balanced, so we're done!
+                    currentBalanceState = BalanceState.Complete;
+                    break;
+                }
+
                 currentBalanceState = BalanceState.Driving;
                 drive.setActivateBrakeOverride(false);
                 initialAnalyzedAngle = currentAngle;
@@ -118,6 +127,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
                 break;
             case FallDetected:
+                log.info("Fall detected");
                 // We've detected a fall, so we need to stop driving and wait for a bit.
                 // We'll also slow down the drive speed for the next attempt.
                 currentAttemptSpeed = currentAttemptSpeed * 0.5;
@@ -128,7 +138,7 @@ public class AutoBalanceCommand extends BaseCommand {
                 break;
             case Waiting:
                 if (XTimer.getFPGATimestamp() - lastDetectedFallTime > 2.0) {
-                    if (Math.abs(currentAngle) < 1.5) {
+                    if (isRobotLevel()) {
                         // We've successfully balanced!
                         currentBalanceState = BalanceState.Complete;
                     } else {
@@ -139,6 +149,7 @@ public class AutoBalanceCommand extends BaseCommand {
                 velocityGoal = 0;
                 break;
             case Complete:
+                log.info("Complete");
                 velocityGoal = 0;
                 return;
             default:
@@ -152,14 +163,17 @@ public class AutoBalanceCommand extends BaseCommand {
 
     private double getAngle() {
         // this is based on the rio orientation
-        double currentAngle = -(pose.getRobotPitch() - 1.75);
+        double currentAngle = -(pose.getRobotPitch());
 
-
-        if (Math.abs(currentAngle) < 1.5) {
+        if (Math.abs(currentAngle) < angleThresholdForBalance) {
             currentAngle = 0;
         }
 
         return currentAngle;
+    }
+
+    private boolean isRobotLevel() {
+        return Math.abs(getAngle()) < angleThresholdForBalance;
     }
 
     @Override
@@ -169,6 +183,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
     @Override
     public void end(boolean interrupted) {
+        log.info("Ending.");
         drive.setVelocityMaintainerXTarget(0);
         drive.setActivateBrakeOverride(false);
     }
