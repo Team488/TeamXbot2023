@@ -1,17 +1,18 @@
 
 package competition.auto_programs;
 
-import competition.commandgroups.ScoreGamepieceCommandGroup;
+import competition.commandgroups.ScoreCubeHighCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
+import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.pose.PoseSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import xbot.common.math.XYPair;
@@ -20,9 +21,8 @@ import javax.inject.Inject;
 
 public class ScoreCubeHighThenLeaveProgram extends SequentialCommandGroup {
     @Inject
-    ScoreCubeHighThenLeaveProgram(ScoreGamepieceCommandGroup scoreGamepieceCommandGroup,
-                                  UnifiedArmSubsystem arm,
-                                  SimpleSafeArmRouterCommand retractArm,
+    ScoreCubeHighThenLeaveProgram(ScoreCubeHighCommandGroup scoreCubeHighCommandGroup,
+                                  SimpleXZRouterCommand retractArm,
                                   CloseClawCommand closeClaw,
                                   SwerveToPointCommand moveOutOfCommunity,
                                   DriveSubsystem drive,
@@ -34,17 +34,14 @@ public class ScoreCubeHighThenLeaveProgram extends SequentialCommandGroup {
                 () -> {
                     var translation =
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight)
-                                    .getTranslation();
-                    var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0));
+                                    .getTranslation().times(1.0 / PoseSubsystem.INCHES_IN_A_METER);
+                    var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180));
+                    pose.setCurrentPoseInMeters(new Pose2d(translation, rotation));
                 }
         );
         this.addCommands(forcePosition);
 
-        scoreGamepieceCommandGroup.setGamePieceModeSupplier(() -> UnifiedArmSubsystem.GamePieceMode.Cube);
-        scoreGamepieceCommandGroup.setArmPositionSupplier(() -> UnifiedArmSubsystem.KeyArmPosition.HighGoal);
-        scoreGamepieceCommandGroup.setRobotFacingSupplier(() -> UnifiedArmSubsystem.RobotFacing.Backward);
-
-        this.addCommands(scoreGamepieceCommandGroup);
+        this.addCommands(scoreCubeHighCommandGroup);
 
         // -------------------------
         // Drive out of community zone while retracting arm and closing claw
@@ -61,11 +58,11 @@ public class ScoreCubeHighThenLeaveProgram extends SequentialCommandGroup {
                     ).getTranslation();
                     return new XYPair(wpiXY.getX(), wpiXY.getY());
                 },
-                () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees()
+                () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees()
         );
 
-        retractArm.setTarget(
-                UnifiedArmSubsystem.KeyArmPosition.StartingPosition,
+        retractArm.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
                 UnifiedArmSubsystem.RobotFacing.Forward);
 
         var waitThenRetractArmAndCloseClaw = new SequentialCommandGroup(

@@ -1426,71 +1426,16 @@
               "_glyph": 148,
               "_showGlyph": false
             }
-          }
-        }
-      }
-    },
-    {
-      "title": "Rumble Warning",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
           },
-          "5,1": {
+          "7,2": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "6,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetScoreCubeHighThenLeave",
+              "_title": "SmartDashboard/AutoPrograms/SetScoreCubeHighThenLeave",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1509,19 +1454,6 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/P",
-              "_title": "SmartDashboard/AutoBalanceCommand/P",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "5,0": {
             "size": [
               1,
@@ -1544,19 +1476,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current roll",
               "_title": "SmartDashboard/PoseSubsystem/Current roll",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/D",
-              "_title": "SmartDashboard/AutoBalanceCommand/D",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1833,6 +1752,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/VoltageOffset",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/VoltageOffset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1953,6 +1898,59 @@
             }
           }
         }
+      }
+    },
+    {
+      "title": "Collector",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/intakePower",
+              "_title": "SmartDashboard/CollectorSubsystem/intakePower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/retractPower",
+              "_title": "SmartDashboard/CollectorSubsystem/retractPower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Driver",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
       }
     }
   ],

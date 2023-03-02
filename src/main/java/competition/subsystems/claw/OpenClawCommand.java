@@ -33,6 +33,8 @@ public class OpenClawCommand extends BaseCommand{
     @Override
     public void initialize() {
         // Nothing to do
+        log.info("Initializing");
+        timeStableValidator.setStable();
     }
 
     @Override

@@ -90,6 +90,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static Translation2d lowSafePosition = new Translation2d(14, 13);
     //public static Translation2d midSafePosition = new Translation2d(26, 28);
     public static Translation2d highSafePosition = new Translation2d(31, 36);
+    public static Translation2d superHighSafePosition = new Translation2d(50, 40);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -349,6 +350,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new InstantCommand(() -> {
             log.info("Forcing arms to uncalibrated mode. Only manual operation will be respected.");
             calibratedProp.set(false);
+        });
+    }
+
+    public Command createForceCalibratedCommand() {
+        return new InstantCommand(() -> {
+            log.info("Forcing arms to calibrated mode. Automatic operation is now possible.");
+            calibratedProp.set(true);
+            upperArm.calibrateThisPositionAs(0);
         });
     }
 

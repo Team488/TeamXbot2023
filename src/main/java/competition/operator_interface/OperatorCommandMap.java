@@ -38,6 +38,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.command.NamedInstantCommand;
 import xbot.common.controls.sensors.XXboxController.XboxButton;
+import xbot.common.controls.sensors.buttons.ChordTrigger;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -228,7 +229,22 @@ public class OperatorCommandMap {
             ScoreCubeHighThenLeaveProgram scoreCubeHigh,
             CollectorSubsystem collector,
             CollectIfSafeCommand collectIfSafe,
-            MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup) {
+            MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup,
+            ChordTrigger.ChordTriggerFactory chordTriggerFactory) {
+
+        var uncalibrateArms = arm.createForceUncalibratedCommand();
+        var recalibrateArms = arm.createForceCalibratedCommand();
+
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(uncalibrateArms);
+        oi.operatorGamepad.getPovIfAvailable(90).onTrue(uncalibrateArms);
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(uncalibrateArms);
+        oi.operatorGamepad.getPovIfAvailable(270).onTrue(uncalibrateArms);
+
+        var doubleJoystickButtonpress = chordTriggerFactory.create(
+                oi.operatorGamepad.getifAvailable(XboxButton.LeftStick),
+                oi.operatorGamepad.getifAvailable(XboxButton.RightStick));
+
+        doubleJoystickButtonpress.onTrue(recalibrateArms);
 
         SimpleSafeArmRouterCommand setLow = armPositionCommandProvider.get();
         setLow.setTarget(KeyArmPosition.LowGoal, RobotFacing.Forward);
@@ -307,10 +323,11 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
         moveDown.setDirection(new XYPair(0, -1));
 
-        oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        /*oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
+         */
     }
 
 }

@@ -9,6 +9,7 @@ import xbot.common.command.BaseSetpointCommand;
 import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -54,6 +55,12 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), defaultSegmentTime));
     }
 
+    public void setKeyPointFromKeyArmPositionProvider(
+            Supplier<UnifiedArmSubsystem.KeyArmPosition> keyArmPositionProvider,
+            Supplier<UnifiedArmSubsystem.RobotFacing> facingProvider) {
+        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPositionProvider.get(), facingProvider.get()), defaultSegmentTime));
+    }
+
     @Override
     public void initialize() {
         log.info("Intializing");
@@ -69,10 +76,12 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
         var lowSafe = UnifiedArmSubsystem.lowSafePosition;
         var highSafe = UnifiedArmSubsystem.highSafePosition;
-
+        var superHighSafe = UnifiedArmSubsystem.superHighSafePosition;
         pointsToConsider.add(lowSafe);
         //pointsToConsider.add(UnifiedArmSubsystem.midSafePosition);
         pointsToConsider.add(highSafe);
+
+        pointsToConsider.add(superHighSafe);
         //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.lowSafePosition));
         //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.midSafePosition));
         //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.highSafePosition));
