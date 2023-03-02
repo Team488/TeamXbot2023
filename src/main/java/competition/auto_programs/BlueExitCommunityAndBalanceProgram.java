@@ -7,6 +7,7 @@ import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -35,6 +36,7 @@ public class BlueExitCommunityAndBalanceProgram extends SequentialCommandGroup {
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueBelowChargeStation)
                                     .getTranslation();
                     var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180));
+                    pose.setCurrentPoseInMeters(new Pose2d(translation, rotation));
                 }
         );
         this.addCommands(forcePosition);

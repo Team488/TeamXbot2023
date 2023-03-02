@@ -6,6 +6,7 @@ import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -24,7 +25,7 @@ public class BlueScoringPositionFiveToBalanceProgram extends SequentialCommandGr
     @Inject
     BlueScoringPositionFiveToBalanceProgram(Provider<AutoBalanceCommand> autoBalanceCommandProvider,
                                             SwerveSimpleTrajectoryCommand mantleChargePlate,
-                                            AutoLandmarks landmarks, PoseSubsystem pose,
+                                            PoseSubsystem pose,
                                             VelocityMaintainerCommand velocityMaintainer, BrakeCommand brake){
         // Force set our current position - facing the charge station, with some distance to get some speed.
         var forcePosition = new InstantCommand(
@@ -33,6 +34,7 @@ public class BlueScoringPositionFiveToBalanceProgram extends SequentialCommandGr
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionFive)
                                     .getTranslation();
                     var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0));
+                    pose.setCurrentPoseInMeters(new Pose2d(translation, rotation));
                 }
         );
         this.addCommands(forcePosition);
@@ -41,7 +43,7 @@ public class BlueScoringPositionFiveToBalanceProgram extends SequentialCommandGr
         mantleChargePlate.setKeyPointsProvider(
                 () -> {
                     var chargeStationMantlePoint =
-                            AutoLandmarks.convertBlueToRedIfNeeded(landmarks.blueChargeStationMantleFromLeft);
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationMantleFromLeft);
                     XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint
                             (chargeStationMantlePoint.getX(), chargeStationMantlePoint.getY(), 0, 1.0);
                     return new ArrayList<>(List.of(goTowardsChargeStation));
