@@ -257,6 +257,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                 MathUtils.constrainDouble(targetPosition.y, minimumZ, maximumZ));
     }
 
+    public double getMaximumZPosition() {
+        return maximumZPosition.get();
+    }
+
     @Override
     public XYPair getTargetValue() {
         return targetPosition;
