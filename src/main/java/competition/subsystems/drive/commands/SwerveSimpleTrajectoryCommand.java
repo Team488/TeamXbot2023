@@ -36,6 +36,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     double previousTimestamp = 0;
     double maximumDistanceFromChasePointInInches = 24;
     int targetIndex = 0;
+    double lerpFraction;
 
     private final Field2d ghostDisplay;
 
@@ -114,7 +115,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         Translation2d chasePoint = targetKeyPoint.keyPose.getTranslation();
 
         // Now, try to find a better point via linear interpolation.
-        double lerpFraction = (accumulatedProductiveSeconds) / targetKeyPoint.secondsToPoint;
+        lerpFraction = (accumulatedProductiveSeconds) / targetKeyPoint.secondsToPoint;
 
         // If the fraction is above 1, it's time to set a new baseline point and start LERPing on the next
         // one.
@@ -185,10 +186,11 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     @Override
     public boolean isFinished() {
         boolean finished = drive.getPositionalPid().isOnTarget() && headingModule.isOnTarget()
-                && targetIndex == keyPoints.size()-1;
+                && targetIndex == keyPoints.size()-1 & lerpFraction >= 1;
         if (finished) {
             log.info("Finished");
             log.info("TargetIndex" + targetIndex + ", KeyPoints Size" + keyPoints.size());
+            log.info("LerpFraction" + lerpFraction);
         }
         return finished;
     }

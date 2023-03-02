@@ -44,7 +44,7 @@ public class BlueScoringPositionFiveToBalanceProgram extends SequentialCommandGr
         mantleChargePlate.setKeyPointsProvider(
                 () -> {
                     var chargeStationMantlePoint =
-                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationMantleFromLeft);
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationCenter);
                     XbotSwervePoint goTowardsChargeStation = new XbotSwervePoint(
                             chargeStationMantlePoint.getX(),
                             chargeStationMantlePoint.getY(),
