@@ -28,8 +28,7 @@ public class EjectLowThenBalanceWithMobilityProgram extends SequentialCommandGro
             CollectorSubsystem collector,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
-            BrakeCommand brake)
-    {
+            BrakeCommand brake) {
         // Force set our current position - facing the grid station, ready to score our cone.
         var forcePosition = new InstantCommand(
                 () -> {
@@ -101,4 +100,5 @@ public class EjectLowThenBalanceWithMobilityProgram extends SequentialCommandGro
         );
         this.addCommands(balance);
         this.addCommands(brake);
+    }
 }
