@@ -3,6 +3,7 @@ package competition.subsystems.arm;
 import competition.BaseCompetitionTest;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
+import org.junit.Ignore;
 import org.junit.Test;
 import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 import xbot.common.math.XYPair;
@@ -36,7 +37,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         // -------------------------------------------
         // Going to first transition point
         // -------------------------------------------
-
+        arms.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
         routerCommand.setTarget(UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
         routerCommand.initialize();
@@ -89,8 +90,10 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         assertTrue(routerCommand.isFinished());
     }
 
+    @Ignore // This isn't relevant for now, since we are only operating in the "forward" regime.
     @Test
     public void testCrossFacingRoute() {
+        arms.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
         // Cross facing, going from neutral state on the front to high state on the reverse side.
         setArmAngles(85, 15);
 
