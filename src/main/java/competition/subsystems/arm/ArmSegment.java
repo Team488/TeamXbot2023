@@ -172,6 +172,10 @@ public abstract class ArmSegment {
         return MathUtils.constrainDouble(angle, getLowerLimitInDegrees(), getUpperLimitInDegrees());
     }
 
+    public boolean isAngleWithinLimits(double angle) {
+        return angle >= getLowerLimitInDegrees() && angle <= getUpperLimitInDegrees();
+    }
+
     public void setArmToAngle(Rotation2d angle) {
 
         // Coerce angle to a safe angle.

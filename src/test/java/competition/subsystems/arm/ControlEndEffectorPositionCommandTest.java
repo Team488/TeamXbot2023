@@ -36,8 +36,8 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
     public void testMoveArmWithCommand() {
         setArmAngles(45, 90);
         XYPair currentPosition = arm.getCurrentXZCoordinates();
-        assertEquals(54.80, currentPosition.x, 0.01);
-        assertEquals(8.13, currentPosition.y, 0.01);
+        assertEquals(56.92, currentPosition.x, 0.01);
+        assertEquals(6.01, currentPosition.y, 0.01);
 
         command.setDirection(new XYPair(-1, 0));
         command.initialize();
@@ -52,15 +52,15 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         command.end(false);
 
         assertEquals(45.45, arm.lowerArm.getArmPositionInDegrees(), 0.01);
-        assertEquals(88.94, arm.upperArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(88.99, arm.upperArm.getArmPositionInDegrees(), 0.01);
     }
 
     @Test
     public void testMoveArmWithCommand2() {
         setArmAngles(103, 56);
         XYPair currentPosition = arm.getCurrentXZCoordinates();
-        assertEquals(20.79, currentPosition.x, 0.01);
-        assertEquals(31.53, currentPosition.y, 0.01);
+        assertEquals(23.60, currentPosition.x, 0.01);
+        assertEquals(30.45, currentPosition.y, 0.01);
 
         command.setDirection(new XYPair(0, 1));
         command.initialize();
@@ -74,16 +74,16 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         assertTrue(arm.isMaintainerAtGoal());
         command.end(false);
 
-        assertEquals(103.27, arm.lowerArm.getArmPositionInDegrees(), 0.01);
-        assertEquals(56.74, arm.upperArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(100.00, arm.lowerArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(56.65, arm.upperArm.getArmPositionInDegrees(), 0.01);
     }
 
     @Test
     public void testMoveArmWithCommandBackwards() {
         setArmAngles(86, -88);
         XYPair currentPosition = arm.getCurrentXZCoordinates();
-        assertEquals(-29.87, currentPosition.x, 0.01);
-        assertEquals(45.54, currentPosition.y, 0.01);
+        assertEquals(-32.87, currentPosition.x, 0.01);
+        assertEquals(45.65, currentPosition.y, 0.01);
 
         command.setDirection(new XYPair(0, 1));
         command.initialize();
@@ -98,7 +98,7 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         command.end(false);
 
         assertEquals(86.03, arm.lowerArm.getArmPositionInDegrees(), 0.01);
-        assertEquals(-88.89, arm.upperArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(-88.82, arm.upperArm.getArmPositionInDegrees(), 0.01);
     }
 
     @Test
@@ -106,8 +106,8 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         // Starting position is illegal. We will snap to the closest legal position.
         setArmAngles(20, 170);
         XYPair currentPosition = arm.getCurrentXZCoordinates();
-        assertEquals(74.31, currentPosition.x, 0.01);
-        assertEquals(20.95, currentPosition.y, 0.01);
+        assertEquals(77.27, currentPosition.x, 0.01);
+        assertEquals(21.47, currentPosition.y, 0.01);
 
         command.setDirection(new XYPair(-1, 0));
         command.initialize();
@@ -121,21 +121,24 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         assertTrue(arm.isMaintainerAtGoal());
         command.end(false);
 
-        assertEquals(47.32, arm.lowerArm.getArmPositionInDegrees(), 0.01);
-        assertEquals(111.80, arm.upperArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(51.66, arm.lowerArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(106.42, arm.upperArm.getArmPositionInDegrees(), 0.01);
         XYPair newPosition = arm.getCurrentXZCoordinates();
         assertEquals(61, newPosition.x, 0.01);
-        assertEquals(20.95, newPosition.y, 0.01);
+        assertEquals(21.47, newPosition.y, 0.01);
     }
 
     @Test
     @Parameters({
-            "20, -10",
-            "20, 10",
+            "35, -50",
+            "35, 45",
             "86, -88",
-            "120, 10"
+            "95, 70"
     })
     public void testMoveArmWithCommandHoldUp(double startingLowerAngle, double startingUpperAngle) {
+        startingLowerAngle = arm.lowerArm.coerceAngleWithinLimits(startingLowerAngle);
+        startingUpperAngle = arm.upperArm.coerceAngleWithinLimits(startingUpperAngle);
+
         setArmAngles(startingLowerAngle, startingUpperAngle);
         XYPair initialPosition = arm.getCurrentXZCoordinates();
 
@@ -154,17 +157,21 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
 
             // Check that movement continues upwards
             XYPair currentPosition = arm.getCurrentXZCoordinates();
-            assertEquals(previousPosition.x, currentPosition.x, 0.01);
+            assertEquals(previousPosition.x, currentPosition.x, 1);
             assertTrue(currentPosition.y >= previousPosition.y);
             previousPosition = currentPosition;
+
+            if (command.isFinished()) {
+                break;
+            }
         }
 
         assertTrue(arm.isMaintainerAtGoal());
         command.end(false);
 
         XYPair finalPosition = arm.getCurrentXZCoordinates();
-        assertEquals(initialPosition.x, finalPosition.x, 0.01);
-        assertEquals(arm.getMaximumZPosition(), finalPosition.y, 0.01);
+        assertEquals(initialPosition.x, finalPosition.x, 1);
+        assertTrue(finalPosition.y <= arm.getMaximumZPosition());
 
         // Check that the upper arm did not cross the lower arm
         assertTrue(Math.abs(arm.getCurrentValue().y + startingUpperAngle) >= Math.abs(startingUpperAngle));

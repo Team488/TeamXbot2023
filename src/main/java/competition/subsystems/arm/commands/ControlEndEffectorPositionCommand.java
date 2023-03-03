@@ -20,12 +20,15 @@ public class ControlEndEffectorPositionCommand extends BaseSetpointCommand {
     private XYPair movementVector = new XYPair(0, 0);
     private XYPair position;
 
+    private boolean exceededLimits;
+
     @Inject
     public ControlEndEffectorPositionCommand(PropertyFactory pf, UnifiedArmSubsystem arm) {
         super(arm);
         this.arm = arm;
         pf.setPrefix(this);
         this.positionChangePerStep = pf.createPersistentProperty("Position change per step", 0.5);
+        this.exceededLimits = false;
     }
 
     public void setDirection(XYPair vector) {
@@ -42,8 +45,19 @@ public class ControlEndEffectorPositionCommand extends BaseSetpointCommand {
     public void execute() {
         position = arm.constrainXZPosition(position.add(movementVector));
 
-        ArmPositionState newTargets = arm.solver.solveArmJointPositions(position, arm.getCurrentValue());
-        arm.setTargetValue(new XYPair(newTargets.getLowerJointRotation().getDegrees(), newTargets.getUpperJointRotation().getDegrees()));
+        ArmPositionState newTargets = arm.solver.solveArmJointPositions(position, arm.getCurrentValue(), false);
+        if (arm.lowerArm.isAngleWithinLimits(newTargets.getLowerJointRotation().getDegrees())
+                && arm.upperArm.isAngleWithinLimits(newTargets.getUpperJointRotation().getDegrees())) {
+            arm.setTargetValue(new XYPair(newTargets.getLowerJointRotation().getDegrees(), newTargets.getUpperJointRotation().getDegrees()));
+        } else {
+            arm.setTargetValue(arm.getCurrentValue());
+            exceededLimits = true;
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return exceededLimits;
     }
 
     @Override
