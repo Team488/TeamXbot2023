@@ -3,13 +3,17 @@ package competition.subsystems.arm;
 import competition.BaseCompetitionTest;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 import xbot.common.math.XYPair;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(JUnitParamsRunner.class)
 public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
 
     private ControlEndEffectorPositionCommand command;
@@ -122,6 +126,48 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         XYPair newPosition = arm.getCurrentXZCoordinates();
         assertEquals(61, newPosition.x, 0.01);
         assertEquals(20.95, newPosition.y, 0.01);
+    }
+
+    @Test
+    @Parameters({
+            "20, -10",
+            "20, 10",
+            "86, -88",
+            "120, 10"
+    })
+    public void testMoveArmWithCommandHoldUp(double startingLowerAngle, double startingUpperAngle) {
+        setArmAngles(startingLowerAngle, startingUpperAngle);
+        XYPair initialPosition = arm.getCurrentXZCoordinates();
+
+        command.setDirection(new XYPair(0, 1));
+        command.initialize();
+
+        XYPair previousPosition = initialPosition;
+
+        // Simulate holding the command for a while
+        for (int i = 0; i < 1000; i++) {
+            command.execute();
+            setArmAngles(arm.getTargetValue().x, arm.getTargetValue().y);
+            maintainer.execute();
+            timer.advanceTimeInSecondsBy(0.1);
+            maintainer.execute();
+
+            // Check that movement continues upwards
+            XYPair currentPosition = arm.getCurrentXZCoordinates();
+            assertEquals(previousPosition.x, currentPosition.x, 0.01);
+            assertTrue(currentPosition.y >= previousPosition.y);
+            previousPosition = currentPosition;
+        }
+
+        assertTrue(arm.isMaintainerAtGoal());
+        command.end(false);
+
+        XYPair finalPosition = arm.getCurrentXZCoordinates();
+        assertEquals(initialPosition.x, finalPosition.x, 0.01);
+        assertEquals(arm.getMaximumZPosition(), finalPosition.y, 0.01);
+
+        // Check that the upper arm did not cross the lower arm
+        assertTrue(Math.abs(arm.getCurrentValue().y + startingUpperAngle) >= Math.abs(startingUpperAngle));
     }
 
     private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
