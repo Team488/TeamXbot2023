@@ -34,10 +34,10 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testGetSetTarget() {
-        arms.setTargetValue(new XYPair(0.5, .75));
+        arms.setTargetValue(new XYPair(45, 50));
         var target = arms.getTargetValue();
-        assertEquals(0.5, target.x, 0.001);
-        assertEquals(0.75, target.y, 0.001);
+        assertEquals(45, target.x, 0.001);
+        assertEquals(50, target.y, 0.001);
     }
     @Test
     @Ignore // Revisit once we set XZ positions rather than raw angles.

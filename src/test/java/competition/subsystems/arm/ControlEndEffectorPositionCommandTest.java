@@ -57,10 +57,10 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
 
     @Test
     public void testMoveArmWithCommand2() {
-        setArmAngles(103, 56);
+        setArmAngles(95, 56);
         XYPair currentPosition = arm.getCurrentXZCoordinates();
-        assertEquals(23.60, currentPosition.x, 0.01);
-        assertEquals(30.45, currentPosition.y, 0.01);
+        assertEquals(27.61, currentPosition.x, 0.01);
+        assertEquals(26.88, currentPosition.y, 0.01);
 
         command.setDirection(new XYPair(0, 1));
         command.initialize();
@@ -74,8 +74,8 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
         assertTrue(arm.isMaintainerAtGoal());
         command.end(false);
 
-        assertEquals(100.00, arm.lowerArm.getArmPositionInDegrees(), 0.01);
-        assertEquals(56.65, arm.upperArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(95.36, arm.lowerArm.getArmPositionInDegrees(), 0.01);
+        assertEquals(56.58, arm.upperArm.getArmPositionInDegrees(), 0.01);
     }
 
     @Test
