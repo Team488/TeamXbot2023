@@ -34,10 +34,10 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testGetSetTarget() {
-        arms.setTargetValue(new XYPair(0.5, .75));
+        arms.setTargetValue(new XYPair(45, 50));
         var target = arms.getTargetValue();
-        assertEquals(0.5, target.x, 0.001);
-        assertEquals(0.75, target.y, 0.001);
+        assertEquals(45, target.x, 0.001);
+        assertEquals(50, target.y, 0.001);
     }
     @Test
     @Ignore // Revisit once we set XZ positions rather than raw angles.
@@ -115,6 +115,21 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         XYPair mirroredFarAway = UnifiedArmSubsystem.mirrorArmAngles(farAway);
         assertEquals(225, mirroredFarAway.x, 0.001);
         assertEquals(-45, mirroredFarAway.y, 0.001);
+    }
+
+    @Test
+    public void testExcessiveAngles() {
+        arms.setArmsToAngles(Rotation2d.fromDegrees(1000), Rotation2d.fromDegrees(1000));
+
+        assertEquals(
+                arms.upperArm.getUpperLimitInDegrees(),
+                ((MockCANSparkMax)arms.upperArm.rightMotor).getReference() * arms.upperArm.getDegreesPerMotorRotation(),
+                0.001);
+
+        assertEquals(
+                arms.lowerArm.getUpperLimitInDegrees(),
+                ((MockCANSparkMax)arms.lowerArm.rightMotor).getReference() * arms.lowerArm.getDegreesPerMotorRotation(),
+                0.001);
     }
 
     private void checkArmPowers(double lowerPower, double upperPower) {

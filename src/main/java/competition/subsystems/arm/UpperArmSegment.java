@@ -115,6 +115,11 @@ public class UpperArmSegment extends ArmSegment {
     }
 
     @Override
+    protected double getVoltageOffset() {
+        return 0;
+    }
+
+    @Override
     public void periodic() {
         super.periodic();
         if (isMotorReady()) {

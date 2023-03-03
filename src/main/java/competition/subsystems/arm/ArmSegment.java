@@ -68,6 +68,7 @@ public abstract class ArmSegment {
 
     protected abstract double getUpperLimitInDegrees();
     protected abstract double getLowerLimitInDegrees();
+    protected abstract double getVoltageOffset();
 
     public void setPower(double power) {
         if (isMotorReady()) {
@@ -117,9 +118,7 @@ public abstract class ArmSegment {
     }
 
     public void calibrateThisPositionAs(double degrees) {
-        if (isMotorReady()) {
-            motorEncoderOffsetInDegrees = getLeaderMotor().getPosition() * getDegreesPerMotorRotation() - degrees;
-        }
+        setAbsoluteEncoderOffsetInDegrees(getAbsoluteEncoder().getAbsoluteDegrees() - degrees);
     }
 
     public double getArmPositionInDegrees() {
@@ -169,11 +168,19 @@ public abstract class ArmSegment {
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
     }
 
+    public double coerceAngleWithinLimits(double angle) {
+        return MathUtils.constrainDouble(angle, getLowerLimitInDegrees(), getUpperLimitInDegrees());
+    }
+
+    public boolean isAngleWithinLimits(double angle) {
+        return angle >= getLowerLimitInDegrees() && angle <= getUpperLimitInDegrees();
+    }
+
     public void setArmToAngle(Rotation2d angle) {
 
-        // Coerce angle to a safe angle
-        double targetAngleDegrees =
-                MathUtils.constrainDouble(angle.getDegrees(), getLowerLimitInDegrees(), getUpperLimitInDegrees());
+        // Coerce angle to a safe angle.
+        // Should already be done by the UnifiedArm, but just in case.
+        double targetAngleDegrees = coerceAngleWithinLimits(angle.getDegrees());
 
         // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
         // controller will be using its internal encoder, so we need to translate from one to the other.
@@ -187,7 +194,11 @@ public abstract class ArmSegment {
             double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionInDegrees()).getDegrees();
             double deltaInMotorRotations = delta / getDegreesPerMotorRotation();
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();
-            getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
+            getLeaderMotor().setReference(
+                    goalPosition,
+                    CANSparkMax.ControlType.kPosition,
+                    0,
+                    getVoltageOffset());
         }
     }
 

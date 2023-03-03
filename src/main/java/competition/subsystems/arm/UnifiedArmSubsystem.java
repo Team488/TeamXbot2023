@@ -3,6 +3,12 @@ package competition.subsystems.arm;
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
@@ -43,6 +49,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         MidGoal,
         HighGoal,
         FullyRetracted,
+        PrepareToAcquireFromCollector,
         AcquireFromCollector,
         SafeExternalTransition,
         StartingPosition
@@ -74,7 +81,16 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     public static XYPair groundAngle = new XYPair(45, 28);
     public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
-    public static XYPair pickupCubeFromCollectorAngles = new XYPair(72, 24.5);
+    public static XYPair prepareToAcquireFromCollectorAngles = new XYPair(103, 35.5);
+    public static XYPair pickupCubeFromCollectorAngles = new XYPair(74, 17);
+    public static XYPair pickupConeFromCollectorAngles = new XYPair(73.1, 14.4);
+
+    // Interesting XZ positions;
+    public static Translation2d specialMiddleTransitionPositionForward = new Translation2d(2.26, 11.76);
+    public static Translation2d lowSafePosition = new Translation2d(14, 13);
+    //public static Translation2d midSafePosition = new Translation2d(26, 28);
+    public static Translation2d highSafePosition = new Translation2d(31, 36);
+    public static Translation2d superHighSafePosition = new Translation2d(50, 40);
 
     double testRangeRadians = 0.17453292519943295; // 10 degrees
 
@@ -83,6 +99,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     protected final BooleanProperty areBrakesEngaged;
 
     protected final BooleanProperty brakeDisabled;
+
+    final Mechanism2d currentArm;
+    final MechanismLigament2d realLowerArm;
+    final MechanismLigament2d realUpperArm;
+
+    final Mechanism2d ghostArm;
+    final MechanismLigament2d ghostLowerArm;
+    final MechanismLigament2d ghostUpperArm;
 
     @Inject
     public UnifiedArmSubsystem(
@@ -96,7 +120,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         this.lowerArmBrakeSolenoid = xSolenoidFactory.create(eContract.getLowerArmBrakeSolenoid().channel);
         ArmPositionSolverConfiguration armConfig = new ArmPositionSolverConfiguration(
             44.5,
-            33.0,
+            36.0,
             Rotation2d.fromDegrees(15.0),
             Rotation2d.fromDegrees(165.0),
             Rotation2d.fromDegrees(-175),
@@ -113,6 +137,28 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         currentXPosition = pf.createEphemeralProperty("Current X Position", 0.0);
         currentZPosition = pf.createEphemeralProperty("Current Z Position", 0.0);
 
+        currentArm = new Mechanism2d(100, 80);
+        var realRoot = currentArm.getRoot("Arm", 50, 20);
+        realLowerArm = realRoot.append(new MechanismLigament2d("LowerArm", 44.5, 90));
+        realUpperArm = realLowerArm.append(new MechanismLigament2d("UpperArm", 33.0, 15.0));
+
+        ghostArm = new Mechanism2d(100, 80);
+        var ghostRoot = ghostArm.getRoot("Arm", 50, 20);
+        ghostLowerArm = ghostRoot.append(new MechanismLigament2d(
+                "LowerArm",
+                44.5,
+                90,
+                10,
+                new Color8Bit(Color.kGreen)));
+        ghostUpperArm = ghostLowerArm.append(new MechanismLigament2d(
+                "UpperArm",
+                33.0,
+                15.0,
+                10,
+                new Color8Bit(Color.kGreen)));
+
+        SmartDashboard.putData("Mechanisms/GhostArm", ghostArm);
+
         // Maximum extents based on frame perimeter being 15in from lower arm joint, joint being 8in above ground.
         // Rules are: Max height: 6ft6in (78in), max extension 48in. Using 2 inches as buffer space since position
         // measurements are to the clamp on the end effector.
@@ -120,35 +166,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         maximumZPosition = pf.createPersistentProperty("Maximum Z Position", 78 - 8 - 2);
         minimumZPosition = pf.createPersistentProperty("Minimum Z Position", -2);
 
+        SmartDashboard.putData("Mechanisms/RealArm", currentArm);
+
         areBrakesEngaged.set(true);
     }
 
-    public XYPair getKeyArmCoordinates(KeyArmPosition keyArmPosition, RobotFacing facing){
-        XYPair candidate = new XYPair();
-        switch (keyArmPosition){
-            case LowGoal:
-                candidate = lowerGoalPosition;
-                break;
-
-            case MidGoal:
-                candidate = midGoalPosition;
-                break;
-
-            case HighGoal:
-                candidate=highGoalPosition;
-                break;
-
-            case FullyRetracted:
-                candidate = fullyRetractedPosition;
-                break;
-
-            default:
-                break;
-        }
-        if (facing == RobotFacing.Backward){
-            // TODO: mirror the coordinates
-        }
-        return candidate;
+    public Translation2d getKeyArmXZ(KeyArmPosition keyArmPosition, RobotFacing facing) {
+        XYPair candidate = getKeyArmAngles(keyArmPosition, facing);
+        return convertOldArmAnglesToXZPositions(candidate);
     }
 
     public XYPair getKeyArmAngles(KeyArmPosition keyArmPosition, RobotFacing facing) {
@@ -178,13 +203,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
                     candidate = highGoalConeAngles;
                 }
                 break;
+            case PrepareToAcquireFromCollector:
+                candidate = prepareToAcquireFromCollectorAngles;
+                break;
             case AcquireFromCollector:
                 if (gamePieceMode == GamePieceMode.Cube) {
                     candidate = pickupCubeFromCollectorAngles;
                 }
                 else {
-                    // TODO: add cone angles
-                    candidate = pickupCubeFromCollectorAngles;
+                    candidate = pickupConeFromCollectorAngles;
                 }
                 break;
             case Ground:
@@ -226,6 +253,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new XYPair(180 - angles.x, -angles.y);
     }
 
+    public static Translation2d mirrorXZPoints(Translation2d point) {
+        return new Translation2d(-point.getX(), point.getY());
+    }
+
     @Override
     public XYPair getCurrentValue() {
 
@@ -248,6 +279,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             upperArm.getArmPositionInRadians());
     }
 
+    public Translation2d getCurrentXZCoordinatesAsTranslation2d() {
+        XYPair currentXZ = getCurrentXZCoordinates();
+        return new Translation2d(currentXZ.x, currentXZ.y);
+    }
+
     public XYPair constrainXZPosition(XYPair targetPosition) {
         double maximumX = maximumXPosition.get();
         double maximumZ = maximumZPosition.get();
@@ -268,7 +304,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     @Override
     public void setTargetValue(XYPair value) {
-        this.targetPosition = value;
+        // We need to coerce targets within legal ranges; otherwise some commands will never finish.
+        XYPair coercedTarget = new XYPair(
+                lowerArm.coerceAngleWithinLimits(value.x),
+                upperArm.coerceAngleWithinLimits(value.y)
+        );
+        this.targetPosition = coercedTarget;
     }
 
     /**
@@ -313,6 +354,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new InstantCommand(() -> {
             log.info("Forcing arms to uncalibrated mode. Only manual operation will be respected.");
             calibratedProp.set(false);
+        });
+    }
+
+    public Command createForceCalibratedCommand() {
+        return new InstantCommand(() -> {
+            log.info("Forcing arms to calibrated mode. Automatic operation is now possible.");
+            calibratedProp.set(true);
+            upperArm.calibrateThisPositionAs(0);
         });
     }
 
@@ -440,6 +489,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         upperArm.setSoftLimit(on);
     }
 
+    public void setGhostArm(Translation2d ghostArmAngles) {
+        ghostLowerArm.setAngle(ghostArmAngles.getX());
+        ghostUpperArm.setAngle(ghostArmAngles.getY() + 180);
+    }
+
     @Override
     public void periodic() {
         lowerArmTarget.set(getTargetValue().x);
@@ -451,6 +505,10 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         XYPair currentPosition = getCurrentXZCoordinates();
         currentXPosition.set(currentPosition.x);
         currentZPosition.set(currentPosition.y);
+
+        var currentAngles = getCurrentValue();
+        realLowerArm.setAngle(currentAngles.x);
+        realUpperArm.setAngle(currentAngles.y + 180);
     }
 
     public void setGamePieceMode(GamePieceMode gamePiece){
@@ -459,5 +517,9 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public Command createSetGamePieceModeCommand(GamePieceMode gamePiece){
         return new InstantCommand(() -> setGamePieceMode(gamePiece));
+    }
+
+    public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {
+        return solver.getPositionFromDegrees(oldArmAngles.x, oldArmAngles.y).toTranslation2d();
     }
 }

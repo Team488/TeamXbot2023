@@ -16,6 +16,10 @@ public class ArmPositionSolver {
         return this.configuration;
     }
 
+    public ArmPositionState solveArmJointPositions(XYPair targetEndEffectorPosition, XYPair currentAngles) {
+        return solveArmJointPositions(targetEndEffectorPosition, currentAngles, false);
+    }
+
     /**
      * Calculate the target rotation of each arm joint given a target end-effector position
      * @param targetEndEffectorPosition X: The distance in front of or behind the robot (in inches) relative to the fixed arm pivot.
@@ -23,7 +27,10 @@ public class ArmPositionSolver {
      * @param currentAngles X: The current lower joint angle.
      *                      Y: The current upper joint angle.
      */
-    public ArmPositionState solveArmJointPositions(XYPair targetEndEffectorPosition, XYPair currentAngles) {
+    public ArmPositionState solveArmJointPositions(
+            XYPair targetEndEffectorPosition,
+            XYPair currentAngles,
+            boolean forceForward) {
         // The arm is made up of two links. LinkA is fixed to a pivot point on the base of the robot (Joint1).
         // LinkB is attached to the other end of LinkA at Joint2.
 
@@ -53,7 +60,7 @@ public class ArmPositionSolver {
 
         // Two possible solutions, depending on if we started with upper arm angle greater than or less than zero.
         // We don't want to cross this, because it will produce a drastically different solution.
-        if (currentAngles.y >= 0) {
+        if (currentAngles.y >= 0 || forceForward) {
             double angleLowerJointRelativeToHorizon = angleLowerJoint + targetEndEffectorPosition.getAngle();
 
             XYPair lowerArmEndpoint = new XYPair(Rotation2d.fromDegrees(angleLowerJointRelativeToHorizon)).scale(configuration.getLowerArmLength());
@@ -91,6 +98,12 @@ public class ArmPositionSolver {
         XYPair upperArm = new XYPair(new WrappedRotation2d(adjustedUpperArmAngleRadians)).scale(configuration.getUpperArmLength());
 
         return lowerArm.add(upperArm);
+    }
+
+    public XYPair getPositionFromDegrees(double lowerArmAngleDegrees, double upperArmAngleDegrees) {
+        return getPositionFromRadians(
+                lowerArmAngleDegrees / 180.0 * Math.PI,
+                upperArmAngleDegrees / 180.0 * Math.PI);
     }
 
     /**

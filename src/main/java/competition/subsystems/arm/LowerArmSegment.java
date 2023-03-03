@@ -30,6 +30,8 @@ public class LowerArmSegment extends ArmSegment {
     private final DoubleProperty lowerLimitInDegrees;
     private final DoubleProperty upperLimitInDegrees;
 
+    private final DoubleProperty voltageOffsetProp;
+
 
     @Inject
     public LowerArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
@@ -40,10 +42,10 @@ public class LowerArmSegment extends ArmSegment {
         // TODO: Right now the max/min output is asymmetric (only works for the front side of the machine).
         // This will likely cause bad behavior on the back of the robot.
         XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
-                0.05, // P
+                0.11, // P
                 0.0001, // I
                 0, // D
-                2, // IZone
+                0.0001, // IZone - basically disabling with a value this low
                 0, // FF
                 0.25, // MaxOutput
                 -0.1 // MinOutput
@@ -52,8 +54,9 @@ public class LowerArmSegment extends ArmSegment {
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation", 4.22);
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -160.64561);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 25);
-        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 155);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 35);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 100);
+        voltageOffsetProp = propFactory.createPersistentProperty("VoltageOffset", 1.0);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
@@ -120,6 +123,11 @@ public class LowerArmSegment extends ArmSegment {
     @Override
     protected double getLowerLimitInDegrees() {
         return lowerLimitInDegrees.get();
+    }
+
+    @Override
+    protected double getVoltageOffset() {
+        return 1.0 * Math.cos(getArmPositionInRadians());
     }
 
     @Override

@@ -290,6 +290,15 @@ public class PoseSubsystem extends BasePoseSubsystem {
         };
     }
 
+    public XYPair rotateVelocityBasedOnAlliance() {
+        if (DriverStation.getAlliance()== DriverStation.Alliance.Red) {
+            return getCurrentVelocity().clone().scale(-1);
+        } else {
+            return getCurrentVelocity();
+        }
+
+    }
+
     @Override
     public void periodic() {
         super.periodic();

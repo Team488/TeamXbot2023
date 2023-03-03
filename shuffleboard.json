@@ -1388,19 +1388,6 @@
               "_showGlyph": false
             }
           },
-          "7,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Command",
-              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBasicMobilityPoints",
-              "_title": "SmartDashboard/AutoPrograms/SetBasicMobilityPoints",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "5,0": {
             "size": [
               2,
@@ -1426,21 +1413,72 @@
               "_glyph": 148,
               "_showGlyph": false
             }
-          }
-        }
-      }
-    },
-    {
-      "title": "Rumble Warning",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
+          },
+          "7,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetScoreCubeHighThenLeave",
+              "_title": "SmartDashboard/AutoPrograms/SetScoreCubeHighThenLeave",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBlueExitCommunityAndBalanceProgram",
+              "_title": "SmartDashboard/AutoPrograms/SetBlueExitCommunityAndBalanceProgram",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram",
+              "_title": "SmartDashboard/AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/BalanceState",
+              "_title": "SmartDashboard/AutoBalanceCommand/BalanceState",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current pitch",
+              "_title": "SmartDashboard/PoseSubsystem/Current pitch",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
           "4,1": {
             "size": [
               1,
@@ -1448,49 +1486,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "6,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
+              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current roll",
+              "_title": "SmartDashboard/PoseSubsystem/Current roll",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1509,19 +1506,6 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/P",
-              "_title": "SmartDashboard/AutoBalanceCommand/P",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "5,0": {
             "size": [
               1,
@@ -1544,19 +1528,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/PoseSubsystem/Current roll",
               "_title": "SmartDashboard/PoseSubsystem/Current roll",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/D",
-              "_title": "SmartDashboard/AutoBalanceCommand/D",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1768,6 +1739,97 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Current X Position",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/Current X Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Current Z Position",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/Current Z Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArmTarget",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArmTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArmTarget",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArmTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kD",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kD",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/VoltageOffset",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/VoltageOffset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -1889,12 +1951,65 @@
           }
         }
       }
+    },
+    {
+      "title": "Collector",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/intakePower",
+              "_title": "SmartDashboard/CollectorSubsystem/intakePower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CollectorSubsystem/retractPower",
+              "_title": "SmartDashboard/CollectorSubsystem/retractPower",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Driver",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
     }
   ],
   "windowGeometry": {
-    "x": 0.800000011920929,
-    "y": 0.800000011920929,
-    "width": 1534.4000244140625,
-    "height": 814.4000244140625
+    "x": -7.199999809265137,
+    "y": -7.199999809265137,
+    "width": 1550.4000244140625,
+    "height": 830.4000244140625
   }
 }
