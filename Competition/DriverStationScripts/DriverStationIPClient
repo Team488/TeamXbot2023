@@ -10,13 +10,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-try:
-    hostname = socket.gethostname()
-    hostip = socket.gethostbyname(hostname)
-except:
-    print("Unable to get Hostname and IP")
-    hostname = None
-    hostip = None
+
 
 inst = nt.NetworkTableInstance.getDefault()
 inst.startClient4("driverStation")
@@ -25,9 +19,14 @@ sd = inst.getTable("SmartDashboard").getSubTable("PoseSubsystem")
 
 i = 0
 while True:
-    print("robotTime:", sd.getNumber("robotTime", -1))
+    try:
+        hostname = socket.gethostname()
+        hostip = socket.gethostbyname(hostname)
+    except:
+        print("Unable to get Hostname and IP")
+        hostname = None
+        hostip = None
 
-    sd.putNumber("dsTime", i)
     sd.putString("DriverStationIp", hostip)
     time.sleep(1)
     i += 1
