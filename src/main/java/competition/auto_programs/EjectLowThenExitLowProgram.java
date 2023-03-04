@@ -10,17 +10,16 @@ import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EjectLowThenExitLowProgram extends SequentialCommandGroup {
 
+    @Inject
     public EjectLowThenExitLowProgram(
             PoseSubsystem pose,
             EjectCollectorCommand ejectCollectorCommand,

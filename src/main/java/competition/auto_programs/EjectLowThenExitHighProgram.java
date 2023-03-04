@@ -13,11 +13,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EjectLowThenExitHighProgram extends SequentialCommandGroup {
 
+    @Inject
     public EjectLowThenExitHighProgram(
             PoseSubsystem pose,
             EjectCollectorCommand ejectCollectorCommand,
