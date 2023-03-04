@@ -1,0 +1,32 @@
+#pip install robotpy first
+
+import sys
+import time
+import socket
+import ntcore as nt
+
+# To see messages from networktables, you must setup logging
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+
+
+inst = nt.NetworkTableInstance.getDefault()
+inst.startClient4("driverStation")
+inst.setServerTeam(488) # replace this with inst.setServer(127.0.0.1) if it's running locally
+sd = inst.getTable("SmartDashboard").getSubTable("PoseSubsystem")
+
+i = 0
+while True:
+    try:
+        hostname = socket.gethostname()
+        hostip = socket.gethostbyname(hostname)
+    except:
+        print("Unable to get Hostname and IP")
+        hostname = None
+        hostip = None
+
+    sd.putString("DriverStationIp", hostip)
+    time.sleep(1)
+    i += 1
