@@ -3,7 +3,6 @@ package competition.auto_programs;
 
 import competition.commandgroups.ScoreCubeHighCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
-import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.drive.DriveSubsystem;
@@ -19,14 +18,14 @@ import xbot.common.math.XYPair;
 
 import javax.inject.Inject;
 
-public class ScoreCubeHighThenLeaveProgram extends SequentialCommandGroup {
+public class ScoreCubeHighThenLeaveHighProgram extends SequentialCommandGroup {
     @Inject
-    ScoreCubeHighThenLeaveProgram(ScoreCubeHighCommandGroup scoreCubeHighCommandGroup,
-                                  SimpleXZRouterCommand retractArm,
-                                  CloseClawCommand closeClaw,
-                                  SwerveToPointCommand moveOutOfCommunity,
-                                  DriveSubsystem drive,
-                                  PoseSubsystem pose) {
+    ScoreCubeHighThenLeaveHighProgram(ScoreCubeHighCommandGroup scoreCubeHighCommandGroup,
+                                      SimpleXZRouterCommand retractArm,
+                                      CloseClawCommand closeClaw,
+                                      SwerveToPointCommand moveOutOfCommunity,
+                                      DriveSubsystem drive,
+                                      PoseSubsystem pose) {
 
         // Set pose to specific location (eventually, ask the camera if it already has a good idea of where we are)
         // We will start facing away from the driver station.

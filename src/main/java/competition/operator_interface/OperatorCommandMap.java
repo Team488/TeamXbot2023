@@ -1,7 +1,5 @@
 package competition.operator_interface;
 
-import competition.auto_programs.BasicMobilityPoints;
-import competition.auto_programs.BlueBottomScoringPath;
 import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
 import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
 import competition.auto_programs.EjectLowThenBalanceProgram;
@@ -9,7 +7,7 @@ import competition.auto_programs.EjectLowThenBalanceWithMobilityProgram;
 import competition.auto_programs.EjectLowThenExitHighProgram;
 import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ParameterizedAutonomousProgram;
-import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
+import competition.auto_programs.ScoreCubeHighThenLeaveHighProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -196,7 +194,7 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
                                         BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
-                                        ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave,
+                                        ScoreCubeHighThenLeaveHighProgram scoreCubeHighThenLeave,
                                         EjectLowThenBalanceProgram ejectLowThenBalance,
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
@@ -214,7 +212,7 @@ public class OperatorCommandMap {
 
         var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
-        setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
+        setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeaveHigh");
 
         oi.experimentalGamepad.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
         oi.experimentalGamepad.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
@@ -264,7 +262,7 @@ public class OperatorCommandMap {
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
             Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             SimpleSafeArmRouterCommand router,
-            ScoreCubeHighThenLeaveProgram scoreCubeHigh,
+            ScoreCubeHighThenLeaveHighProgram scoreCubeHigh,
             CollectorSubsystem collector,
             CollectIfSafeCommand collectIfSafe,
             MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup,
