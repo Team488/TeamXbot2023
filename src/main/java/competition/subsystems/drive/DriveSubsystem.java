@@ -4,6 +4,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.apache.log4j.Logger;
 
 import competition.electrical_contract.ElectricalContract;
@@ -196,6 +200,28 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     boolean precisionTranslationActive;
     boolean extremePrecisionTranslationActive;
     boolean precisionRotationActive;
+    boolean unlockFullDrivePower;
+
+    public boolean isUnlockFullDrivePowerActive() {
+        return unlockFullDrivePower;
+    }
+
+    public void setUnlockFullDrivePower(boolean value) {
+        unlockFullDrivePower = value;
+    }
+
+    public Command createUnlockFullDrivePowerCommand() {
+        return new StartEndCommand(
+                () -> {
+                    log.info("Unlocking full drive power");
+                    setUnlockFullDrivePower(true);
+                    },
+                () -> {
+                    log.info("Locking maximum drive power");
+                    setUnlockFullDrivePower(false);
+                }
+        );
+    }
 
     public boolean isPrecisionTranslationActive() {
         return precisionTranslationActive;
