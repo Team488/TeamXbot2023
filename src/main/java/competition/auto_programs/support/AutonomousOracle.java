@@ -141,6 +141,10 @@ public class AutonomousOracle {
         secondScoringModeProp.set(scoringMode.toString());
     }
 
+    public ScoringMode getSecondScoringMode() {
+        return secondScoringMode;
+    }
+
     public void setMantlePrepPosition(MantlePrepPosition position) {
         this.mantlePrepPosition = position;
         mantlePrepPositionProp.set(position.toString());
@@ -150,20 +154,48 @@ public class AutonomousOracle {
         enableDrivePhaseOne.set(enable);
     }
 
+    public boolean getEnableDrivePhaseOne() {
+        return enableDrivePhaseOne.get();
+    }
+
     public void setEnableAcquireGamePiece(boolean enable) {
         enableAcquireGamePiece.set(enable);
+    }
+
+    public boolean getEnableAcquireGamePiece() {
+        return enableAcquireGamePiece.get();
     }
 
     public void setEnableMoveToScore(boolean enable) {
         enableMoveToScore.set(enable);
     }
 
+    public boolean getEnableMoveToScore() {
+        return enableMoveToScore.get();
+    }
+
     public void setEnableSecondScore(boolean enable) {
         enableSecondScore.set(enable);
     }
 
+    public boolean getEnableSecondScore() {
+        return enableSecondScore.get();
+    }
+
     public void setEnableBalance(boolean enable) {
         enableBalance.set(enable);
+    }
+
+    public boolean getEnableBalance() {
+        return enableBalance.get();
+    }
+
+    public Pose2d getInitialPoseInMeters() {
+        return new Pose2d(initialLocation.times(1.0 / PoseSubsystem.INCHES_IN_A_METER), initialHeading);
+    }
+
+    public ScoringMode getInitialScoringMode() {
+        return initialScoringMode;
     }
 
 
@@ -263,11 +295,44 @@ public class AutonomousOracle {
         return points;
     }
 
+    public List<XbotSwervePoint> getTrajectoryForBalance() {
+            ArrayList<XbotSwervePoint> points = new ArrayList<>();
+
+            switch (mantlePrepPosition) {
+                default: // Default to InsideCommunity
+                case InsideCommunity: // we're facing outwards here, so 0 degrees
+                    points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                    points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(0), 1.0));
+                    break;
+                case OutsideCommunity: // we're facing inwards here, so -180 degrees
+                    points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                    points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(-180), 1.0));
+                    break;
+            }
+
+
+
+            return points;
+    }
+
+    public List<XbotSwervePoint> getTrajectoryToBalanceChargePlate() {
+        ArrayList<XbotSwervePoint> points = new ArrayList<>();
+
+        return points;
+    }
+
 
     // -------------------------------------------
     // Helper methods
     // -------------------------------------------
 
+    /**
+     * Handles blue/red alliance conversion
+     * @param targetLocation X/Y coordinates on the field
+     * @param targetHeading Desired heading of the robot
+     * @param durationInSeconds How long the robot should interpolate along this segment
+     * @return A new XbotSwervePoint (handling blue/red alliance location) with the given parameters
+     */
     private XbotSwervePoint createXbotSwervePoint(Pose2d targetLocation, Rotation2d targetHeading, double durationInSeconds) {
         var translation = AutoLandmarks.convertBlueToRedIfNeeded(targetLocation);
         var heading = pose.rotateAngleBasedOnAlliance(targetHeading);

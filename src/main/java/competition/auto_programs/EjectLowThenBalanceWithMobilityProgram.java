@@ -28,7 +28,8 @@ public class EjectLowThenBalanceWithMobilityProgram extends SequentialCommandGro
             CollectorSubsystem collector,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
-            BrakeCommand brake) {
+            BrakeCommand brake
+    ) {
         // Force set our current position - facing the grid station, ready to score our cone.
         var forcePosition = new InstantCommand(
                 () -> {
@@ -71,7 +72,7 @@ public class EjectLowThenBalanceWithMobilityProgram extends SequentialCommandGro
 
                     // Go straight over the charge plate to get those mobility points over 2 seconds
                     var mobilityPoint =
-                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueEastOfChargeStation);
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint);
                     XbotSwervePoint mobilitySwervePoint = new XbotSwervePoint(
                             mobilityPoint.getX(),
                             mobilityPoint.getY(),

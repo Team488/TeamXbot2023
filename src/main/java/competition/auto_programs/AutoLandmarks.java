@@ -27,7 +27,6 @@ public class AutoLandmarks {
     public static Pose2d blueChargeStationMantleFromLeft = new Pose2d(140,110, Rotation2d.fromDegrees(-180));
     public static Pose2d blueChargeStationMantleFromRight = new Pose2d(170,110, Rotation2d.fromDegrees(-180));
     public static Pose2d blueBelowChargeStation = new Pose2d(170,30, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueEastOfChargeStation = new Pose2d(235, 110, Rotation2d.fromDegrees(-180));
 
     public static Pose2d blueToUpperAndLowerCommunityCheckpoint = new Pose2d(87,110, Rotation2d.fromDegrees(-180));
     public static Pose2d blueToUpperAndLowerFieldCheckpoint = new Pose2d(239,110, Rotation2d.fromDegrees(-180));
