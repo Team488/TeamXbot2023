@@ -4,8 +4,11 @@ import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
 import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
+import competition.auto_programs.EjectLowThenBalanceProgram;
+import competition.auto_programs.EjectLowThenBalanceWithMobilityProgram;
 import competition.auto_programs.EjectLowThenExitHighProgram;
 import competition.auto_programs.EjectLowThenExitLowProgram;
+import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -191,22 +194,16 @@ public class OperatorCommandMap {
     @Inject
     public void setupAutonomousCommands(Provider<SetAutonomousCommand> setAutonomousCommandProvider,
                                         OperatorInterface oi,
-                                        BlueBottomScoringPath blueBottom,
-                                        BasicMobilityPoints basicMobilityPoints,
                                         BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
                                         BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
                                         ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave,
+                                        EjectLowThenBalanceProgram ejectLowThenBalance,
+                                        EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
-                                        EjectLowThenExitHighProgram ejectLowThenExitHigh) {
+                                        EjectLowThenExitHighProgram ejectLowThenExitHigh,
+                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram) {
 
-        var setBlueBottomScoring = setAutonomousCommandProvider.get();
-        setBlueBottomScoring.setAutoCommand(blueBottom);
-        setBlueBottomScoring.includeOnSmartDashboard("AutoPrograms/SetBlueBottomScoring");
-
-        var setBasicMobilityPoints = setAutonomousCommandProvider.get();
-        setBasicMobilityPoints.setAutoCommand(basicMobilityPoints);
-        setBasicMobilityPoints.includeOnSmartDashboard("AutoPrograms/SetBasicMobilityPoints");
-
+        // These three programs have all been tested to "work" on blocks at least once.
         var setBlueCommunitySideToChargeStation = setAutonomousCommandProvider.get();
         setBlueCommunitySideToChargeStation.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
         setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram");
@@ -219,6 +216,18 @@ public class OperatorCommandMap {
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
         setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
 
+        // These four programs seem reliable, and are based on the above programs but without further testing I'm concerned.
+        // Should be prioritized for testing, especially the basic eject & balance combo.
+        // Mapping the four of these to buttons on the gamepad.
+
+        var setEjectLowThenBalance = setAutonomousCommandProvider.get();
+        setEjectLowThenBalance.setAutoCommand(ejectLowThenBalance);
+        setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
+
+        var setEjectLowThenBalanceWithMobility = setAutonomousCommandProvider.get();
+        setEjectLowThenBalanceWithMobility.setAutoCommand(ejectLowThenBalanceWithMobility);
+        setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
+
         var setEjectLowThenExitLow = setAutonomousCommandProvider.get();
         setEjectLowThenExitLow.setAutoCommand(ejectLowThenExitLow);
         setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
@@ -226,6 +235,19 @@ public class OperatorCommandMap {
         var setEjectLowThenExitHigh = setAutonomousCommandProvider.get();
         setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
         setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
+
+        oi.experimentalGamepad.getifAvailable(XboxButton.A).whileTrue(setEjectLowThenBalance);
+        oi.experimentalGamepad.getifAvailable(XboxButton.B).whileTrue(setEjectLowThenBalanceWithMobility);
+        oi.experimentalGamepad.getifAvailable(XboxButton.X).whileTrue(setEjectLowThenExitLow);
+        oi.experimentalGamepad.getifAvailable(XboxButton.Y).whileTrue(setEjectLowThenExitHigh);
+
+        // This is highly experimental, but gives the drive team a lot of flexibility with alliance partners.
+
+        var setParameterizedAutonomousProgram = setAutonomousCommandProvider.get();
+        setParameterizedAutonomousProgram.setAutoCommand(parameterizedAutonomousProgram);
+        setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParamaterizedAutonomousProgram");
+
+        // There are two autonomous
     }
 
     @Inject

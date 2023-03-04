@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 import javax.inject.Inject;
@@ -23,10 +22,10 @@ import javax.inject.Provider;
 /**
  * A command group that conditionally runs many commands depending on driver selection.
  */
-public class ParamaterizedAutonomousProgram extends SequentialCommandGroup {
+public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
     @Inject
-    public ParamaterizedAutonomousProgram(
+    public ParameterizedAutonomousProgram(
             AutonomousOracle oracle,
             PoseSubsystem pose,
             Provider<EjectCollectorCommand> ejectCollectorCommandProvider,
