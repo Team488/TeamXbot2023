@@ -8,6 +8,7 @@ import competition.auto_programs.EjectLowThenExitHighProgram;
 import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveHighProgram;
+import competition.auto_programs.ScoreCubeHighThenLeaveLowProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -194,7 +195,8 @@ public class OperatorCommandMap {
                                         OperatorInterface oi,
                                         BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
                                         BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
-                                        ScoreCubeHighThenLeaveHighProgram scoreCubeHighThenLeave,
+                                        ScoreCubeHighThenLeaveHighProgram scoreCubeHighThenLeaveHigh,
+                                        ScoreCubeHighThenLeaveLowProgram scoreCubeHighThenLeaveLow,
                                         EjectLowThenBalanceProgram ejectLowThenBalance,
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
@@ -210,13 +212,17 @@ public class OperatorCommandMap {
         setPositionFiveMobilityThenBalance.setAutoCommand(blueExitCommunityAndBalanceProgram);
         setPositionFiveMobilityThenBalance.includeOnSmartDashboard("AutoPrograms/SetBlueExitCommunityAndBalanceProgram");
 
-        var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
-        setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
-        setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeaveHigh");
+        var setScoreCubeHighThenLeaveHigh = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenLeaveHigh.setAutoCommand(scoreCubeHighThenLeaveHigh);
+        setScoreCubeHighThenLeaveHigh.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeaveHigh");
+
+        var setScoreCubeHighThenLeaveLow = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenLeaveLow.setAutoCommand(scoreCubeHighThenLeaveLow);
+        setScoreCubeHighThenLeaveLow.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeaveLow");
 
         oi.experimentalGamepad.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
         oi.experimentalGamepad.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
-        oi.experimentalGamepad.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeave);
+        oi.experimentalGamepad.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeaveHigh);
 
         // These four programs seem reliable, and are based on the above programs but without further testing I'm concerned.
         // Should be prioritized for testing, especially the basic eject & balance combo.
