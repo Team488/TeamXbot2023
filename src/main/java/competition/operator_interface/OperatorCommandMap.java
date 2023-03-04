@@ -4,6 +4,8 @@ import competition.auto_programs.BasicMobilityPoints;
 import competition.auto_programs.BlueBottomScoringPath;
 import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
 import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
+import competition.auto_programs.EjectLowThenExitHighProgram;
+import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -193,7 +195,9 @@ public class OperatorCommandMap {
                                         BasicMobilityPoints basicMobilityPoints,
                                         BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
                                         BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
-                                        ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave) {
+                                        ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave,
+                                        EjectLowThenExitLowProgram ejectLowThenExitLow,
+                                        EjectLowThenExitHighProgram ejectLowThenExitHigh) {
 
         var setBlueBottomScoring = setAutonomousCommandProvider.get();
         setBlueBottomScoring.setAutoCommand(blueBottom);
@@ -214,6 +218,14 @@ public class OperatorCommandMap {
         var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
         setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
+
+        var setEjectLowThenExitLow = setAutonomousCommandProvider.get();
+        setEjectLowThenExitLow.setAutoCommand(ejectLowThenExitLow);
+        setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
+
+        var setEjectLowThenExitHigh = setAutonomousCommandProvider.get();
+        setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
+        setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
     }
 
     @Inject

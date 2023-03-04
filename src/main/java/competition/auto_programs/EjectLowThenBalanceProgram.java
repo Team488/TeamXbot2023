@@ -48,7 +48,7 @@ public class EjectLowThenBalanceProgram extends SequentialCommandGroup {
         // Eject the cone for 1 second.
         var ejectAndWait = ejectCollectorCommand.withTimeout(1);
         this.addCommands(ejectAndWait);
-        this.addCommands(new InstantCommand(() -> collector.stop()));
+        this.addCommands(new InstantCommand(() -> coll.stop()));
 
         mantleChargePlate.setMaxPower(0.75);
         mantleChargePlate.setKeyPointsProvider(
