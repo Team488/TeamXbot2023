@@ -9,6 +9,7 @@ import competition.auto_programs.EjectLowThenBalanceWithMobilityProgram;
 import competition.auto_programs.EjectLowThenExitHighProgram;
 import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ParameterizedAutonomousProgram;
+import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -197,6 +198,7 @@ public class OperatorCommandMap {
                                         BlueScoringPositionFiveToBalanceProgram blueScoringPositionFiveToBalanceProgram,
                                         BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
                                         ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave,
+                                        ScoreCubeHighThenBalanceProgram scoreCubeHighThenBalance,
                                         EjectLowThenBalanceProgram ejectLowThenBalance,
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
@@ -216,9 +218,14 @@ public class OperatorCommandMap {
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
         setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
 
+        var setScoreCubeHighThenBalance = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenBalance.setAutoCommand(scoreCubeHighThenBalance);
+        setScoreCubeHighThenBalance.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenBalance");
+
         oi.experimentalGamepad.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
         oi.experimentalGamepad.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
         oi.experimentalGamepad.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeave);
+        oi.experimentalGamepad.getPovIfAvailable(270).onTrue(setScoreCubeHighThenBalance);
 
         // These four programs seem reliable, and are based on the above programs but without further testing I'm concerned.
         // Should be prioritized for testing, especially the basic eject & balance combo.
