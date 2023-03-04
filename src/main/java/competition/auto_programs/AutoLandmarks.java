@@ -32,6 +32,9 @@ public class AutoLandmarks {
     public static Pose2d blueToUpperAndLowerCommunityCheckpoint = new Pose2d(87,110, Rotation2d.fromDegrees(-180));
     public static Pose2d blueToUpperAndLowerFieldCheckpoint = new Pose2d(239,110, Rotation2d.fromDegrees(-180));
 
+    public static Pose2d blueUpperCheckpointOutsideCommunity = new Pose2d(239, 178, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueLowerCheckpointOutsideCommunity = new Pose2d(239, 29, Rotation2d.fromDegrees(-180));
+
     // Every single blue scoring position
     public static Pose2d blueScoringPositionTwo = new Pose2d(66,40, Rotation2d.fromDegrees(-180));
     public static Pose2d blueScoringPositionThree = new Pose2d(66,64, Rotation2d.fromDegrees(-180));
