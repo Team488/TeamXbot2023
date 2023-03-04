@@ -204,17 +204,21 @@ public class OperatorCommandMap {
                                         ParameterizedAutonomousProgram parameterizedAutonomousProgram) {
 
         // These three programs have all been tested to "work" on blocks at least once.
-        var setBlueCommunitySideToChargeStation = setAutonomousCommandProvider.get();
-        setBlueCommunitySideToChargeStation.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
-        setBlueCommunitySideToChargeStation.includeOnSmartDashboard("AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram");
+        var setPositionFiveToBalance = setAutonomousCommandProvider.get();
+        setPositionFiveToBalance.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
+        setPositionFiveToBalance.includeOnSmartDashboard("AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram");
 
-        var setBlueMoveOutToFieldAndOntoChargePad = setAutonomousCommandProvider.get();
-        setBlueMoveOutToFieldAndOntoChargePad.setAutoCommand(blueExitCommunityAndBalanceProgram);
-        setBlueMoveOutToFieldAndOntoChargePad.includeOnSmartDashboard("AutoPrograms/SetBlueExitCommunityAndBalanceProgram");
+        var setPositionFiveMobilityThenBalance = setAutonomousCommandProvider.get();
+        setPositionFiveMobilityThenBalance.setAutoCommand(blueExitCommunityAndBalanceProgram);
+        setPositionFiveMobilityThenBalance.includeOnSmartDashboard("AutoPrograms/SetBlueExitCommunityAndBalanceProgram");
 
         var setScoreCubeHighThenLeave = setAutonomousCommandProvider.get();
         setScoreCubeHighThenLeave.setAutoCommand(scoreCubeHighThenLeave);
         setScoreCubeHighThenLeave.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenLeave");
+
+        oi.experimentalGamepad.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
+        oi.experimentalGamepad.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
+        oi.experimentalGamepad.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeave);
 
         // These four programs seem reliable, and are based on the above programs but without further testing I'm concerned.
         // Should be prioritized for testing, especially the basic eject & balance combo.
@@ -236,10 +240,10 @@ public class OperatorCommandMap {
         setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
         setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
 
-        oi.experimentalGamepad.getifAvailable(XboxButton.A).whileTrue(setEjectLowThenBalance);
-        oi.experimentalGamepad.getifAvailable(XboxButton.B).whileTrue(setEjectLowThenBalanceWithMobility);
-        oi.experimentalGamepad.getifAvailable(XboxButton.X).whileTrue(setEjectLowThenExitLow);
-        oi.experimentalGamepad.getifAvailable(XboxButton.Y).whileTrue(setEjectLowThenExitHigh);
+        oi.experimentalGamepad.getifAvailable(XboxButton.A).onTrue(setEjectLowThenBalance);
+        oi.experimentalGamepad.getifAvailable(XboxButton.B).onTrue(setEjectLowThenBalanceWithMobility);
+        oi.experimentalGamepad.getifAvailable(XboxButton.X).onTrue(setEjectLowThenExitLow);
+        oi.experimentalGamepad.getifAvailable(XboxButton.Y).onTrue(setEjectLowThenExitHigh);
 
         // This is highly experimental, but gives the drive team a lot of flexibility with alliance partners.
 
