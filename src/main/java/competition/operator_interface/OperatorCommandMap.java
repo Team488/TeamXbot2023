@@ -122,7 +122,7 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             VelocityMaintainerCommand velocityMaintainer,
             AutoBalanceCommand balanceCommand) {
-        oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
+        //oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
         //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
         velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
