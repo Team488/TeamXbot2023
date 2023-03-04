@@ -1,6 +1,7 @@
 package competition.auto_programs;
 
 import competition.auto_programs.support.AutonomousOracle;
+import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.commandgroups.ScoreCubeHighCommandGroup;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.EjectCollectorCommand;
@@ -34,6 +35,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
             Provider<SwerveSimpleTrajectoryCommand> swerveSimpleTrajectoryCommandProvider,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
+            Provider<MoveCollectedGamepieceToArmCommandGroup> moveCollectedGamepieceToArmCommandGroupProvider,
             BrakeCommand brake) {
 
         // ----------------------------
@@ -105,8 +107,18 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         driveForScoring.setMaxPower(0.50);
         driveForScoring.setKeyPointsProvider(oracle::getTrajectoryForScoring);
 
+        // If we're planning on scoring using the arm, we should move the game piece to the claw.
+
+        var moveGamePieceToArm = moveCollectedGamepieceToArmCommandGroupProvider.get();
+
+        var moveGamePieceToArmOrNot = new ConditionalCommand(
+                moveGamePieceToArm,
+                new InstantCommand(),
+                () -> oracle.getSecondScoringMode() != AutonomousOracle.ScoringMode.Eject
+        );
+
         var driveForScoringOrNot = new ConditionalCommand(
-                driveForScoring,
+                driveForScoring.alongWith(moveGamePieceToArmOrNot),
                 new InstantCommand(),
                 oracle::getEnableMoveToScore
         );
