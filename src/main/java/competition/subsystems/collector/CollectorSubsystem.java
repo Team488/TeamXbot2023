@@ -35,12 +35,13 @@ public class CollectorSubsystem extends BaseSubsystem {
         if(contract.isCollectorReady()){
             this.collectorMotor = sparkMaxFactory.create(eContract.getCollectorMotor(),getPrefix(),"CollectorMotor");
             this.collectorSolenoid = xSolenoidFactory.create(eContract.getCollectorSolenoid().channel);
+            collectorMotor.setSmartCurrentLimit(5);
         }
         pf.setPrefix(this);
         intakePower = pf.createPersistentProperty("intakePower",1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
 
-        collectorMotor.setSmartCurrentLimit(5);
+
 
     }
 
