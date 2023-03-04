@@ -257,9 +257,9 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         // Rotation is scaled when deciding on human vs machine inputs
 
         if (drive.isPrecisionTranslationActive()) {
-            translationIntent = translationIntent.scale(0.60);
-        } else if (drive.isExtremePrecisionTranslationActive()) {
             translationIntent = translationIntent.scale(0.30);
+        } else if (drive.isExtremePrecisionTranslationActive()) {
+            translationIntent = translationIntent.scale(0.15);
         }
 
         // Scale the power down if requested (typically used when novices are controlling the robot)
