@@ -34,7 +34,7 @@ public class VelocityMaintainerCommand extends BaseCommand {
     }
 
     public void execute() {
-        double currentXVelocity = pose.rotateVelocityBasedOnAlliance().x;
+        double currentXVelocity = pose.getRobotOrientedXVelocity();
         double deltaPower = xPIDManager.calculate(drive.getVelocityMaintainerXTarget(), currentXVelocity);
         this.xThrottle += deltaPower;
         drive.move(new XYPair(xThrottle,0), 0);
