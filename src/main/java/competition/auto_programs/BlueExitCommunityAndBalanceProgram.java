@@ -55,17 +55,17 @@ public class BlueExitCommunityAndBalanceProgram extends SequentialCommandGroup {
                     XbotSwervePoint blueLowerGamePieceSideMidCheckpointPoint = new XbotSwervePoint
                             (blueLowerGamePieceSideMidCheckpoint.getX(),
                                     blueLowerGamePieceSideMidCheckpoint.getY(),
-                                    -180,
+                                    pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                                     1.0);
                     XbotSwervePoint blueToUpperAndLowerFieldCheckpointPoint = new XbotSwervePoint
                             (blueToUpperAndLowerFieldCheckpoint.getX(),
                                     blueToUpperAndLowerFieldCheckpoint.getY(),
-                                    -180,
+                                    pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                                     1.0);
                     XbotSwervePoint blueChargeStationMantleFromRightPoint = new XbotSwervePoint
                             (blueChargeStationMantleFromRight.getX(),
                                     blueChargeStationMantleFromRight.getY(),
-                                    -180,
+                                    pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                                     0.5);
 
                     return new ArrayList<>(List.of(blueLowerGamePieceSideMidCheckpointPoint,
