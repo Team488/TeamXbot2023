@@ -232,6 +232,37 @@ public class AutonomousOracle {
         return points;
     }
 
+    public List<XbotSwervePoint> getTrajectoryForScoring() {
+        ArrayList<XbotSwervePoint> points = new ArrayList<>();
+
+        switch (lane) {
+            case Top:
+                // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
+                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(
+                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
+                break;
+            case Bottom:
+                // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
+                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(
+                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
+                break;
+            default: // default to middle
+            case Middle:
+                // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
+                points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(
+                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
+                break;
+        }
+
+        return points;
+    }
+
 
     // -------------------------------------------
     // Helper methods
