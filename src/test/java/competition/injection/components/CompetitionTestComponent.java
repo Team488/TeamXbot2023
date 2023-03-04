@@ -17,6 +17,7 @@ import competition.subsystems.arm.commands.ControlArmsWithJoyStickCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
+import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.drive.swerve.SwerveSteeringMotorPidSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import dagger.Component;
@@ -63,4 +64,6 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract SimpleSafeArmRouterCommand simpleSafeArmRouterCommand();
 
     public abstract SimpleXZRouterCommand simpleXZRouterCommand();
+
+    public abstract VelocityMaintainerCommand velocityMaintainerCommand();
 }
