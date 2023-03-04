@@ -50,7 +50,8 @@ public class EjectLowThenBalanceProgram extends SequentialCommandGroup {
         this.addCommands(ejectAndWait);
         this.addCommands(new InstantCommand(() -> collector.stop()));
 
-        mantleChargePlate.setMaxPower(0.75);
+        mantleChargePlate.setMaxPower(1.0);
+        mantleChargePlate.setMaxTurningPower(0.5);
         mantleChargePlate.setKeyPointsProvider(
                 () -> {
                     // back up 6 inches over 0.5 seconds
