@@ -9,7 +9,7 @@ public class RoboxContract extends CompetitionContract{
 
     @Override
     public boolean areCanCodersReady() {
-        return false;
+        return true;
     }
 
     @Override
