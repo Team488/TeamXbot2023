@@ -9,7 +9,6 @@ import competition.injection.components.DaggerSimulationComponent;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.command.BaseRobot;
 import xbot.common.math.FieldPose;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
@@ -58,25 +57,25 @@ public class Robot extends BaseRobot {
     @Override
     public void disabledInit() {
         super.disabledInit();
-        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+        performCommonInitializationTasks();
     }
 
     @Override
     public void autonomousInit() {
         super.autonomousInit();
-        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+        performCommonInitializationTasks();
     }
 
     @Override
     public void teleopInit() {
         super.teleopInit();
-        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+        performCommonInitializationTasks();
     }
 
     @Override
     public void simulationInit() {
         super.simulationInit();
-        ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();
+        performCommonInitializationTasks();
         // Automatically enables the robot; remove this line of code if you want the robot
         // to start in a disabled state (as it would on the field). However, this does save you the 
         // hassle of navigating to the DS window and re-enabling the simulated robot.
@@ -93,5 +92,11 @@ public class Robot extends BaseRobot {
             -4.58*PoseSubsystem.INCHES_IN_A_METER, 
             BasePoseSubsystem.FACING_TOWARDS_DRIVERS
             );
+    }
+
+    private void performCommonInitializationTasks() {
+        var pose = ((PoseSubsystem)getInjectorComponent().poseSubsystem());
+        pose.updateAllianceFromDriverStation();
+        pose.resetExtremePitchDetection();
     }
 }

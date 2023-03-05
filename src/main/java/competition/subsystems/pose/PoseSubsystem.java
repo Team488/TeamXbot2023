@@ -319,6 +319,10 @@ public class PoseSubsystem extends BasePoseSubsystem {
         hasExperiencedExtremePitch = false;
     }
 
+    public boolean getHasExperiencedExtremePitch() {
+        return hasExperiencedExtremePitch;
+    }
+
     @Override
     public void periodic() {
         super.periodic();
