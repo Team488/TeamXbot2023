@@ -352,9 +352,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                 .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
                 .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());
 
-        var collectionSequence = collectIfSafe.alongWith(setPrepareToPickupFromCollectorXZ);
-
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collectionSequence);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
         SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
