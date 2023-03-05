@@ -61,10 +61,15 @@ public class DriveUntilExtremePitchCommand extends BaseCommand {
     @Override
     public void execute() {
         XYPair translationIntent = new XYPair();
-        if (fieldOrientedDriveDirection == BlueAllianceDriveDirection.East)
+        if (fieldOrientedDriveDirection == BlueAllianceDriveDirection.East) {
+            translationIntent = new XYPair(drivePower, 0);
+        }
+        else if (fieldOrientedDriveDirection == BlueAllianceDriveDirection.West) {
+            translationIntent = new XYPair(-drivePower, 0);
+        }
 
         drive.fieldOrientedDrive(
-                new XYPair(0,0),
+                translationIntent,
                 0.0,
                 pose.getCurrentHeading().getDegrees(),
                 false);
