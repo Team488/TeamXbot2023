@@ -299,6 +299,20 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
     }
 
+    // We actually need something simpler to work with the velocity program - robot oriented X velocity.
+    // moing forwards is positive, moving backwards is negative.
+    // We can get the robot oriented velocity by adjusting for the current orientation.
+    public double getRobotOrientedXVelocity() {
+        var currentVelocityVector = getCurrentVelocity();
+        // Let's say the robot was facing -90 degrees (field-relative) (aka "south")
+        // and was driving in that direction. This would be a vector like 0, -1.
+        // We need to rotate that so it would be 1, 0. That suggests we need to rotate that vector
+        // by 90 degrees; the negative of our current heading.
+        var robotOrientedVelocityVector = currentVelocityVector.clone().rotate(-getCurrentHeading().getDegrees());
+        // now just get the x component
+        return robotOrientedVelocityVector.x;
+    }
+
     @Override
     public void periodic() {
         super.periodic();

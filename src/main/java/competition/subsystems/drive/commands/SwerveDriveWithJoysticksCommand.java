@@ -58,7 +58,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         this.arms = arms;
         pf.setPrefix(this);
         this.input_exponent = pf.createPersistentProperty("Input Exponent", 1);
-        this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 1);
+        this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 0.75);
         this.turnPowerFactor = pf.createPersistentProperty("Turn Power Factor", 0.75);
         this.absoluteOrientationMode = pf.createPersistentProperty("Absolute Orientation Mode", true);
         this.minimumMagnitudeForAbsoluteHeading = pf.createPersistentProperty("Min Magnitude For Absolute Heading", 0.75);
@@ -256,14 +256,20 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         // Scale the power down if we are in one or more precision modes
         // Rotation is scaled when deciding on human vs machine inputs
 
-        if (drive.isPrecisionTranslationActive()) {
-            translationIntent = translationIntent.scale(0.30);
-        } else if (drive.isExtremePrecisionTranslationActive()) {
-            translationIntent = translationIntent.scale(0.15);
-        }
+        if (drive.isUnlockFullDrivePowerActive()) {
+            // do nothing - unleash the full power of the machine!
+        } else {
+            // Use various ways of scaling down the drive power
 
-        // Scale the power down if requested (typically used when novices are controlling the robot)
-        translationIntent = translationIntent.scale(drivePowerFactor.get());
+            if (drive.isPrecisionTranslationActive()) {
+                translationIntent = translationIntent.scale(0.30);
+            } else if (drive.isExtremePrecisionTranslationActive()) {
+                translationIntent = translationIntent.scale(0.15);
+            }
+
+            // Scale the power down if requested (typically used when novices are controlling the robot)
+            translationIntent = translationIntent.scale(drivePowerFactor.get());
+        }
         suggestedRotatePower *= turnPowerFactor.get();
 
         // Check if we need a different center of rotation

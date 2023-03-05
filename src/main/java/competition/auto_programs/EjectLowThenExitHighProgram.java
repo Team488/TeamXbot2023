@@ -33,7 +33,7 @@ public class EjectLowThenExitHighProgram extends SequentialCommandGroup {
         var forcePosition = new InstantCommand(
                 () -> {
                     var translation =
-                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionThree)
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight)
                                     .getTranslation().times(1.0 / PoseSubsystem.INCHES_IN_A_METER);
                     var rotation = pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180));
                     pose.setCurrentPoseInMeters(new Pose2d(translation, rotation));

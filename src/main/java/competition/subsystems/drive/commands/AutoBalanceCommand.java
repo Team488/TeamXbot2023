@@ -18,7 +18,7 @@ public class AutoBalanceCommand extends BaseCommand {
     private final PIDManager pidManager;
 
     private boolean drivingAgainstPositiveAngle = true;
-    final double firstAttemptSpeed = 0.10;
+    final double firstAttemptSpeed = 0.35;
     double currentAttemptSpeed = firstAttemptSpeed;
     double lastDetectedFallTime = -1000;
     double initialAnalyzedAngle = 0;

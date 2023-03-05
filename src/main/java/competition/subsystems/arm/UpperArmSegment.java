@@ -57,6 +57,9 @@ public class UpperArmSegment extends ArmSegment {
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
 
             configureCommonMotorProperties();
+
+            leftMotor.setSmartCurrentLimit(30);
+            rightMotor.setSmartCurrentLimit(30);
         }
         if (contract.isUpperArmEncoderReady()) {
             this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getUpperArmEncoder());

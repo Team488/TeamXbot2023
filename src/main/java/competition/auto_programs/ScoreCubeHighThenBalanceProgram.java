@@ -1,7 +1,9 @@
 package competition.auto_programs;
 
-import competition.subsystems.collector.CollectorSubsystem;
-import competition.subsystems.collector.commands.EjectCollectorCommand;
+import competition.commandgroups.ScoreCubeHighCommandGroup;
+import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.commands.SimpleXZRouterCommand;
+import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
@@ -10,8 +12,8 @@ import competition.subsystems.drive.commands.XbotSwervePoint;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -20,18 +22,18 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EjectLowThenBalanceProgram extends SequentialCommandGroup {
+public class ScoreCubeHighThenBalanceProgram extends SequentialCommandGroup {
 
     @Inject
-    public EjectLowThenBalanceProgram(
+    public ScoreCubeHighThenBalanceProgram(
             PoseSubsystem pose,
-            EjectCollectorCommand ejectCollectorCommand,
-            CollectorSubsystem collector,
+            ScoreCubeHighCommandGroup scoreCubeHigh,
+            SimpleXZRouterCommand retractArm,
+            CloseClawCommand closeClaw,
             SwerveSimpleTrajectoryCommand mantleChargePlate,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
-            BrakeCommand brake)
-            {
+            BrakeCommand brake) {
 
         // Force set our current position - facing the grid station, ready to score our cone.
         var forcePosition = new InstantCommand(
@@ -45,44 +47,34 @@ public class EjectLowThenBalanceProgram extends SequentialCommandGroup {
         );
         this.addCommands(forcePosition);
 
-        // Eject the cone for 1 second.
-        var ejectAndWait = ejectCollectorCommand.withTimeout(1);
-        this.addCommands(ejectAndWait);
-        this.addCommands(new InstantCommand(() -> collector.stop()));
+        // Score high
+        this.addCommands(scoreCubeHigh);
+
+        // Get the arm back safe
+        retractArm.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
+                UnifiedArmSubsystem.RobotFacing.Forward);
+
+        var retractArmAndCloseClaw = new ParallelCommandGroup(
+                        retractArm,
+                        new WaitCommand(1.0).andThen(closeClaw)
+        ).withTimeout(2.0);
+
+        this.addCommands(retractArmAndCloseClaw);
 
         mantleChargePlate.setMaxPower(1.0);
         mantleChargePlate.setMaxTurningPower(0.5);
         mantleChargePlate.setKeyPointsProvider(
                 () -> {
-                    // back up 6 inches over 0.5 seconds
-                    var backUpPointPreMirrored = AutoLandmarks.blueScoringPositionFive;
-                    backUpPointPreMirrored.getTranslation().plus(new Translation2d(6, 0));
-                    var backUpPoint = AutoLandmarks.convertBlueToRedIfNeeded(backUpPointPreMirrored);
-                    XbotSwervePoint backUpPointSwerve = new XbotSwervePoint(
-                            backUpPoint.getX(),
-                            backUpPoint.getY(),
-                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
-                            0.5);
-
-                    // back up an additional 3 inches while rotating over 1 second
-                    var backUpPoint2PreMirrored = AutoLandmarks.blueScoringPositionFive;
-                    backUpPoint2PreMirrored.getTranslation().plus(new Translation2d(9, 0));
-                    var backUpPoint2 = AutoLandmarks.convertBlueToRedIfNeeded(backUpPoint2PreMirrored);
-                    XbotSwervePoint backUpPoint2Swerve = new XbotSwervePoint(
-                            backUpPoint2.getX(),
-                            backUpPoint2.getY(),
-                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
-                            1.0);
-
                     // Get on that charge station over 1 seconds
                     var chargeStationMantlePoint =
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationCenter);
                     XbotSwervePoint getOnChargeStation = new XbotSwervePoint(
                             chargeStationMantlePoint.getX(),
                             chargeStationMantlePoint.getY(),
-                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
+                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                             1.0);
-                    return new ArrayList<>(List.of(backUpPointSwerve, backUpPoint2Swerve, getOnChargeStation));
+                    return new ArrayList<>(List.of(getOnChargeStation));
                 });
         // This is only supposed to take 2.5 seconds. Set a timeout just in case.
         this.addCommands(mantleChargePlate.withTimeout(3.0));
