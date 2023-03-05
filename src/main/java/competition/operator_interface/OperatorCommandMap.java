@@ -223,6 +223,7 @@ public class OperatorCommandMap {
         oi.experimentalGamepad.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
         oi.experimentalGamepad.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
         oi.experimentalGamepad.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeaveHigh);
+        oi.experimentalGamepad.getPovIfAvailable(270).onTrue(setScoreCubeHighThenLeaveLow);
 
         // These four programs seem reliable, and are based on the above programs but without further testing I'm concerned.
         // Should be prioritized for testing, especially the basic eject & balance combo.
