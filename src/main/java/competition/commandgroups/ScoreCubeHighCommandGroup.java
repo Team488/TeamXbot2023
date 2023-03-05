@@ -31,7 +31,7 @@ public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
         moveArmToPosition.setKeyPointFromKeyArmPosition(
                 UnifiedArmSubsystem.KeyArmPosition.HighGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
-        this.addCommands(moveArmToPosition);
+        this.addCommands(moveArmToPosition.withTimeout(5.0));
 
         var openClawAndWait = new ParallelDeadlineGroup(new WaitCommand(0.5), openClaw);
 
