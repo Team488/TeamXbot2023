@@ -57,7 +57,8 @@ public class ScoreCubeHighThenBalanceProgram extends SequentialCommandGroup {
 
         var retractArmAndCloseClaw = new ParallelCommandGroup(
                         retractArm,
-                        closeClaw).withTimeout(2.0);
+                        new WaitCommand(1.0).andThen(closeClaw)
+        ).withTimeout(2.0);
 
         this.addCommands(retractArmAndCloseClaw);
 
