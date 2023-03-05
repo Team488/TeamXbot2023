@@ -332,7 +332,8 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
                 });
 
-        InstantCommand setConeMode = new InstantCommand(
+        InstantCommand
+                setConeMode = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cone mode");
