@@ -45,6 +45,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
     private DoubleProperty matchTime;
 
+    private boolean hasExperiencedExtremePitch;
+
     @Inject
     public PoseSubsystem(XGyroFactory gyroFactory, PropertyFactory propManager, DriveSubsystem drive, VisionSubsystem vision) {
         super(gyroFactory, propManager);
@@ -313,10 +315,17 @@ public class PoseSubsystem extends BasePoseSubsystem {
         return robotOrientedVelocityVector.x;
     }
 
+    public void resetExtremePitchDetection() {
+        hasExperiencedExtremePitch = false;
+    }
+
     @Override
     public void periodic() {
         super.periodic();
         matchTime.set(DriverStation.getMatchTime());
+        if (Math.abs(getRobotPitch()) > 10) {
+            hasExperiencedExtremePitch = true;
+        }
     }
     public DoubleProperty getMatchTime(){
         return matchTime;

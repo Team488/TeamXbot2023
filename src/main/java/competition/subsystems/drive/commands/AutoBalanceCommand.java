@@ -29,7 +29,7 @@ public class AutoBalanceCommand extends BaseCommand {
         Driving,
         FallDetected,
         Waiting,
-        Complete
+        Complete,
     }
 
     private final StringProperty balanceStateProp;
