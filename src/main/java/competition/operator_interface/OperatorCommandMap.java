@@ -102,8 +102,6 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
-        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(nextModule);
 
         NamedInstantCommand enableCollectorRotation =
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
