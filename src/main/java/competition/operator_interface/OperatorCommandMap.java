@@ -354,41 +354,41 @@ public class OperatorCommandMap {
 setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
 
 
-        var SmartOrDumbCollectionMode = new ConditionalCommand(
+        var smartOrDumbCollectionMode = new ConditionalCommand(
                 setArmsToCollectPositionCommand,
                 moveCollectedGamepieceToArmCommandGroup,
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        var SmartOrDumbScoreHigh = new ConditionalCommand(
+        var smartOrDumbScoreHigh = new ConditionalCommand(
                 setArmsToScoreHighCommand,
                 setHighXZ,
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        var SmartOrDumbScoreMedium = new ConditionalCommand(
+        var smartOrDumbScoreMedium = new ConditionalCommand(
                 setArmsToScoreMediumCommand,
                 setMidXZ,
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        var SmartOrDumbScoreLow = new ConditionalCommand(
+        var smartOrDumbScoreLow = new ConditionalCommand(
                 setArmsToScoreLowCommand,
                 setlowXZ,
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        var SmartOrDumbCollectFromSubstation = new ConditionalCommand(
+        var smartOrDumbCollectFromSubstation = new ConditionalCommand(
                 setArmsToSubstationCollection,
                 setSubstationXZ,
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(SmartOrDumbScoreLow);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(SmartOrDumbScoreMedium);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(SmartOrDumbScoreHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(SmartOrDumbCollectionMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(SmartOrDumbCollectFromSubstation);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(smartOrDumbScoreLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
