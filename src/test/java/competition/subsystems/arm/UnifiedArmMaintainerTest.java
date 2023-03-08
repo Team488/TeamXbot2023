@@ -5,6 +5,7 @@ import competition.BaseCompetitionTest;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
 import org.junit.Ignore;
 import org.junit.Test;
+import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 import xbot.common.math.XYPair;
 
 import static org.junit.Assert.assertEquals;
@@ -25,14 +26,16 @@ public class UnifiedArmMaintainerTest extends BaseCompetitionTest {
         arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
         arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
 
+        setArmAngles(1,1);
+
     }
 
     @Test
     @Ignore("TODO: Investigate")
     public void testBrakeChangeState() {
         assertTrue(arms.areBrakesEngaged());
-        assertEquals(0, arms.getCurrentValue().x, 0.001);
-        assertEquals(0, arms.getCurrentValue().y, 0.001);
+        assertEquals(1, arms.getCurrentValue().x, 0.001);
+        assertEquals(1, arms.getCurrentValue().y, 0.001);
         arms.setTargetValue(new XYPair(90, -90));
         maintainer.execute();
 
@@ -40,7 +43,7 @@ public class UnifiedArmMaintainerTest extends BaseCompetitionTest {
         assertFalse(arms.areBrakesEngaged());
 
         // Now, let's move to a position where the brakes should engage.
-        arms.setTargetValue(new XYPair(maintainer.getLowerArmErrorThresholdToEngageBrake() - 0.1, -90));
+        arms.setTargetValue(new XYPair(1+maintainer.getLowerArmErrorThresholdToEngageBrake() - 0.1, -90));
         maintainer.execute();
 
         // Since we are very close to our target, but this is just the first time we've been close, the brakes should not engage.
@@ -54,17 +57,22 @@ public class UnifiedArmMaintainerTest extends BaseCompetitionTest {
         assertTrue(arms.areBrakesEngaged());
 
         // To test hysterisis, move the position just outside the threshold.
-        arms.setTargetValue(new XYPair(maintainer.getLowerArmErrorThresholdToDisengageBrake() - 0.1, -90));
+        arms.setTargetValue(new XYPair(1+maintainer.getLowerArmErrorThresholdToDisengageBrake() - 0.1, -90));
         maintainer.execute();
 
         // Even though we are outside our brake engage threshold, we haven't moved outside the disengage threshold.
         assertTrue(arms.areBrakesEngaged());
 
         // Now, move outside the disengage threshold.
-        arms.setTargetValue(new XYPair(maintainer.getLowerArmErrorThresholdToDisengageBrake() + 0.1, -90));
+        arms.setTargetValue(new XYPair(1+maintainer.getLowerArmErrorThresholdToDisengageBrake() + 0.1, -90));
         maintainer.execute();
 
         // Now that we are outside the disengage threshold, the brakes should disengage.
         assertFalse(arms.areBrakesEngaged());
+    }
+
+    private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
+        ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
     }
 }
