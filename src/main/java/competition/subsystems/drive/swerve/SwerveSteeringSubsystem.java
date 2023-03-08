@@ -354,7 +354,6 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         if (contract.isDriveReady()) {
             setupStatusFrames();
             //motorEncoderPosition.set(getMotorControllerEncoderPosiitonInDegrees());
-            motorController.periodic();
         }
 
         double positionInDegrees = getBestEncoderPositionInDegrees();
