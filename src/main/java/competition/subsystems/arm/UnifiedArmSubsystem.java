@@ -283,6 +283,25 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
 
+        boolean encodersPluggedIn = areEncodersPluggedIn();
+
+        if (!encodersPluggedIn) {
+            log.error("Disabling arm control.");
+            setIsCalibrated(false);
+            lowerArm.setPower(0);
+            upperArm.setPower(0);
+        } else {
+            // Encoders are working, so we can move the arms.
+            if (areBrakesEngaged.get() && !getDisableBrake()) {
+                lowerArm.setPower(0);
+            } else {
+                lowerArm.setArmToAngle(lowerArmAngle);
+            }
+            upperArm.setArmToAngle(upperArmAngle);
+        }
+    }
+
+    private boolean areEncodersPluggedIn() {
         // If our absolute encoders have come unplugged, then we are about to have a very bad day.
         // When they become unplugged, they return a native value of 0. This means that any read of the
         // robot angle will instead return the negated offset.
@@ -302,21 +321,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             log.error("The upper arm absolute encoder has come unplugged.");
             encodersPluggedIn = false;
         }
-
-        if (!encodersPluggedIn) {
-            log.error("Disabling arm control.");
-            setIsCalibrated(false);
-            lowerArm.setPower(0);
-            upperArm.setPower(0);
-        } else {
-            // Encoders are working, so we can move the arms.
-            if (areBrakesEngaged.get() && !getDisableBrake()) {
-                lowerArm.setPower(0);
-            } else {
-                lowerArm.setArmToAngle(lowerArmAngle);
-            }
-            upperArm.setArmToAngle(upperArmAngle);
-        }
+        return encodersPluggedIn;
     }
 
     @Override
