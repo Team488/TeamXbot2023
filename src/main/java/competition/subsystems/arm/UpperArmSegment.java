@@ -36,8 +36,8 @@ public class UpperArmSegment extends ArmSegment {
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -153.6);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -125);
-        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 125);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -1000);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 1000);
 
         XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
                 0.06, // P

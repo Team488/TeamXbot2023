@@ -108,6 +108,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     final MechanismLigament2d ghostLowerArm;
     final MechanismLigament2d ghostUpperArm;
 
+    private boolean engageSpecialUpperArmOverride = false;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -330,9 +332,15 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         if (areBrakesEngaged.get() && !getDisableBrake()) {
             lowerArm.setPower(0);
         } else {
-            lowerArm.setArmToAngle(lowerArmAngle);
+            if (engageSpecialUpperArmOverride) {
+                // do nothing to upper arm. Don't even mess with power.
+            } else{
+                // regular behavior.
+                upperArm.setArmToAngle(upperArmAngle);
+
+            }
         }
-        upperArm.setArmToAngle(upperArmAngle);
+        lowerArm.setArmToAngle(lowerArmAngle);
     }
 
     @Override
@@ -521,5 +529,27 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {
         return solver.getPositionFromDegrees(oldArmAngles.x, oldArmAngles.y).toTranslation2d();
+    }
+
+    public void setEngageSpecialUpperArmOverride(boolean engageSpecialUpperArmOverride) {
+        this.engageSpecialUpperArmOverride = engageSpecialUpperArmOverride;
+    }
+
+    public boolean getEngageSpecialUpperArmOverride() {
+        return engageSpecialUpperArmOverride;
+    }
+
+    public InstantCommand createEngageSpecialUpperArmOverride() {
+        return new InstantCommand(() -> {
+            log.info("Engage special upper arm override!");
+            setEngageSpecialUpperArmOverride(true);
+        });
+    }
+
+    public InstantCommand createDisableSpecialUpperArmOverride() {
+        return new InstantCommand(() -> {
+            log.info("Disabling special upper arm override!");
+            setEngageSpecialUpperArmOverride(false);
+        });
     }
 }

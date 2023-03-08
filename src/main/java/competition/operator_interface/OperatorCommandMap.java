@@ -16,6 +16,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
+import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.ClawGripperMotorSubsystem;
@@ -37,6 +38,7 @@ import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -275,15 +277,47 @@ public class OperatorCommandMap {
             CollectorSubsystem collector,
             CollectIfSafeCommand collectIfSafe,
             MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup,
+            SetArmsToKeyArmPositionCommand setArmsToCollectPositionCommand,
+            SetArmsToKeyArmPositionCommand setArmsToScoreHighCommand,
+            SetArmsToKeyArmPositionCommand setArmsToScoreMediumCommand,
+            SetArmsToKeyArmPositionCommand setArmsToScoreLowCommand,
+            SetArmsToKeyArmPositionCommand setArmsToSubstationCollection,
             ChordTrigger.ChordTriggerFactory chordTriggerFactory) {
 
         var uncalibrateArms = arm.createForceUncalibratedCommand();
         var recalibrateArms = arm.createForceCalibratedCommand();
 
-        oi.operatorGamepad.getPovIfAvailable(0).onTrue(uncalibrateArms);
-        oi.operatorGamepad.getPovIfAvailable(90).onTrue(uncalibrateArms);
-        oi.operatorGamepad.getPovIfAvailable(180).onTrue(uncalibrateArms);
-        oi.operatorGamepad.getPovIfAvailable(270).onTrue(uncalibrateArms);
+        setArmsToCollectPositionCommand.setTargetSupplier(
+                () -> UnifiedArmSubsystem.KeyArmPosition.AcquireFromCollector,
+                () -> UnifiedArmSubsystem.RobotFacing.Forward);
+
+        setArmsToScoreHighCommand.setTargetSupplier(
+                () -> KeyArmPosition.HighGoal,
+                () -> RobotFacing.Forward
+        );
+
+        setArmsToScoreMediumCommand.setTargetSupplier(
+                () -> KeyArmPosition.MidGoal,
+                () -> RobotFacing.Forward
+        );
+
+        setArmsToScoreLowCommand.setTargetSupplier(
+                () -> KeyArmPosition.LowGoal,
+                () -> RobotFacing.Forward
+        );
+
+        setArmsToSubstationCollection.setTargetSupplier(
+                () -> KeyArmPosition.LoadingTray,
+                () -> RobotFacing.Forward
+        );
+
+        var engageSpecialUpperArmOverride = arm.createEngageSpecialUpperArmOverride();
+        var disableSpecialUpperArmOverride = arm.createDisableSpecialUpperArmOverride();
+
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(engageSpecialUpperArmOverride);
+        oi.operatorGamepad.getPovIfAvailable(90).onTrue(engageSpecialUpperArmOverride);
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(disableSpecialUpperArmOverride); // This is the disable!
+        oi.operatorGamepad.getPovIfAvailable(270).onTrue(engageSpecialUpperArmOverride);
 
         var doubleJoystickButtonpress = chordTriggerFactory.create(
                 oi.operatorGamepad.getifAvailable(XboxButton.LeftStick),
@@ -319,11 +353,42 @@ public class OperatorCommandMap {
         var setPrepareToPickupFromCollectorXZ = simpleXZRouterCommandProvider.get();
 setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setlowXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHighXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(moveCollectedGamepieceToArmCommandGroup);
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstationXZ);
+
+        var SmartOrDumbCollectionMode = new ConditionalCommand(
+                setArmsToCollectPositionCommand,
+                moveCollectedGamepieceToArmCommandGroup,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var SmartOrDumbScoreHigh = new ConditionalCommand(
+                setArmsToScoreHighCommand,
+                setHighXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var SmartOrDumbScoreMedium = new ConditionalCommand(
+                setArmsToScoreMediumCommand,
+                setMidXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var SmartOrDumbScoreLow = new ConditionalCommand(
+                setArmsToScoreLowCommand,
+                setlowXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var SmartOrDumbCollectFromSubstation = new ConditionalCommand(
+                setArmsToSubstationCollection,
+                setSubstationXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(SmartOrDumbScoreLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(SmartOrDumbScoreMedium);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(SmartOrDumbScoreHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(SmartOrDumbCollectionMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(SmartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
