@@ -343,6 +343,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             // First, consider the lower arm. If the brakes are engaged, we shouldn't try to power through them.
             if (areBrakesEngaged.get() && !getDisableBrake()) {
                 lowerArm.setPower(0);
+            } else {
+                lowerArm.setArmToAngle(lowerArmAngle);
             }
 
             // Second, consider the upper arm. It doesn't have a brake, so we are free to drive it anytime.
@@ -579,6 +581,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new InstantCommand(() -> {
             log.info("Engage special upper arm override!");
             setEngageSpecialUpperArmOverride(true);
+            lowerArm.setLowerLimitInDegrees(-1000);
+            lowerArm.setUpperLimitInDegrees(1000);
         });
     }
 
@@ -586,6 +590,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
         return new InstantCommand(() -> {
             log.info("Disabling special upper arm override!");
             setEngageSpecialUpperArmOverride(false);
+            lowerArm.setLowerLimitInDegrees(-130);
+            lowerArm.setUpperLimitInDegrees(130);
         });
     }
 }

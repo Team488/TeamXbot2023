@@ -131,6 +131,16 @@ public class LowerArmSegment extends ArmSegment {
     }
 
     @Override
+    protected void setUpperLimitInDegrees(double upperLimitInDegrees) {
+        this.upperLimitInDegrees.set(upperLimitInDegrees);
+    }
+
+    @Override
+    protected void setLowerLimitInDegrees(double lowerLimitInDegrees) {
+        this.lowerLimitInDegrees.set(lowerLimitInDegrees);
+    }
+
+    @Override
     public void periodic() {
         super.periodic();
         if (isMotorReady()) {

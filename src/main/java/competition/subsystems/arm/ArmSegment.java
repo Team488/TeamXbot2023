@@ -69,6 +69,8 @@ public abstract class ArmSegment {
     protected abstract double getUpperLimitInDegrees();
     protected abstract double getLowerLimitInDegrees();
     protected abstract double getVoltageOffset();
+    protected abstract void setUpperLimitInDegrees(double upperLimitInDegrees);
+    protected abstract void setLowerLimitInDegrees(double lowerLimitInDegrees);
 
     public void setPower(double power) {
         if (isMotorReady()) {
