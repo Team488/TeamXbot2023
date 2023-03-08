@@ -122,6 +122,7 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testExcessiveAngles() {
+        setArmAngles(0.0001,0.0001);
         arms.setArmsToAngles(Rotation2d.fromDegrees(1000), Rotation2d.fromDegrees(1000));
 
         assertEquals(

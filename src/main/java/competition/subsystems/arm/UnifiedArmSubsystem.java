@@ -109,6 +109,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     final MechanismLigament2d ghostLowerArm;
     final MechanismLigament2d ghostUpperArm;
 
+    private boolean engageSpecialUpperArmOverride = false;
+
     @Inject
     public UnifiedArmSubsystem(
             LowerArmSegment lowerArm,
@@ -338,12 +340,21 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             upperArm.setPower(0);
         } else {
             // Encoders are working, so we can move the arms.
+            // First, consider the lower arm. If the brakes are engaged, we shouldn't try to power through them.
             if (areBrakesEngaged.get() && !getDisableBrake()) {
                 lowerArm.setPower(0);
             } else {
                 lowerArm.setArmToAngle(lowerArmAngle);
             }
-            upperArm.setArmToAngle(upperArmAngle);
+
+            // Second, consider the upper arm. It doesn't have a brake, so we are free to drive it anytime.
+            // However, if we are in the special override, it should only be managed manually.
+            if (engageSpecialUpperArmOverride) {
+                // do nothing to upper arm. Don't even mess with power.
+            } else {
+                // regular behavior.
+                upperArm.setArmToAngle(upperArmAngle);
+            }
         }
     }
 
@@ -556,5 +567,31 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {
         return solver.getPositionFromDegrees(oldArmAngles.x, oldArmAngles.y).toTranslation2d();
+    }
+
+    public void setEngageSpecialUpperArmOverride(boolean engageSpecialUpperArmOverride) {
+        this.engageSpecialUpperArmOverride = engageSpecialUpperArmOverride;
+    }
+
+    public boolean getEngageSpecialUpperArmOverride() {
+        return engageSpecialUpperArmOverride;
+    }
+
+    public InstantCommand createEngageSpecialUpperArmOverride() {
+        return new InstantCommand(() -> {
+            log.info("Engage special upper arm override!");
+            setEngageSpecialUpperArmOverride(true);
+            lowerArm.setLowerLimitInDegrees(-1000);
+            lowerArm.setUpperLimitInDegrees(1000);
+        });
+    }
+
+    public InstantCommand createDisableSpecialUpperArmOverride() {
+        return new InstantCommand(() -> {
+            log.info("Disabling special upper arm override!");
+            setEngageSpecialUpperArmOverride(false);
+            lowerArm.setLowerLimitInDegrees(-130);
+            lowerArm.setUpperLimitInDegrees(130);
+        });
     }
 }

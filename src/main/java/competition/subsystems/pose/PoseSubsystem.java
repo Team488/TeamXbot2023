@@ -101,7 +101,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
      * @return The robot alliance color
      */
     public DriverStation.Alliance getAlliance() {
-        return this.cachedAlliance;
+        return DriverStation.getAlliance();
     }
 
     /**
@@ -137,7 +137,11 @@ public class PoseSubsystem extends BasePoseSubsystem {
      * @return The rotated input.
      */
     public Rotation2d rotateAngleBasedOnAlliance(Rotation2d rotation) {
+        var alliance = getAlliance();
+        log.info("Detected Alliance:" + alliance + ", and AllianceAwareField is:" +allianceAwareFieldProp.get());
+
         if (getAlliance() == DriverStation.Alliance.Red && isAllianceAwareField()) {
+            log.info("Detected red alliance and AllianceAwareField. Rotating angle 180 degrees.");
             return rotation.rotateBy(Rotation2d.fromDegrees(180));
         }
         return rotation;
