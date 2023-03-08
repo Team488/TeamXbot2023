@@ -26,6 +26,7 @@ import competition.subsystems.collector.commands.CollectIfSafeCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
+import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
@@ -75,6 +76,7 @@ public class OperatorCommandMap {
             DriveSubsystem drive,
             PoseSubsystem pose,
             GoToNextActiveSwerveModuleCommand nextModule,
+            DebuggingSwerveWithJoysticksCommand debugSwerve,
             SwerveDriveWithJoysticksCommand regularSwerve,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
@@ -99,9 +101,9 @@ public class OperatorCommandMap {
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        //oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
-
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(debugSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(nextModule);
 
         NamedInstantCommand enableCollectorRotation =
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
@@ -116,7 +118,7 @@ public class OperatorCommandMap {
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
-        oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
+        //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
     }
 
