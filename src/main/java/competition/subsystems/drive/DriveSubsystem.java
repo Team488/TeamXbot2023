@@ -1,6 +1,5 @@
 package competition.subsystems.drive;
 
-
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.FrontLeftDrive;
 import competition.injection.swerve.FrontRightDrive;
@@ -15,6 +14,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import xbot.common.advantage.DataFrameRefreshable;
@@ -106,18 +107,35 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         // Probably not a huge priority, Since as soon as we move once the robot remembers the last commanded direction.
         lastCommandedDirection = new XYPair(0, 90);
 
-        positionalPidManager = pidFactory.create(this.getPrefix() + "PositionPID", 0.018, 0, 0.1, 0.6, -0.6);
-        headingPidManager = pidFactory.create(this.getPrefix() + "HeadingPID", 0.015, 0.0000001, 0.045, 0.75, -0.75);
+        positionalPidManager = pidFactory.create(
+                this.getPrefix() + "PositionPID",
+                0.018, // P
+                0, // I
+                0.1, // D
+                0.0, // F
+                0.6, // Max output
+                -0.6, // Min output
+                2.0, // Error threshold
+                0.2, // Derivative threshold
+                0.2); // Time threshold
+        positionalPidManager.setEnableErrorThreshold(true);
+        positionalPidManager.setEnableTimeThreshold(true);
 
-        headingPidManager.setTimeThreshold(0.2);
-        headingPidManager.setErrorThreshold(2);
+        headingPidManager = pidFactory.create(
+                this.getPrefix() + "HeadingPID",
+                0.015, // P
+                0.0000001, // I
+                0.045, // D
+                0.0, // F
+                0.75, // Max output
+                -0.75, // Min output
+                2.0, // Error threshold
+                0.2, // Derivative threshold
+                0.2); // Time threshold
+
         headingPidManager.setEnableErrorThreshold(true);
         headingPidManager.setEnableTimeThreshold(true);
 
-        positionalPidManager.setErrorThreshold(2);
-        positionalPidManager.setTimeThreshold(0.2);
-        positionalPidManager.setEnableErrorThreshold(true);
-        positionalPidManager.setEnableTimeThreshold(true);
     }
 
     public SwerveDriveKinematics getSwerveDriveKinematics() {
@@ -169,14 +187,45 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
     }
 
     boolean precisionTranslationActive;
+    boolean extremePrecisionTranslationActive;
     boolean precisionRotationActive;
+    boolean unlockFullDrivePower;
+
+    public boolean isUnlockFullDrivePowerActive() {
+        return unlockFullDrivePower;
+    }
+
+    public void setUnlockFullDrivePower(boolean value) {
+        unlockFullDrivePower = value;
+    }
+
+    public Command createUnlockFullDrivePowerCommand() {
+        return new StartEndCommand(
+                () -> {
+                    log.info("Unlocking full drive power");
+                    setUnlockFullDrivePower(true);
+                    },
+                () -> {
+                    log.info("Locking maximum drive power");
+                    setUnlockFullDrivePower(false);
+                }
+        );
+    }
 
     public boolean isPrecisionTranslationActive() {
         return precisionTranslationActive;
     }
 
+    public boolean isExtremePrecisionTranslationActive() {
+        return extremePrecisionTranslationActive;
+    }
+
     public void setPrecisionTranslationActive(boolean isActive) {
         precisionTranslationActive = isActive;
+    }
+
+    public void setExtremePrecisionTranslationActive(boolean isActive) {
+        extremePrecisionTranslationActive = isActive;
     }
 
     public boolean isPrecisionRotationActive() {

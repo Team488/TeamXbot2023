@@ -24,7 +24,7 @@ public class VelocityMaintainerCommand extends BaseCommand {
         this.addRequirements(drive);
         this.drive = drive;
         this.pose = pose;
-        this.xPIDManager = pidFactory.create("DriveVelocity", 0, 0, 0);
+        this.xPIDManager = pidFactory.create("DriveVelocity", 0.15, 0, 0);
     }
 
     public void initialize() {
@@ -34,7 +34,7 @@ public class VelocityMaintainerCommand extends BaseCommand {
     }
 
     public void execute() {
-        double currentXVelocity = pose.getCurrentVelocity().x;
+        double currentXVelocity = pose.getRobotOrientedXVelocity();
         double deltaPower = xPIDManager.calculate(drive.getVelocityMaintainerXTarget(), currentXVelocity);
         this.xThrottle += deltaPower;
         drive.move(new XYPair(xThrottle,0), 0);

@@ -8,6 +8,7 @@ import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.pose.PoseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
+import xbot.common.controls.actuators.XCANSparkMaxPIDProperties;
 import xbot.common.controls.sensors.XDutyCycleEncoder;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -30,22 +31,35 @@ public class UpperArmSegment extends ArmSegment {
     @Inject
     public UpperArmSegment(XCANSparkMaxFactory sparkMaxFactory, XDutyCycleEncoder.XDutyCycleEncoderFactory dutyCycleEncoderFactory,
                            ElectricalContract eContract, PropertyFactory propFactory, PoseSubsystem pose){
-        super("UnifiedArmSubsystem/UpperArm", propFactory, pose, 90, -270);
+        super("UnifiedArmSubsystem/UpperArm", propFactory, pose, 180, -180);
         String prefix = "UnifiedArmSubsystem/UpperArm";
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
-        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", 0.0);
-        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -200);
-        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 20);
+        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -153.6);
+        lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -130);
+        upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 130);
+
+        XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
+                0.06, // P
+                0.0, // I
+                0, // D
+                0, // IZone
+                0, // FF
+                0.75, // MaxOutput
+                -0.75 // MinOutput
+        );
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
-            this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor");
+            this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor", motorPidDefaults);
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
 
             configureCommonMotorProperties();
+
+            leftMotor.setSmartCurrentLimit(30);
+            rightMotor.setSmartCurrentLimit(30);
         }
         if (contract.isUpperArmEncoderReady()) {
             this.absoluteEncoder = dutyCycleEncoderFactory.create(contract.getUpperArmEncoder());
@@ -56,6 +70,11 @@ public class UpperArmSegment extends ArmSegment {
     @Override
     protected double getAbsoluteEncoderOffsetInDegrees() {
         return absoluteEncoderOffsetInDegreesProp.get();
+    }
+
+    @Override
+    public void setAbsoluteEncoderOffsetInDegrees(double offset) {
+        absoluteEncoderOffsetInDegreesProp.set(offset);
     }
 
     @Override
@@ -96,6 +115,21 @@ public class UpperArmSegment extends ArmSegment {
     @Override
     protected double getLowerLimitInDegrees() {
         return lowerLimitInDegrees.get();
+    }
+
+    @Override
+    protected double getVoltageOffset() {
+        return 0;
+    }
+
+    @Override
+    protected void setUpperLimitInDegrees(double upperLimitInDegrees) {
+        this.upperLimitInDegrees.set(upperLimitInDegrees);
+    }
+
+    @Override
+    protected void setLowerLimitInDegrees(double lowerLimitInDegrees) {
+        this.lowerLimitInDegrees.set(lowerLimitInDegrees);
     }
 
     @Override

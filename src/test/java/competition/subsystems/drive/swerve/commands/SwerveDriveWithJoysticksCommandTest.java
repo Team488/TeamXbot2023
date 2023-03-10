@@ -23,6 +23,7 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         command = getInjectorComponent().swerveDriveWithJoysticksCommand();
         drive = (DriveSubsystem)getInjectorComponent().driveSubsystem();
         pose = (MockPoseSubsystem)getInjectorComponent().poseSubsystem();
+        drive.setUnlockFullDrivePower(true);
     }
 
     @Test

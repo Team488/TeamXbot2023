@@ -18,10 +18,11 @@ public class AutoBalanceCommand extends BaseCommand {
     private final PIDManager pidManager;
 
     private boolean drivingAgainstPositiveAngle = true;
-    final double firstAttemptSpeed = 0.10;
+    final double firstAttemptSpeed = 0.35;
     double currentAttemptSpeed = firstAttemptSpeed;
     double lastDetectedFallTime = -1000;
     double initialAnalyzedAngle = 0;
+    double angleThresholdForBalance = 1.5;
 
     public enum BalanceState {
         Analyzing,
@@ -40,7 +41,13 @@ public class AutoBalanceCommand extends BaseCommand {
                               PropertyFactory pf) {
         this.drive = drive;
         this.pose = pose;
-        this.pidManager = pidFactory.create(this.getPrefix(), 0.1, 0, 0);
+        this.pidManager = pidFactory.create(
+                this.getPrefix(),
+                0.01,// P
+                0, // I
+                0, // D
+                0.25, // Max Output
+                -0.25); // Min Output
         pf.setPrefix(this);
 
         balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");
@@ -74,7 +81,15 @@ public class AutoBalanceCommand extends BaseCommand {
         double velocityGoal = 0;
         switch (currentBalanceState) {
             case Analyzing:
+                log.info("Analyzing");
                 drivingAgainstPositiveAngle = currentAngle > 0.0;
+
+                if (isRobotLevel()) {
+                    // We're already balanced, so we're done!
+                    currentBalanceState = BalanceState.Complete;
+                    break;
+                }
+
                 currentBalanceState = BalanceState.Driving;
                 drive.setActivateBrakeOverride(false);
                 initialAnalyzedAngle = currentAngle;
@@ -91,6 +106,15 @@ public class AutoBalanceCommand extends BaseCommand {
                     velocityGoal = -currentAttemptSpeed;
                 }
 
+                // If we're driving against a positive angle and see an even more positive angle, we need
+                // to update our angle to that angle (and the mirror for negative angle).
+                // This could happen if we only are kind of on the leaf of the ramp and then our angle
+                // increases as we leave the leaf and get on the main body of the charge pad.
+                if ((drivingAgainstPositiveAngle && currentAngle > initialAnalyzedAngle)
+                 || (!drivingAgainstPositiveAngle && currentAngle < initialAnalyzedAngle)) {
+                    initialAnalyzedAngle = currentAngle;
+                }
+
                 // If we're driving against the positive angle, see a sudden drop in angle, we need
                 // to advance to FallDetected. Likewise, if we're driving against the negative angle,
                 // and we see a sudden increase in angle, we need to advance to FallDetected.
@@ -103,6 +127,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
                 break;
             case FallDetected:
+                log.info("Fall detected");
                 // We've detected a fall, so we need to stop driving and wait for a bit.
                 // We'll also slow down the drive speed for the next attempt.
                 currentAttemptSpeed = currentAttemptSpeed * 0.5;
@@ -113,7 +138,7 @@ public class AutoBalanceCommand extends BaseCommand {
                 break;
             case Waiting:
                 if (XTimer.getFPGATimestamp() - lastDetectedFallTime > 2.0) {
-                    if (Math.abs(currentAngle) < 1.5) {
+                    if (isRobotLevel()) {
                         // We've successfully balanced!
                         currentBalanceState = BalanceState.Complete;
                     } else {
@@ -124,6 +149,7 @@ public class AutoBalanceCommand extends BaseCommand {
                 velocityGoal = 0;
                 break;
             case Complete:
+                log.info("Complete");
                 velocityGoal = 0;
                 return;
             default:
@@ -137,14 +163,17 @@ public class AutoBalanceCommand extends BaseCommand {
 
     private double getAngle() {
         // this is based on the rio orientation
-        double currentAngle = -(pose.getRobotPitch() - 1.75);
+        double currentAngle = -(pose.getRobotPitch());
 
-
-        if (Math.abs(currentAngle) < 1.5) {
+        if (Math.abs(currentAngle) < angleThresholdForBalance) {
             currentAngle = 0;
         }
 
         return currentAngle;
+    }
+
+    private boolean isRobotLevel() {
+        return Math.abs(getAngle()) < angleThresholdForBalance;
     }
 
     @Override
@@ -154,6 +183,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
     @Override
     public void end(boolean interrupted) {
+        log.info("Ending.");
         drive.setVelocityMaintainerXTarget(0);
         drive.setActivateBrakeOverride(false);
     }

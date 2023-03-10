@@ -2,12 +2,14 @@ package competition.subsystems.arm.claw;
 
 import competition.BaseCompetitionTest;
 import competition.operator_interface.OperatorInterface;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.claw.OpenClawCommand;
 import edu.wpi.first.wpilibj.MockSolenoid;
 import org.junit.Assert;
 import org.junit.Test;
+import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 
 public class ClawCommandsTest extends BaseCompetitionTest {
 
@@ -15,6 +17,7 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     OperatorInterface oi;
     CloseClawCommand closeClaw;
     OpenClawCommand openClaw;
+    UnifiedArmSubsystem arms;
 
     @Override
     public void setUp() {
@@ -22,6 +25,11 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         clawSubsystem = getInjectorComponent().clawSubsystem();
         closeClaw = getInjectorComponent().closeClawCommand();
         openClaw = getInjectorComponent().openClawCommand();
+        arms = getInjectorComponent().unifiedArmSubsystem();
+        arms.setIsCalibrated(true);
+        setUpperArmAngles(90);
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
     }
 
     @Test
@@ -29,14 +37,35 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
+        timer.advanceTimeInSecondsBy(1);
+        openClaw.execute();
         checkClawState(true);
+    }
 
+    @Test
+    public void openClawTestWithSafety() {
+        setCloseClaw();
+        openClaw.initialize();
+        openClaw.execute();
+        timer.advanceTimeInSecondsBy(1);
+        openClaw.execute();
+        checkClawState(true);
+        setUpperArmAngles(0);
+        openClaw.execute();
+        checkClawState(false);
+        setUpperArmAngles(90);
+        openClaw.execute();
+        checkClawState(false);
+        timer.advanceTimeInSecondsBy(1);
+        openClaw.execute();
+        checkClawState(true);
     }
 
     @Test
     public void closeClawTest() {
         setOpenClaw();
         closeClaw.initialize();
+        closeClaw.execute();
         closeClaw.execute();
         checkClawState(false);
     }
@@ -46,6 +75,7 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
+        timer.advanceTimeInSecondsBy(1);
         openClaw.execute();
         checkClawState(true);
 
@@ -65,6 +95,8 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         setCloseClaw();
         openClaw.initialize();
         openClaw.execute();
+        timer.advanceTimeInSecondsBy(1);
+        openClaw.execute();
         closeClaw.initialize();
         closeClaw.execute();
         checkClawState(false);
@@ -77,6 +109,8 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         closeClaw.initialize();
         closeClaw.execute();
         openClaw.initialize();
+        openClaw.execute();
+        timer.advanceTimeInSecondsBy(1);
         openClaw.execute();
         checkClawState(true);
     }
@@ -94,5 +128,9 @@ public class ClawCommandsTest extends BaseCompetitionTest {
     private void setCloseClaw() {
         clawSubsystem.close();
         ((MockSolenoid) clawSubsystem.clawSolenoid).set(false);
+    }
+
+    private void setUpperArmAngles(double upperArmAngle) {
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
     }
 }

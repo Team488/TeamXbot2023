@@ -12,6 +12,7 @@ import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.properties.BooleanProperty;
+import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 public abstract class ArmSegment implements DataFrameRefreshable {
@@ -22,6 +23,7 @@ public abstract class ArmSegment implements DataFrameRefreshable {
     private final BooleanProperty invertPitchCompensationProp;
     private double motorEncoderOffsetInDegrees;
     protected abstract double getAbsoluteEncoderOffsetInDegrees();
+    public abstract void setAbsoluteEncoderOffsetInDegrees(double offset);
     private final PoseSubsystem pose;
 
     private static Logger log = LogManager.getLogger(ArmSegment.class);
@@ -39,6 +41,7 @@ public abstract class ArmSegment implements DataFrameRefreshable {
         this.lowerDegreeReference = lowerDegreeReference;
         useAbsoluteEncoderProp = propFactory.createPersistentProperty("useAbsoluteEncoder", true);
         usePitchCompensationProp = propFactory.createEphemeralProperty("usePitchCompensation", false);
+        usePitchCompensationProp.set(false);
         invertPitchCompensationProp = propFactory.createPersistentProperty("invertPitchCompensation", false);
     }
 
@@ -58,6 +61,9 @@ public abstract class ArmSegment implements DataFrameRefreshable {
 
     protected abstract double getUpperLimitInDegrees();
     protected abstract double getLowerLimitInDegrees();
+    protected abstract double getVoltageOffset();
+    protected abstract void setUpperLimitInDegrees(double upperLimitInDegrees);
+    protected abstract void setLowerLimitInDegrees(double lowerLimitInDegrees);
 
     public void setPower(double power) {
         if (isMotorReady()) {
@@ -107,9 +113,7 @@ public abstract class ArmSegment implements DataFrameRefreshable {
     }
 
     public void calibrateThisPositionAs(double degrees) {
-        if (isMotorReady()) {
-            motorEncoderOffsetInDegrees = getLeaderMotor().getPosition() * getDegreesPerMotorRotation() - degrees;
-        }
+        setAbsoluteEncoderOffsetInDegrees(getAbsoluteEncoder().getAbsoluteDegrees() - degrees);
     }
 
     public double getArmPositionInDegrees() {
@@ -159,11 +163,19 @@ public abstract class ArmSegment implements DataFrameRefreshable {
         getLeaderMotor().setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,(float)lower);
     }
 
+    public double coerceAngleWithinLimits(double angle) {
+        return MathUtils.constrainDouble(angle, getLowerLimitInDegrees(), getUpperLimitInDegrees());
+    }
+
+    public boolean isAngleWithinLimits(double angle) {
+        return angle >= getLowerLimitInDegrees() && angle <= getUpperLimitInDegrees();
+    }
+
     public void setArmToAngle(Rotation2d angle) {
 
-        // Coerce angle to a safe angle
-        double targetAngleDegrees =
-                MathUtils.constrainDouble(angle.getDegrees(), getLowerLimitInDegrees(), getUpperLimitInDegrees());
+        // Coerce angle to a safe angle.
+        // Should already be done by the UnifiedArm, but just in case.
+        double targetAngleDegrees = coerceAngleWithinLimits(angle.getDegrees());
 
         // We want to use the absolute encoder to figure out how far away we are from the target angle. However, the motor
         // controller will be using its internal encoder, so we need to translate from one to the other.
@@ -177,7 +189,11 @@ public abstract class ArmSegment implements DataFrameRefreshable {
             double delta = WrappedRotation2d.fromDegrees(targetAngleDegrees - getArmPositionInDegrees()).getDegrees();
             double deltaInMotorRotations = delta / getDegreesPerMotorRotation();
             double goalPosition = deltaInMotorRotations + getLeaderMotor().getPosition();
-            getLeaderMotor().setReference(goalPosition, CANSparkMax.ControlType.kPosition);
+            getLeaderMotor().setReference(
+                    goalPosition,
+                    CANSparkMax.ControlType.kPosition,
+                    0,
+                    getVoltageOffset());
         }
     }
 

@@ -156,6 +156,21 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getClawSolenoid() {return new DeviceInfo("ClawSubsystem",0, false);}
 
     @Override
+    public DeviceInfo getLeftClawMotor() {
+        return new DeviceInfo("LeftClaw", 33, false, 1);
+    }
+
+    @Override
+    public DeviceInfo getRightClawMotor() {
+        return new DeviceInfo("RightClaw", 34, false, 1);
+    }
+
+    @Override
+    public boolean areClawMotorsReady() {
+        return false;
+    }
+
+    @Override
     public DeviceInfo getLowerArmBrakeSolenoid() {
         return new DeviceInfo("LowerArmBrake", 1, false);
     }
@@ -166,4 +181,31 @@ public class CompetitionContract extends ElectricalContract {
     public boolean isCollectorReady() { return true; }
 
     public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo("Collector", 2,false);}
+
+    @Override
+    public DeviceInfo getArduinoDio0() {
+        return new DeviceInfo("Arduino0",8);
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio1() {
+        return new DeviceInfo("Arduino1", 9);
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio2() {
+        return new DeviceInfo("Arduino2", 10);
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio3() {
+        return new DeviceInfo("Arduino3", 11); // something on the navX, just out of the way
+    }
+
+    @Override
+    public DeviceInfo getArduinoAllianceDio() {
+        return new DeviceInfo("ArduinoAlliance", 4);
+    }
+
+    public DeviceInfo getPressureSensor() {return new DeviceInfo("PressurSensor", 3);}
 }

@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.junit.Ignore;
 import org.junit.Test;
 import xbot.common.controls.actuators.mock_adapters.MockCANSparkMax;
+import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 import xbot.common.math.XYPair;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +22,8 @@ public class UnifiedArmTest extends BaseCompetitionTest {
         super.setUp();
         arms = getInjectorComponent().unifiedArmSubsystem();
         arms.setBrake(false);
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
     }
 
     @Test
@@ -32,10 +35,10 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testGetSetTarget() {
-        arms.setTargetValue(new XYPair(0.5, .75));
+        arms.setTargetValue(new XYPair(45, 50));
         var target = arms.getTargetValue();
-        assertEquals(0.5, target.x, 0.001);
-        assertEquals(0.75, target.y, 0.001);
+        assertEquals(45, target.x, 0.001);
+        assertEquals(50, target.y, 0.001);
     }
     @Test
     @Ignore // Revisit once we set XZ positions rather than raw angles.
@@ -80,8 +83,10 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testSetAnglesWithBrake() {
-        assertEquals(0, arms.lowerArm.getArmPositionInDegrees(), 0.001);
-        assertEquals(0, arms.upperArm.getArmPositionInDegrees(), 0.001);
+        setArmAngles(1,1);
+
+        assertEquals(1, arms.lowerArm.getArmPositionInDegrees(), 0.001);
+        assertEquals(1, arms.upperArm.getArmPositionInDegrees(), 0.001);
         arms.setPower(new XYPair(1, 1));
 
         arms.setBrake(true);
@@ -96,27 +101,48 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testMirrorArmAngles() {
-        XYPair perfectlyVertical = new XYPair(90, -90);
+        XYPair perfectlyVertical = new XYPair(90, 0);
         XYPair mirroredVertical = UnifiedArmSubsystem.mirrorArmAngles(perfectlyVertical);
         // There should be no change if we mirror around the center point of 90 for the lower arm and -90 for the upper.
         assertEquals(90, mirroredVertical.x, 0.001);
-        assertEquals(-90, mirroredVertical.y, 0.001);
+        assertEquals(0, mirroredVertical.y, 0.001);
 
         // We should see some changes using angles offset by 45 degrees.
         XYPair offset = new XYPair(135, -45);
         XYPair mirroredOffset = UnifiedArmSubsystem.mirrorArmAngles(offset);
         assertEquals(45, mirroredOffset.x, 0.001);
-        assertEquals(-135, mirroredOffset.y, 0.001);
+        assertEquals(45, mirroredOffset.y, 0.001);
 
         // Let's check some angles that are more than 135 degrees away from the mirror point.
         XYPair farAway = new XYPair(-45, 45);
         XYPair mirroredFarAway = UnifiedArmSubsystem.mirrorArmAngles(farAway);
         assertEquals(225, mirroredFarAway.x, 0.001);
-        assertEquals(-225, mirroredFarAway.y, 0.001);
+        assertEquals(-45, mirroredFarAway.y, 0.001);
+    }
+
+    @Test
+    public void testExcessiveAngles() {
+        setArmAngles(0.0001,0.0001);
+        arms.setArmsToAngles(Rotation2d.fromDegrees(1000), Rotation2d.fromDegrees(1000));
+
+        assertEquals(
+                arms.upperArm.getUpperLimitInDegrees(),
+                ((MockCANSparkMax)arms.upperArm.rightMotor).getReference() * arms.upperArm.getDegreesPerMotorRotation(),
+                0.001);
+
+        assertEquals(
+                arms.lowerArm.getUpperLimitInDegrees(),
+                ((MockCANSparkMax)arms.lowerArm.rightMotor).getReference() * arms.lowerArm.getDegreesPerMotorRotation(),
+                0.001);
     }
 
     private void checkArmPowers(double lowerPower, double upperPower) {
         assertEquals(lowerPower, arms.lowerArm.rightMotor.get(), 0.001);
         assertEquals(upperPower, arms.upperArm.rightMotor.get(), 0.001);
+    }
+
+    private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
+        ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
     }
 }

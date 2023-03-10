@@ -3,6 +3,7 @@ package competition.subsystems.drive.commands;
 import javax.inject.Inject;
 
 import competition.operator_interface.OperatorInterface;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
@@ -13,6 +14,7 @@ import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineDeciderFactory;
 import xbot.common.logic.HumanVsMachineDecider.HumanVsMachineMode;
 import xbot.common.logic.Latch;
 import xbot.common.logic.Latch.EdgeType;
+import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
@@ -29,6 +31,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
     final DriveSubsystem drive;
     final PoseSubsystem pose;
+    final UnifiedArmSubsystem arms;
     final OperatorInterface oi;
     final VisionSubsystem vision;
     final DoubleProperty input_exponent;
@@ -44,15 +47,18 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
     DriverStation.Alliance alliance;
 
     @Inject
-    public SwerveDriveWithJoysticksCommand(DriveSubsystem drive, PoseSubsystem pose, OperatorInterface oi,
-            PropertyFactory pf, HumanVsMachineDeciderFactory hvmFactory, HeadingModuleFactory headingModuleFactory, VisionSubsystem vision) {
+    public SwerveDriveWithJoysticksCommand(
+            DriveSubsystem drive, PoseSubsystem pose, OperatorInterface oi,
+            PropertyFactory pf, HumanVsMachineDeciderFactory hvmFactory, HeadingModuleFactory headingModuleFactory, VisionSubsystem vision,
+            UnifiedArmSubsystem arms) {
         this.drive = drive;
         this.oi = oi;
         this.pose = pose;
         this.vision = vision;
+        this.arms = arms;
         pf.setPrefix(this);
         this.input_exponent = pf.createPersistentProperty("Input Exponent", 1);
-        this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 1);
+        this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 0.75);
         this.turnPowerFactor = pf.createPersistentProperty("Turn Power Factor", 0.75);
         this.absoluteOrientationMode = pf.createPersistentProperty("Absolute Orientation Mode", true);
         this.minimumMagnitudeForAbsoluteHeading = pf.createPersistentProperty("Min Magnitude For Absolute Heading", 0.75);
@@ -173,6 +179,19 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get()) {
                 // If the magnitude is greater than the minimum magnitude, we can use the joystick to set the heading.
                 desiredHeading = headingVector.getAngle();
+
+                // Force the desired heading into one of four quadrants:
+                // -45 to 45
+                // 45 to 135
+                // 135 to 225
+                // 225 to 315
+
+                // First, we need to normalize the angle to be between -45 and 315
+                desiredHeading = ContiguousDouble.reboundValue(desiredHeading, -45, 315);
+
+                // Now, we can use the modulus operator to get the quadrant.
+                int quadrant = (int) (desiredHeading / 90);
+                desiredHeading = quadrant * 90;
                 
                 if (pose.getHeadingResetRecently()) {
                     drive.setDesiredHeading(pose.getCurrentHeading().getDegrees());
@@ -236,16 +255,27 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
         // Scale the power down if we are in one or more precision modes
         // Rotation is scaled when deciding on human vs machine inputs
-        translationIntent.scale(drive.isPrecisionTranslationActive() ? 0.5 : 1);
 
-        // Scale the power down if requested (typically used when novices are controlling the robot)
-        translationIntent = translationIntent.scale(drivePowerFactor.get());
+        if (drive.isUnlockFullDrivePowerActive()) {
+            // do nothing - unleash the full power of the machine!
+        } else {
+            // Use various ways of scaling down the drive power
+
+            if (drive.isPrecisionTranslationActive()) {
+                translationIntent = translationIntent.scale(0.30);
+            } else if (drive.isExtremePrecisionTranslationActive()) {
+                translationIntent = translationIntent.scale(0.15);
+            }
+
+            // Scale the power down if requested (typically used when novices are controlling the robot)
+            translationIntent = translationIntent.scale(drivePowerFactor.get());
+        }
         suggestedRotatePower *= turnPowerFactor.get();
 
         // Check if we need a different center of rotation
         XYPair centerOfRotationInches = new XYPair(0,0);
         if (drive.isCollectorRotationActive()) {
-            centerOfRotationInches = new XYPair(36, 0);
+            centerOfRotationInches = new XYPair(arms.getCurrentXZCoordinates().x, 0);
         }
 
         // Rumble based on camera state

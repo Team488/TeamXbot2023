@@ -6,7 +6,9 @@ import competition.injection.modules.CompetitionTestModule;
 import competition.subsystems.arm.LowerArmSegment;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UpperArmSegment;
+import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
+import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.arm.commands.UnifiedArmMaintainer;
 import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.claw.CloseClawCommand;
@@ -15,6 +17,7 @@ import competition.subsystems.arm.commands.ControlArmsWithJoyStickCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
+import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.drive.swerve.SwerveSteeringMotorPidSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
 import dagger.Component;
@@ -44,7 +47,9 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
 
     public abstract UpperArmSegment upperArmSegment();
 
-    public  abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
+    public abstract ControlArmsWithJoyStickCommand controlArmsWithJoyStickCommand();
+
+    public abstract ControlEndEffectorPositionCommand controlEndEffectorPositionCommand();
 
     public abstract UnifiedArmSubsystem unifiedArmSubsystem();
 
@@ -57,4 +62,8 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract UnifiedArmMaintainer unifiedArmMaintainer();
 
     public abstract SimpleSafeArmRouterCommand simpleSafeArmRouterCommand();
+
+    public abstract SimpleXZRouterCommand simpleXZRouterCommand();
+
+    public abstract VelocityMaintainerCommand velocityMaintainerCommand();
 }

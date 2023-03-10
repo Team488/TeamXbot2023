@@ -28,6 +28,9 @@ public class ControlArmsWithJoyStickCommandTest extends BaseCompetitionTest {
 
         arms.setBrake(false);
 
+        arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
+        arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
+
         ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(90.0/360.0);
         ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(-90.0/360.0);
     }

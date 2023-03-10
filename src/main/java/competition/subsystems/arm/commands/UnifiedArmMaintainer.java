@@ -3,8 +3,10 @@ package competition.subsystems.arm.commands;
 import competition.operator_interface.OperatorInterface;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
+import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
@@ -18,18 +20,21 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     OperatorInterface oi;
     private final DoubleProperty lowerArmErrorThresholdToEngageBrake;
     private final DoubleProperty lowerArmErrorThresholdToDisengageBrake;
+    private final TimeStableValidator lowerArmBrakeValidator;
+
     @Inject
     public UnifiedArmMaintainer(
             UnifiedArmSubsystem subsystemToMaintain,
             OperatorInterface oi,
             PropertyFactory pf,
             HumanVsMachineDecider.HumanVsMachineDeciderFactory hvmFactory) {
-        super(subsystemToMaintain, pf, hvmFactory, 0.001, 0.001);
+        super(subsystemToMaintain, pf, hvmFactory, 1.5, 0.33);
         this.unifiedArm = subsystemToMaintain;
         this.oi = oi;
         pf.setPrefix(this);
         lowerArmErrorThresholdToEngageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToEngageBrake",2.0);
         lowerArmErrorThresholdToDisengageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToDisengageBrake",4.0);
+        lowerArmBrakeValidator = new TimeStableValidator(1);
     }
 
     @Override
@@ -98,12 +103,16 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     private void changeBrakeStateBasedOnError() {
         double lowerArmError = Math.abs(unifiedArm.getCurrentValue().x - unifiedArm.getTargetValue().x);
 
-        if (lowerArmError < lowerArmErrorThresholdToEngageBrake.get()) {
-            unifiedArm.setBrake(true);
+        if (lowerArmError < lowerArmErrorThresholdToEngageBrake.get() && !unifiedArm.getDisableBrake()) {
+            boolean isStable = lowerArmBrakeValidator.checkStable(true);
+            if (isStable) {
+                unifiedArm.setBrake(true);
+            }
         }
 
-        if (lowerArmError > lowerArmErrorThresholdToDisengageBrake.get()) {
+        if (lowerArmError > lowerArmErrorThresholdToDisengageBrake.get() || unifiedArm.getDisableBrake()) {
             unifiedArm.setBrake(false);
+            lowerArmBrakeValidator.checkStable(false);
         }
     }
 
@@ -120,13 +129,17 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
         }
         double upperArmError = Math.abs(current.y - target.y);
 
-        return lowerArmError + upperArmError;
+        if (unifiedArm.getEngageSpecialUpperArmOverride()) {
+            return lowerArmError;
+        } else {
+            return lowerArmError + upperArmError;
+        }
     }
 
     @Override
     protected XYPair getHumanInput() {
         double lowerArmPower = MathUtils.deadband(
-                oi.operatorGamepad.getLeftVector().y,
+                -oi.operatorGamepad.getLeftVector().y,
                 oi.getOperatorGamepadTypicalDeadband(),
                 (a)-> MathUtils.exponentAndRetainSign(a,2));
         double upperArmPower = MathUtils.deadband(

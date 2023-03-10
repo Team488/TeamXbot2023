@@ -29,6 +29,11 @@ public abstract class ElectricalContract {
     public abstract XYPair getSwerveModuleOffsets(SwerveInstance swerveInstance);
     public abstract boolean isForwardAprilCamReady();
     public abstract DeviceInfo getClawSolenoid();
+
+    public abstract DeviceInfo getLeftClawMotor();
+    public abstract DeviceInfo getRightClawMotor();
+    public abstract boolean areClawMotorsReady();
+
     public abstract DeviceInfo getCollectorSolenoid();
     public abstract DeviceInfo getCollectorMotor();
     public abstract boolean isCollectorReady();
@@ -48,4 +53,11 @@ public abstract class ElectricalContract {
     protected String getSteeringEncoderName(SwerveInstance swerveInstance) {
         return "DriveSubsystem/"+swerveInstance.getLabel();
     }
+
+    public abstract DeviceInfo getArduinoDio0();
+    public abstract DeviceInfo getArduinoDio1();
+    public abstract DeviceInfo getArduinoDio2();
+    public abstract DeviceInfo getArduinoDio3();
+    public abstract DeviceInfo getArduinoAllianceDio();
+    public abstract DeviceInfo getPressureSensor();
 }

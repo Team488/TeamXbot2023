@@ -18,4 +18,9 @@ public class MockPoseSubsystem extends PoseSubsystem {
     public void setAlliance(DriverStation.Alliance alliance) {
         cachedAlliance = alliance;
     }
+
+    @Override
+    public DriverStation.Alliance getAlliance() {
+        return cachedAlliance;
+    }
 }

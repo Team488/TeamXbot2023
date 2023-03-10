@@ -1,9 +1,12 @@
 package competition.subsystems.collector;
 
 import competition.electrical_contract.ElectricalContract;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XSolenoid;
+import xbot.common.controls.sensors.XAnalogInput;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
@@ -18,6 +21,9 @@ public class CollectorSubsystem extends BaseSubsystem {
     public DoubleProperty ejectPower;
     private CollectorState currentState;
     final ElectricalContract contract;
+    private int loopCount;
+
+    private XAnalogInput pressureSensor;
 
     public enum CollectorState{
         Extended,
@@ -26,17 +32,21 @@ public class CollectorSubsystem extends BaseSubsystem {
 
     @Inject
     public CollectorSubsystem(XCANSparkMax.XCANSparkMaxFactory sparkMaxFactory, PropertyFactory pf,
-                              XSolenoid.XSolenoidFactory xSolenoidFactory,
+                              XSolenoid.XSolenoidFactory xSolenoidFactory, XAnalogInput.XAnalogInputFactory analogInputFactory,
                               ElectricalContract eContract){
         this.contract = eContract;
         this.currentState = CollectorState.Retracted;
         if(contract.isCollectorReady()){
             this.collectorMotor = sparkMaxFactory.create(eContract.getCollectorMotor(),getPrefix(),"CollectorMotor");
             this.collectorSolenoid = xSolenoidFactory.create(eContract.getCollectorSolenoid().channel);
+            collectorMotor.setSmartCurrentLimit(5);
+            pressureSensor = analogInputFactory.create(eContract.getPressureSensor().channel);
         }
         pf.setPrefix(this);
         intakePower = pf.createPersistentProperty("intakePower",1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
+
+
 
     }
 
@@ -77,5 +87,39 @@ public class CollectorSubsystem extends BaseSubsystem {
         setMotorPower(0);
     }
 
+    public Command getCollectThenRetractCommand() {
+        return Commands.startEnd(
+                () -> {
+                    log.info("Collecting");
+                    this.intake();
+                    this.extend();
+                },
+                () -> {
+                    this.retract();
+                },
+                this);
+    }
 
+    public Command getEjectThenStopCommand() {
+        return Commands.startEnd(
+                () -> {
+                    log.info("Ejecting");
+                    this.retract();
+                    this.eject();
+                },
+                () -> {
+                    this.stop();
+                },
+                this);
+    }
+
+    @Override
+    public void periodic() {
+        loopCount++;
+        if (contract.isCollectorReady()) {
+            if (loopCount % 250 == 0) {
+                log.info("PressureSensorValue:" + pressureSensor.getVoltage());
+            }
+        }
+    }
 }
