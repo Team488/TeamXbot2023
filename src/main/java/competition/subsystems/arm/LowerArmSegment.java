@@ -3,10 +3,8 @@ package competition.subsystems.arm;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.pose.PoseSubsystem;
-import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.actuators.XCANSparkMaxPIDProperties;
@@ -30,7 +28,8 @@ public class LowerArmSegment extends ArmSegment {
     private final DoubleProperty lowerLimitInDegrees;
     private final DoubleProperty upperLimitInDegrees;
 
-    private final DoubleProperty voltageOffsetProp;
+    // used for the feed forward part of the arm pid
+    private final DoubleProperty feedForwardVoltageBase;
 
 
     @Inject
@@ -56,7 +55,7 @@ public class LowerArmSegment extends ArmSegment {
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -160.64561);
         lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 35);
         upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 100);
-        voltageOffsetProp = propFactory.createPersistentProperty("VoltageOffset", 1.0);
+        feedForwardVoltageBase = propFactory.createPersistentProperty("FeedForoward Voltage Base", 1.0);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
@@ -127,7 +126,7 @@ public class LowerArmSegment extends ArmSegment {
 
     @Override
     protected double getVoltageOffset() {
-        return 1.0 * Math.cos(getArmPositionInRadians());
+        return feedForwardVoltageBase.get() * Math.cos(getArmPositionInRadians());
     }
 
     @Override
