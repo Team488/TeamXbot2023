@@ -1388,19 +1388,6 @@
               "_showGlyph": false
             }
           },
-          "7,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Command",
-              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBasicMobilityPoints",
-              "_title": "SmartDashboard/AutoPrograms/SetBasicMobilityPoints",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "5,0": {
             "size": [
               2,
@@ -1414,9 +1401,9 @@
               "_showGlyph": false
             }
           },
-          "5,1": {
+          "2,0": {
             "size": [
-              2,
+              3,
               1
             ],
             "content": {
@@ -1426,71 +1413,94 @@
               "_glyph": 148,
               "_showGlyph": false
             }
-          }
-        }
-      }
-    },
-    {
-      "title": "Rumble Warning",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/End of match warning time",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "5,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Has sent end of match warning",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "6,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble duration",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
           },
           "7,1": {
             "size": [
-              1,
+              3,
               1
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
-              "_title": "SmartDashboard/PoseSubsystem/Warning Rumble/Rumble strength",
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram",
+              "_title": "/SmartDashboard/AutoPrograms/SetBlueScoringPositionFiveToBalanceProgram",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetBlueExitCommunityAndBalanceProgram",
+              "_title": "/SmartDashboard/AutoPrograms/SetBlueExitCommunityAndBalanceProgram",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,3": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetScoreCubeHighThenLeave",
+              "_title": "/SmartDashboard/AutoPrograms/SetScoreCubeHighThenLeave",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetEjectLowThenBalance",
+              "_title": "/SmartDashboard/AutoPrograms/SetEjectLowThenBalance",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetEjectLowThenBalanceWithMobility",
+              "_title": "/SmartDashboard/AutoPrograms/SetEjectLowThenBalanceWithMobility",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetEjectLowThenExitHigh",
+              "_title": "/SmartDashboard/AutoPrograms/SetEjectLowThenExitHigh",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,1": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetEjectLowThenExitLow",
+              "_title": "/SmartDashboard/AutoPrograms/SetEjectLowThenExitLow",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1678,7 +1688,7 @@
               "_showGlyph": false
             }
           },
-          "3,2": {
+          "1,0": {
             "size": [
               1,
               1
@@ -1687,19 +1697,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/UpperLimitInDegrees",
               "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/UpperLimitInDegrees",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
-              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1765,6 +1762,147 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/LowerLimitInDegrees",
               "_title": "/SmartDashboard/UnifiedArmSubsystem/LowerArm/LowerLimitInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArmTarget",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArmTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArmTarget",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArmTarget",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Toggle Switch",
+                  "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
+                  "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
+                  "_glyph": 148,
+                  "_showGlyph": false
+                }
+              }
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Current X Position",
+              "_title": "/SmartDashboard/UnifiedArmSubsystem/Current X Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/Current Z Position",
+              "_title": "/SmartDashboard/UnifiedArmSubsystem/Current Z Position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kI",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kI",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/AbsoluteEncoderOffsetInDegrees",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/AbsoluteEncoderOffsetInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Time Stable Window",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Time Stable Window",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/LowerLimitInDegrees",
+              "_title": "/SmartDashboard/UnifiedArmSubsystem/UpperArm/LowerLimitInDegrees",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1889,11 +2027,120 @@
           }
         }
       }
+    },
+    {
+      "title": "Cameras",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              5,
+              4
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision-usb_Port_1181_MJPEG_Server",
+              "_title": "photonvision-usb_Port_1181_MJPEG_Server",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "5,0": {
+            "size": [
+              5,
+              4
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision_Port_1181_MJPEG_Server",
+              "_title": "photonvision_Port_1181_MJPEG_Server",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tab 12",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/Max Output",
+              "_title": "SmartDashboard/AutoBalanceCommand/Max Output",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/Min Output",
+              "_title": "SmartDashboard/AutoBalanceCommand/Min Output",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/P",
+              "_title": "SmartDashboard/AutoBalanceCommand/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
     }
   ],
   "windowGeometry": {
-    "x": 0.800000011920929,
-    "y": 0.800000011920929,
+    "x": -7.199999809265137,
+    "y": 4.800000190734863,
     "width": 1534.4000244140625,
     "height": 814.4000244140625
   }
