@@ -5,8 +5,8 @@ import competition.trajectory.SimpleTimeInterpolator;
 import competition.trajectory.XbotArmAngles;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xbot.common.command.BaseSetpointCommand;
 
 import javax.inject.Inject;

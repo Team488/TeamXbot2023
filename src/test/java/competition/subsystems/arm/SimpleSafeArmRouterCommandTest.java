@@ -106,7 +106,7 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         arms.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
         // Cross facing, going from neutral state on the front to high state on the reverse side.
         setArmAngles(85, 15);
-        
+
         // -------------------------------------------
         // Going to first transition point (forward)
         // -------------------------------------------

@@ -26,34 +26,34 @@ public class VelocityMaintainerCommandTest extends BaseCompetitionTest {
     public void testRobotOrientedVelocity() {
         // Test forward
         pose.setCurrentHeading(-90);
-        pose.velocityX.set(0);
-        pose.velocityY.set(-1);
+        pose.velocityX = 0;
+        pose.velocityY = -1;
         assertEquals(1, pose.getRobotOrientedXVelocity(), 0.001);
 
         pose.setCurrentHeading(-135);
-        pose.velocityY.set(-Math.sqrt(2));
-        pose.velocityX.set(-Math.sqrt(2));
+        pose.velocityY = -Math.sqrt(2);
+        pose.velocityX = -Math.sqrt(2);
         assertEquals(2, pose.getRobotOrientedXVelocity(), 0.001);
 
         pose.setCurrentHeading(135);
-        pose.velocityX.set(-Math.sqrt(2));
-        pose.velocityY.set(Math.sqrt(2));
+        pose.velocityX = -Math.sqrt(2);
+        pose.velocityY = Math.sqrt(2);
         assertEquals(2, pose.getRobotOrientedXVelocity(), 0.001);
 
         // Test backward
         pose.setCurrentHeading(-90);
-        pose.velocityX.set(0);
-        pose.velocityY.set(1);
+        pose.velocityX = 0;
+        pose.velocityY = 1;
         assertEquals(-1, pose.getRobotOrientedXVelocity(), 0.001);
 
         pose.setCurrentHeading(-135);
-        pose.velocityY.set(Math.sqrt(2));
-        pose.velocityX.set(Math.sqrt(2));
+        pose.velocityY = Math.sqrt(2);
+        pose.velocityX = Math.sqrt(2);
         assertEquals(-2, pose.getRobotOrientedXVelocity(), 0.001);
 
         pose.setCurrentHeading(135);
-        pose.velocityX.set(Math.sqrt(2));
-        pose.velocityY.set(-Math.sqrt(2));
+        pose.velocityX = Math.sqrt(2);
+        pose.velocityY = -Math.sqrt(2);
         assertEquals(-2, pose.getRobotOrientedXVelocity(), 0.001);
     }
 }

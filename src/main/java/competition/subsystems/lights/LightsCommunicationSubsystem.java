@@ -73,8 +73,6 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio2Property = pf.createEphemeralProperty("DIO2", false);
         dio3Property = pf.createEphemeralProperty("DIO3", false);
         allianceDioProperty = pf.createEphemeralProperty("AllianceDIO", false);
-
-        this.register();
     }
 
     int counter = 0;

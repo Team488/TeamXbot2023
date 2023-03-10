@@ -337,7 +337,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
         } else {
             // Encoders are working, so we can move the arms.
             // First, consider the lower arm. If the brakes are engaged, we shouldn't try to power through them.
-            if (areBrakesEngaged.get() && !getDisableBrake()) {
+            if (areBrakesEngaged && !getDisableBrake()) {
                 lowerArm.setPower(0);
             } else {
                 lowerArm.setArmToAngle(lowerArmAngle);

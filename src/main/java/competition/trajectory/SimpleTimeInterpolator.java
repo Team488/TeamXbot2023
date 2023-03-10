@@ -1,8 +1,8 @@
 package competition.trajectory;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xbot.common.controls.sensors.XTimer;
 
 import java.util.List;
