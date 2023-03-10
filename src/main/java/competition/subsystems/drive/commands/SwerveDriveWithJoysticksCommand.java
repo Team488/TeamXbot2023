@@ -155,7 +155,11 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         
         // Michael wants the triggers to be more precise pretty much all the time, so adding a trigger-only
         // power reduction
-        humanRotatePowerFromTriggers *= triggerOnlyPowerScaling.get();
+        if (drive.isUnlockFullDrivePowerActive()) {
+            // do nothing - unleash the full power of the machine!
+        } else {
+            humanRotatePowerFromTriggers *= triggerOnlyPowerScaling.get();
+        }
                 
         if (absoluteOrientationMode.get()) {
             // If we are using absolute orientation, we first need get the desired heading from the right joystick.
@@ -270,7 +274,11 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // Scale the power down if requested (typically used when novices are controlling the robot)
             translationIntent = translationIntent.scale(drivePowerFactor.get());
         }
-        suggestedRotatePower *= turnPowerFactor.get();
+        if (drive.isUnlockFullDrivePowerActive()) {
+            // do nothing - unleash the full power of the machine!
+        } else {
+            suggestedRotatePower *= turnPowerFactor.get();
+        }
 
         // Check if we need a different center of rotation
         XYPair centerOfRotationInches = new XYPair(0,0);
