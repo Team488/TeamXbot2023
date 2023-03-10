@@ -3,10 +3,8 @@ package competition.subsystems.arm;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.pose.PoseSubsystem;
-import edu.wpi.first.networktables.DoubleEntry;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.actuators.XCANSparkMaxPIDProperties;
@@ -30,6 +28,7 @@ public class LowerArmSegment extends ArmSegment {
     private final DoubleProperty lowerLimitInDegrees;
     private final DoubleProperty upperLimitInDegrees;
 
+    // used for the feed forward part of the arm pid
     private final DoubleProperty voltageOffsetProp;
 
 
@@ -127,7 +126,7 @@ public class LowerArmSegment extends ArmSegment {
 
     @Override
     protected double getVoltageOffset() {
-        return 1.0 * Math.cos(getArmPositionInRadians());
+        return voltageOffsetProp.get() * Math.cos(getArmPositionInRadians());
     }
 
     @Override
