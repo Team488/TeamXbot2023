@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+import ntcore as nt
 import sys
 
 class Window(QMainWindow):
@@ -10,6 +11,22 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle("XDash")
         self.createUI()
+        self.createNetworkTables()
+    
+    def createNetworkTables(self):
+        self.inst = nt.NetworkTableInstance.getDefault()
+        self.inst.startClient4("xdash")
+        self.inst.setServerTeam(488) # replace this with inst.setServer(127.0.0.1) if it's running locally
+        self.blackmesa = self.inst.getTable("SmartDashboard").getSubTable("BlackMesa")
+        self.subs = []
+        def setupStringListener(topic, listener):
+            sub = self.blackmesa.getStringTopic(topic).subscribe("")
+            self.subs.append(sub)
+            self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
+        setupStringListener("state", lambda event: self.streamingStatus.setText(event.data.value.getString()))
+        setupStringListener("streamingError", lambda event: self.streamingError.setText(event.data.value.getString()))
+        setupStringListener("streamingUrl", lambda event: self.streamingStatus.setText(event.data.value.getString()))
+        setupStringListener("streamingIteration", lambda event: self.streamingRestartCount.setText(event.data.value.getString()))
     
     def createUI(self):
         driverStationIPLabel = QLabel()
