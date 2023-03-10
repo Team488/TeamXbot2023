@@ -29,7 +29,7 @@ public class LowerArmSegment extends ArmSegment {
     private final DoubleProperty upperLimitInDegrees;
 
     // used for the feed forward part of the arm pid
-    private final DoubleProperty voltageOffsetProp;
+    private final DoubleProperty feedForwardVoltageBase;
 
 
     @Inject
@@ -55,7 +55,7 @@ public class LowerArmSegment extends ArmSegment {
         absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -160.64561);
         lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", 35);
         upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 100);
-        voltageOffsetProp = propFactory.createPersistentProperty("VoltageOffset", 1.0);
+        feedForwardVoltageBase = propFactory.createPersistentProperty("FeedForoward Voltage Base", 1.0);
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
@@ -126,7 +126,7 @@ public class LowerArmSegment extends ArmSegment {
 
     @Override
     protected double getVoltageOffset() {
-        return voltageOffsetProp.get() * Math.cos(getArmPositionInRadians());
+        return feedForwardVoltageBase.get() * Math.cos(getArmPositionInRadians());
     }
 
     @Override
