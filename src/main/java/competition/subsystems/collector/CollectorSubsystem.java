@@ -22,7 +22,7 @@ public class CollectorSubsystem extends BaseSubsystem {
     public DoubleProperty ejectPower;
     private CollectorState currentState;
     final ElectricalContract contract;
-    public DoubleProperty currentMotorVelocity;
+    public final DoubleProperty currentMotorVelocity;
     public double intakeTime;
     public double currentIntakeTime;
     boolean gamePieceCollected = false;
@@ -51,6 +51,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         pf.setPrefix(this);
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
+        currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
 
 
     }
