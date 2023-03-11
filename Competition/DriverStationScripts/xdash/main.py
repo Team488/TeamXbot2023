@@ -20,7 +20,7 @@ class Window(QMainWindow):
     def createNetworkTables(self):
         self.blackmesa = self.inst.getTable("SmartDashboard").getSubTable("BlackMesa")
         self.subs = []
-        self.ipWriter = IPWriter(self.blackmesa)
+        self.ipWriter = IPWriter(self.inst, self.blackmesa, self.ntConnected)
         self.ipWriter.start()
         def setupStringListener(topic, listener):
             sub = self.blackmesa.getStringTopic(topic).subscribe("")
@@ -30,13 +30,27 @@ class Window(QMainWindow):
             sub = self.blackmesa.getIntegerTopic(topic).subscribe(0)
             self.subs.append(sub)
             self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
+        def setupDoubleListener(topic, listener):
+            sub = self.inst.getTable("SmartDashboard").getSubTable("PoseSubsystem").getDoubleTopic(topic).subscribe(0.0)
+            self.subs.append(sub)
+            self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
         setupStringListener("state", lambda event: self.streamingStatus.setText(event.data.value.getString()))
         setupStringListener("streamingError", lambda event: self.streamingError.setText(event.data.value.getString()))
-        setupStringListener("streamingUrl", lambda event: self.streamingStatus.setText(event.data.value.getString()))
-        setupStringListener("streamingIteration", lambda event: self.streamingRestartCount.setText(event.data.value.getString()))
-        setupIntegerListener("streamingForceRestartCount", lambda event: self.streamingForceRestartCount.setText(event.data.value.getInteger()))
-    
+        setupStringListener("streamingUrl", lambda event: self.streamingServerUrl.setText(event.data.value.getString()))
+        setupStringListener("DriverStationIp", lambda event: self.driverStationIP.setText(event.data.value.getString()))
+        setupDoubleListener("Time", lambda event: self.timeDisplay.setText(str(event.data.value.getDouble())))
+        setupIntegerListener("streamingIteration", lambda event: self.streamingRestartCount.setText(str(event.data.value.getInteger())))
+        setupIntegerListener("streamingForceRestartCount", lambda event: self.streamingForceRestartCount.setText(str(event.data.value.getInteger())))
+        setupIntegerListener("roundCount", lambda event: self.round.setText(str(event.data.value.getInteger())))
+
     def createUI(self):
+        ntConnectedLabel = QLabel("Is Connected")
+        self.ntConnected = QLabel()
+        roundLabel = QLabel("Round Count")
+        self.round = QLabel()
+        timeLabel = QLabel()
+        timeLabel.setText("Time")
+        self.timeDisplay = QLabel()
         driverStationIPLabel = QLabel()
         driverStationIPLabel.setText("Driver Station IP")
         self.driverStationIP = QLabel()
@@ -60,19 +74,22 @@ class Window(QMainWindow):
         self.forceRestartStreamingButton.clicked.connect(self.forceRestartStreaming)
         self.layout = QGridLayout()
         self.layout.setSizeConstraint(QLayout.SetMaximumSize)
-        self.layout.addWidget(driverStationIPLabel, 1, 1)
-        self.layout.addWidget(self.driverStationIP, 1, 2)
-        self.layout.addWidget(streamingStatusLabel, 2, 1)
-        self.layout.addWidget(self.streamingStatus, 2, 2)
-        self.layout.addWidget(streamingErrorLabel, 3, 1)
-        self.layout.addWidget(self.streamingError, 3, 2)
-        self.layout.addWidget(streamingServerUrlLabel, 4, 1)
-        self.layout.addWidget(self.streamingServerUrl, 4, 2)
-        self.layout.addWidget(streamingRestartCountLabel, 5, 1)
-        self.layout.addWidget(self.streamingRestartCount, 5, 2)
-        self.layout.addWidget(streamingForceRestartCountLabel, 6, 1)
-        self.layout.addWidget(self.streamingForceRestartCount, 6, 2)
-        self.layout.addWidget(self.forceRestartStreamingButton, 7, 1, 1, 2)
+        row = 1
+        def addPair(a, b):
+            nonlocal row
+            self.layout.addWidget(a, row, 1)
+            self.layout.addWidget(b, row, 2)
+            row += 1
+        addPair(ntConnectedLabel, self.ntConnected)
+        addPair(roundLabel, self.round)
+        addPair(timeLabel, self.timeDisplay)
+        addPair(driverStationIPLabel, self.driverStationIP)
+        addPair(streamingStatusLabel, self.streamingStatus)
+        addPair(streamingErrorLabel, self.streamingError)
+        addPair(streamingServerUrlLabel, self.streamingServerUrl)
+        addPair(streamingRestartCountLabel, self.streamingRestartCount)
+        addPair(streamingForceRestartCountLabel, self.streamingForceRestartCount)
+        self.layout.addWidget(self.forceRestartStreamingButton, row, 1, 1, 2)
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.layout)
         self.setCentralWidget(self.centralWidget)
@@ -82,14 +99,17 @@ class Window(QMainWindow):
         self.blackmesa.getEntry("streamingForceRestartCount").setInteger(restartCounter + 1)
 
     def closeEvent(self, event):
-
+        print("CLOSE")
+        self.ipWriter.interrupt()
         event.accept()
 
 class IPWriter(QThread):
-    def __init__(self, blackmesa):
+    def __init__(self, inst, blackmesa, ntConnectedStatus):
         QThread.__init__(self)
         self.active = True
         self.blackmesa = blackmesa
+        self.inst = inst
+        self.ntConnectedStatus = ntConnectedStatus
 
     def run(self):
         while self.active:
@@ -100,11 +120,11 @@ class IPWriter(QThread):
                 print("Unable to get Hostname and IP")
                 hostname = None
                 hostip = None
+            self.blackmesa.putString("DriverStationIp", hostip)
+            self.ntConnectedStatus.setText(str(self.inst.isConnected()))
             time.sleep(1)
-
-        blackmesa.putString("DriverStationIp", hostip)
     
-    def interrupt():
+    def interrupt(self):
         self.active = False
 
 def main():
