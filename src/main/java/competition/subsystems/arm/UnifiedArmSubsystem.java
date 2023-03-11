@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSetpointSubsystem;
 import xbot.common.controls.actuators.XSolenoid;
+import xbot.common.math.ContiguousDouble;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
@@ -107,6 +108,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     final Mechanism2d ghostArm;
     final MechanismLigament2d ghostLowerArm;
     final MechanismLigament2d ghostUpperArm;
+
+    private boolean engageSpecialUpperArmOverride = false;
 
     @Inject
     public UnifiedArmSubsystem(
@@ -327,12 +330,55 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     }
 
     public void setArmsToAngles(Rotation2d lowerArmAngle, Rotation2d upperArmAngle) {
-        if (areBrakesEngaged.get() && !getDisableBrake()) {
+
+        boolean encodersPluggedIn = areEncodersPluggedIn();
+
+        if (!encodersPluggedIn) {
+            log.error("Disabling arm control.");
+            setIsCalibrated(false);
             lowerArm.setPower(0);
+            upperArm.setPower(0);
         } else {
-            lowerArm.setArmToAngle(lowerArmAngle);
+            // Encoders are working, so we can move the arms.
+            // First, consider the lower arm. If the brakes are engaged, we shouldn't try to power through them.
+            if (areBrakesEngaged.get() && !getDisableBrake()) {
+                lowerArm.setPower(0);
+            } else {
+                lowerArm.setArmToAngle(lowerArmAngle);
+            }
+
+            // Second, consider the upper arm. It doesn't have a brake, so we are free to drive it anytime.
+            // However, if we are in the special override, it should only be managed manually.
+            if (engageSpecialUpperArmOverride) {
+                // do nothing to upper arm. Don't even mess with power.
+            } else {
+                // regular behavior.
+                upperArm.setArmToAngle(upperArmAngle);
+            }
         }
-        upperArm.setArmToAngle(upperArmAngle);
+    }
+
+    private boolean areEncodersPluggedIn() {
+        // If our absolute encoders have come unplugged, then we are about to have a very bad day.
+        // When they become unplugged, they return a native value of 0. This means that any read of the
+        // robot angle will instead return the negated offset.
+        // So, we can check for very close equality between detected angle and negated offset. This should never
+        // trigger in normal operation, as live robot values have very long tails (e.g. 8.38739834598374858 degrees).
+        var reboundedLowerArmAngle = ContiguousDouble.reboundValue(lowerArm.getArmPositionInDegrees(), 0, 360);
+        var reboundedNegatedLowerArmOffset = ContiguousDouble.reboundValue(-lowerArm.getAbsoluteEncoderOffsetInDegrees(), 0, 360);
+        var reboundedUpperArmAngle = ContiguousDouble.reboundValue(upperArm.getArmPositionInDegrees(), 0, 360);
+        var reboundedNegatedUpperArmOffset = ContiguousDouble.reboundValue(-upperArm.getAbsoluteEncoderOffsetInDegrees(), 0, 360);
+
+        boolean encodersPluggedIn = true;
+        if (Math.abs(reboundedLowerArmAngle - reboundedNegatedLowerArmOffset) < 0.000001) {
+            log.error("The lower arm absolute encoder has come unplugged.");
+            encodersPluggedIn = false;
+        }
+        if (Math.abs(reboundedUpperArmAngle - reboundedNegatedUpperArmOffset) < 0.000001) {
+            log.error("The upper arm absolute encoder has come unplugged.");
+            encodersPluggedIn = false;
+        }
+        return encodersPluggedIn;
     }
 
     @Override
@@ -521,5 +567,31 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {
         return solver.getPositionFromDegrees(oldArmAngles.x, oldArmAngles.y).toTranslation2d();
+    }
+
+    public void setEngageSpecialUpperArmOverride(boolean engageSpecialUpperArmOverride) {
+        this.engageSpecialUpperArmOverride = engageSpecialUpperArmOverride;
+    }
+
+    public boolean getEngageSpecialUpperArmOverride() {
+        return engageSpecialUpperArmOverride;
+    }
+
+    public InstantCommand createEngageSpecialUpperArmOverride() {
+        return new InstantCommand(() -> {
+            log.info("Engage special upper arm override!");
+            setEngageSpecialUpperArmOverride(true);
+            lowerArm.setLowerLimitInDegrees(-1000);
+            lowerArm.setUpperLimitInDegrees(1000);
+        });
+    }
+
+    public InstantCommand createDisableSpecialUpperArmOverride() {
+        return new InstantCommand(() -> {
+            log.info("Disabling special upper arm override!");
+            setEngageSpecialUpperArmOverride(false);
+            lowerArm.setLowerLimitInDegrees(-130);
+            lowerArm.setUpperLimitInDegrees(130);
+        });
     }
 }
