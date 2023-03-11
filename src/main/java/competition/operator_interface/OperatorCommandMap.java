@@ -85,7 +85,8 @@ public class OperatorCommandMap {
             VelocityDriveWithJoysticksCommand velocityDrive,
             BrakeCommand setWheelsToXMode,
             MoveLeftInchByInchCommand moveLeft,
-            MoveRightInchByInchCommand moveRight) {
+            MoveRightInchByInchCommand moveRight,
+            ChordTrigger.ChordTriggerFactory chordFactory) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -111,16 +112,21 @@ public class OperatorCommandMap {
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
-
-        oi.driverGamepad.getPovIfAvailable(0).onTrue(moveRight);
-        oi.driverGamepad.getPovIfAvailable(180).onTrue(moveLeft);
+        var brakesButton = oi.driverGamepad.getifAvailable(XboxButton.X);
+        chordFactory.create(
+                brakesButton,
+                povLeft).whileTrue(moveLeft);
+        chordFactory.create(
+                brakesButton,
+                povRight).whileTrue(moveRight);
 
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
+
+        brakesButton.whileTrue(setWheelsToXMode);
     }
 
     @Inject
