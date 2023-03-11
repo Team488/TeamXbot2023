@@ -323,7 +323,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHighXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(moveCollectedGamepieceToArmCommandGroup);
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(setSubstationXZ);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setSubstationXZ);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -348,7 +348,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper)
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper)
                 .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
                 .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());
 
