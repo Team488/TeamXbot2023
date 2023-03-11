@@ -8,6 +8,7 @@ import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XSolenoid;
 import xbot.common.controls.sensors.XAnalogInput;
 import xbot.common.controls.sensors.XTimer;
+import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
@@ -25,7 +26,7 @@ public class CollectorSubsystem extends BaseSubsystem {
     public final DoubleProperty currentMotorVelocity;
     public double intakeTime;
     public double currentIntakeTime;
-    boolean gamePieceCollected = false;
+    private final BooleanProperty gamePieceCollected;
     boolean intake = false;
     private int loopCount;
 
@@ -52,6 +53,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
         currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
+        gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
 
 
     }
@@ -138,12 +140,12 @@ public class CollectorSubsystem extends BaseSubsystem {
             if (currentIntakeTime - intakeTime > 0.5) {
                 //check current RPM is less than 0.5
                 currentMotorVelocity.set(collectorMotor.getVelocity());
-                gamePieceCollected = currentMotorVelocity.get() < 0.5;
+                gamePieceCollected.set(currentMotorVelocity.get() < 0.5);
             }
         }
     }
 
     public boolean getGamePieceCollected() {
-        return gamePieceCollected;
+        return gamePieceCollected.get();
     }
 }
