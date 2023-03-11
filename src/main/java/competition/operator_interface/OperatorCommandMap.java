@@ -26,6 +26,8 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.MoveLeftInchByInchCommand;
+import competition.subsystems.drive.commands.MoveRightInchByInchCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
@@ -77,7 +79,9 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
-            BrakeCommand setWheelsToXMode) {
+            BrakeCommand setWheelsToXMode,
+            MoveLeftInchByInchCommand moveLeft,
+            MoveRightInchByInchCommand moveRight) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -106,9 +110,8 @@ public class OperatorCommandMap {
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
 
-        oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
-        oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
-
+        oi.driverGamepad.getPovIfAvailable(0).onTrue(moveRight);
+        oi.driverGamepad.getPovIfAvailable(180).onTrue(moveLeft);
 
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
