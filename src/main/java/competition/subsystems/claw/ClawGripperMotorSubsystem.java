@@ -37,7 +37,7 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
             leaderMotor.setSmartCurrentLimit(5);
             followerMotor.setSmartCurrentLimit(5);
 
-            followerMotor.follow(leaderMotor);
+            followerMotor.follow(leaderMotor, eContract.getLeftClawMotor().inverted);
         }
     }
 
