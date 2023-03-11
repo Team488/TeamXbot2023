@@ -24,18 +24,7 @@ import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.CollectIfSafeCommand;
 import competition.subsystems.drive.DriveSubsystem;
-import competition.subsystems.drive.commands.AutoBalanceCommand;
-import competition.subsystems.drive.commands.BrakeCommand;
-import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
-import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
-import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
-import competition.subsystems.drive.commands.PositionMaintainerCommand;
-import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
-import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
-import competition.subsystems.drive.commands.SwerveToPointCommand;
-import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
-import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
-import competition.subsystems.drive.commands.VelocityMaintainerCommand;
+import competition.subsystems.drive.commands.*;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,7 +70,8 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
-            BrakeCommand setWheelsToXMode) {
+            BrakeCommand setWheelsToXMode,
+            ManualBalanceModeCommand setManualBalanceMode) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -118,6 +108,7 @@ public class OperatorCommandMap {
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
+        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(setManualBalanceMode);
     }
 
     @Inject

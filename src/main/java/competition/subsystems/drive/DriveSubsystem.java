@@ -182,9 +182,19 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         
         // 90 degrees is the defined "forward" direction for a driver
         fieldRelativeVector.rotate(-currentHeading);
-        
+
         // send the rotated vector to be driven
         move(fieldRelativeVector, rotation, centerOfRotationInches);
+    }
+
+    boolean manualBalanceMode;
+
+    public void setManualBalanceMode(boolean isActive) {
+        manualBalanceMode = isActive;
+    }
+
+    public boolean isManualBalanceModeActive() {
+        return manualBalanceMode;
     }
 
     boolean collectorOrientedRotationActive;
