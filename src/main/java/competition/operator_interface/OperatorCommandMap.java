@@ -114,8 +114,8 @@ public class OperatorCommandMap {
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
 
-        oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
-        oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+        //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
+        //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
 
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
@@ -218,7 +218,7 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(drive.createUnlockFullDrivePowerCommand());
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
+        //oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject

@@ -55,7 +55,9 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
         assertTrue(nearestPose.getX() < 325);
 
         Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
-                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Blue, SwerveToNextScoringPositionCommand.TargetDirection.Left);
+                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
+                DriverStation.Alliance.Blue,
+                SwerveToNextScoringPositionCommand.TargetDirection.Left);
 
         assertEquals(scoringPoses.get(expectedNextPositionIndex), nextPose);
         assertEquals(Rotation2d.fromDegrees(-180), nextPose.getRotation());
@@ -85,7 +87,9 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
         assertTrue(nearestPose.getX() < 325);
 
         Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
-                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Blue, SwerveToNextScoringPositionCommand.TargetDirection.Right);
+                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
+                DriverStation.Alliance.Blue,
+                SwerveToNextScoringPositionCommand.TargetDirection.Right);
 
         assertEquals(scoringPoses.get(expectedNextPositionIndex), nextPose);
         assertEquals(Rotation2d.fromDegrees(-180), nextPose.getRotation());
@@ -115,7 +119,9 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
         assertTrue(nearestPose.getX() > 325);
 
         Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
-                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Red, SwerveToNextScoringPositionCommand.TargetDirection.Left);
+                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
+                DriverStation.Alliance.Red,
+                SwerveToNextScoringPositionCommand.TargetDirection.Left);
 
         assertEquals(scoringPoses.get(expectedNextPositionIndex), nextPose);
         assertEquals(Rotation2d.fromDegrees(0), nextPose.getRotation());
@@ -145,7 +151,9 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
         assertTrue(nearestPose.getX() > 325);
 
         Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
-                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Red, SwerveToNextScoringPositionCommand.TargetDirection.Right);
+                new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
+                DriverStation.Alliance.Red,
+                SwerveToNextScoringPositionCommand.TargetDirection.Right);
 
         assertEquals(scoringPoses.get(expectedNextPositionIndex), nextPose);
         assertEquals(Rotation2d.fromDegrees(0), nextPose.getRotation());
