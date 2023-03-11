@@ -28,16 +28,20 @@ public class SwerveToNearestScoringPositionCommand extends SwerveToPointCommand 
     }
 
     @Override
-    public void initialize() {
-        this.targetPose = findNearestScoringPosition(pose.getCurrentPose2d(), pose.getAlliance());
+    public final void initialize() {
+        this.targetPose = getTargetPose();
         setTargetPosition(new XYPair(targetPose.getX(), targetPose.getY()), targetPose.getRotation().getDegrees());
 
         super.initialize();
     }
 
     @Override
-    public void execute() {
+    public final void execute() {
         super.execute();
+    }
+
+    protected Pose2d getTargetPose() {
+        return findNearestScoringPosition(pose.getCurrentPose2d(), pose.getAlliance());
     }
 
     public static List<Pose2d> getScoringPositionPoses(DriverStation.Alliance alliance) {
