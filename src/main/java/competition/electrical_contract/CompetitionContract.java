@@ -200,4 +200,6 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getArduinoAllianceDio() {
         return new DeviceInfo(4);
     }
+
+    public DeviceInfo getPressureSensor() {return new DeviceInfo(3);}
 }

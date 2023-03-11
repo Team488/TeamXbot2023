@@ -3,6 +3,7 @@ package competition.subsystems.arm.commands;
 import competition.operator_interface.OperatorInterface;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseMaintainerCommand;
 import xbot.common.logic.HumanVsMachineDecider;
 import xbot.common.logic.TimeStableValidator;
@@ -128,7 +129,11 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
         }
         double upperArmError = Math.abs(current.y - target.y);
 
-        return lowerArmError + upperArmError;
+        if (unifiedArm.getEngageSpecialUpperArmOverride()) {
+            return lowerArmError;
+        } else {
+            return lowerArmError + upperArmError;
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.junit.Ignore;
 import org.junit.Test;
 import xbot.common.controls.actuators.mock_adapters.MockCANSparkMax;
+import xbot.common.controls.sensors.mock_adapters.MockDutyCycleEncoder;
 import xbot.common.math.XYPair;
 
 import static org.junit.Assert.assertEquals;
@@ -82,8 +83,10 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testSetAnglesWithBrake() {
-        assertEquals(0, arms.lowerArm.getArmPositionInDegrees(), 0.001);
-        assertEquals(0, arms.upperArm.getArmPositionInDegrees(), 0.001);
+        setArmAngles(1,1);
+
+        assertEquals(1, arms.lowerArm.getArmPositionInDegrees(), 0.001);
+        assertEquals(1, arms.upperArm.getArmPositionInDegrees(), 0.001);
         arms.setPower(new XYPair(1, 1));
 
         arms.setBrake(true);
@@ -119,6 +122,7 @@ public class UnifiedArmTest extends BaseCompetitionTest {
 
     @Test
     public void testExcessiveAngles() {
+        setArmAngles(0.0001,0.0001);
         arms.setArmsToAngles(Rotation2d.fromDegrees(1000), Rotation2d.fromDegrees(1000));
 
         assertEquals(
@@ -135,5 +139,10 @@ public class UnifiedArmTest extends BaseCompetitionTest {
     private void checkArmPowers(double lowerPower, double upperPower) {
         assertEquals(lowerPower, arms.lowerArm.rightMotor.get(), 0.001);
         assertEquals(upperPower, arms.upperArm.rightMotor.get(), 0.001);
+    }
+
+    private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
+        ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
+        ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
     }
 }

@@ -45,4 +45,5 @@ public abstract class ElectricalContract {
     public abstract DeviceInfo getArduinoDio2();
     public abstract DeviceInfo getArduinoDio3();
     public abstract DeviceInfo getArduinoAllianceDio();
+    public abstract DeviceInfo getPressureSensor();
 }

@@ -16,6 +16,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
 import competition.subsystems.arm.commands.ControlEndEffectorPositionCommand;
+import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.ClawGripperMotorSubsystem;
@@ -25,6 +26,7 @@ import competition.subsystems.collector.commands.CollectIfSafeCommand;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
+import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.MoveLeftInchByInchCommand;
 import competition.subsystems.drive.commands.MoveRightInchByInchCommand;
@@ -39,6 +41,7 @@ import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -75,6 +78,7 @@ public class OperatorCommandMap {
             DriveSubsystem drive,
             PoseSubsystem pose,
             GoToNextActiveSwerveModuleCommand nextModule,
+            DebuggingSwerveWithJoysticksCommand debugSwerve,
             SwerveDriveWithJoysticksCommand regularSwerve,
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
@@ -101,8 +105,6 @@ public class OperatorCommandMap {
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
-        //oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(resetPoseCube);
-
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
 
         NamedInstantCommand enableCollectorRotation =
@@ -117,7 +119,7 @@ public class OperatorCommandMap {
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
-        oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
+        //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
     }
 
@@ -278,15 +280,47 @@ public class OperatorCommandMap {
             CollectorSubsystem collector,
             CollectIfSafeCommand collectIfSafe,
             MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup,
+            SetArmsToKeyArmPositionCommand setArmsToCollectPositionCommand,
+            SetArmsToKeyArmPositionCommand setArmsToScoreHighCommand,
+            SetArmsToKeyArmPositionCommand setArmsToScoreMediumCommand,
+            SetArmsToKeyArmPositionCommand setArmsToScoreLowCommand,
+            SetArmsToKeyArmPositionCommand setArmsToSubstationCollection,
             ChordTrigger.ChordTriggerFactory chordTriggerFactory) {
 
         var uncalibrateArms = arm.createForceUncalibratedCommand();
         var recalibrateArms = arm.createForceCalibratedCommand();
 
-        oi.operatorGamepad.getPovIfAvailable(0).onTrue(uncalibrateArms);
-        oi.operatorGamepad.getPovIfAvailable(90).onTrue(uncalibrateArms);
-        oi.operatorGamepad.getPovIfAvailable(180).onTrue(uncalibrateArms);
-        oi.operatorGamepad.getPovIfAvailable(270).onTrue(uncalibrateArms);
+        setArmsToCollectPositionCommand.setTargetSupplier(
+                () -> UnifiedArmSubsystem.KeyArmPosition.AcquireFromCollector,
+                () -> UnifiedArmSubsystem.RobotFacing.Forward);
+
+        setArmsToScoreHighCommand.setTargetSupplier(
+                () -> KeyArmPosition.HighGoal,
+                () -> RobotFacing.Forward
+        );
+
+        setArmsToScoreMediumCommand.setTargetSupplier(
+                () -> KeyArmPosition.MidGoal,
+                () -> RobotFacing.Forward
+        );
+
+        setArmsToScoreLowCommand.setTargetSupplier(
+                () -> KeyArmPosition.LowGoal,
+                () -> RobotFacing.Forward
+        );
+
+        setArmsToSubstationCollection.setTargetSupplier(
+                () -> KeyArmPosition.LoadingTray,
+                () -> RobotFacing.Forward
+        );
+
+        var engageSpecialUpperArmOverride = arm.createEngageSpecialUpperArmOverride();
+        var disableSpecialUpperArmOverride = arm.createDisableSpecialUpperArmOverride();
+
+        oi.operatorGamepad.getPovIfAvailable(0).onTrue(engageSpecialUpperArmOverride);
+        oi.operatorGamepad.getPovIfAvailable(90).onTrue(engageSpecialUpperArmOverride);
+        oi.operatorGamepad.getPovIfAvailable(180).onTrue(disableSpecialUpperArmOverride); // This is the disable!
+        oi.operatorGamepad.getPovIfAvailable(270).onTrue(engageSpecialUpperArmOverride);
 
         var doubleJoystickButtonpress = chordTriggerFactory.create(
                 oi.operatorGamepad.getifAvailable(XboxButton.LeftStick),
@@ -322,11 +356,41 @@ public class OperatorCommandMap {
         var setPrepareToPickupFromCollectorXZ = simpleXZRouterCommandProvider.get();
 setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setlowXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(setMidXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(setHighXZ);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(moveCollectedGamepieceToArmCommandGroup);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(setSubstationXZ);
+        var smartOrDumbCollectionMode = new ConditionalCommand(
+                setArmsToCollectPositionCommand,
+                moveCollectedGamepieceToArmCommandGroup,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var smartOrDumbScoreHigh = new ConditionalCommand(
+                setArmsToScoreHighCommand,
+                setHighXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var smartOrDumbScoreMedium = new ConditionalCommand(
+                setArmsToScoreMediumCommand,
+                setMidXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var smartOrDumbScoreLow = new ConditionalCommand(
+                setArmsToScoreLowCommand,
+                setlowXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        var smartOrDumbCollectFromSubstation = new ConditionalCommand(
+                setArmsToSubstationCollection,
+                setSubstationXZ,
+                arm::getEngageSpecialUpperArmOverride
+        );
+
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(smartOrDumbScoreLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
+        oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
@@ -335,7 +399,8 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
                 });
 
-        InstantCommand setConeMode = new InstantCommand(
+        InstantCommand
+                setConeMode = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cone mode");
