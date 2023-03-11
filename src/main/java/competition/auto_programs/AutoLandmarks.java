@@ -58,7 +58,11 @@ public class AutoLandmarks {
     }
 
     public static Pose2d convertBlueToRedIfNeeded(Pose2d blueCoordinates) {
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+        return convertBlueToRedIfNeeded(blueCoordinates, DriverStation.getAlliance());
+    }
+
+    public static Pose2d convertBlueToRedIfNeeded(Pose2d blueCoordinates, DriverStation.Alliance alliance) {
+        if (alliance == DriverStation.Alliance.Red) {
             return convertBluetoRed(blueCoordinates);
         }
         return blueCoordinates;
