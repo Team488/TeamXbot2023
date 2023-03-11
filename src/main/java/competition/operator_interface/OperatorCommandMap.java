@@ -390,7 +390,6 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
-
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
@@ -428,10 +427,6 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(grabGamePiece);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(gripperMotorSubsystem.setEject(-0.2));
-       /* oi.operatorGamepad.getifAvailable(XboxButton.RightBumper)
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper)
-                .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
-                .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());*/
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
