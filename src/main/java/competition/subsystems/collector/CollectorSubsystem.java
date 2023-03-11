@@ -87,7 +87,6 @@ public class CollectorSubsystem extends BaseSubsystem {
         if (!intake) {
             intakeTime = XTimer.getFPGATimestamp();
         }
-        currentIntakeTime = XTimer.getFPGATimestamp();
         intake = true;
     }
 
@@ -134,7 +133,7 @@ public class CollectorSubsystem extends BaseSubsystem {
             if (loopCount % 250 == 0) {
                 log.info("PressureSensorValue:" + pressureSensor.getVoltage());
             }
-
+            currentIntakeTime = XTimer.getFPGATimestamp();
             if (currentIntakeTime - intakeTime > 0.5) {
                 //check current RPM is less than 0.5
                 currentMotorVelocity.set(collectorMotor.getVelocity());
