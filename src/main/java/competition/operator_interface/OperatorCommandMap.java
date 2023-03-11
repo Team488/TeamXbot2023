@@ -20,6 +20,7 @@ import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.ClawGripperMotorSubsystem;
+import competition.subsystems.claw.ClawSubsystem;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
@@ -271,6 +272,7 @@ public class OperatorCommandMap {
             UnifiedArmSubsystem arm,
             OpenClawCommand openClaw,
             CloseClawCommand closeClaw,
+            ClawSubsystem claw,
             ClawGripperMotorSubsystem gripperMotorSubsystem,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
@@ -398,7 +400,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     log.info("Setting cube mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
                     arm.checkGamePieceMode(true);
-
+                    claw.open();
                 });
 
         InstantCommand
@@ -408,6 +410,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     log.info("Setting cone mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
                     arm.checkGamePieceMode(false);
+                    claw.close();
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
