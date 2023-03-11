@@ -390,7 +390,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
+        //oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
