@@ -145,6 +145,11 @@ public class OperatorCommandMap {
                 scoringPositionModeButton,
                 povRight
         ).whileTrue(swerveRightScoringPosition);
+
+        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
+                () -> drive.setPrecisionRotationActive(true),
+                () -> drive.setPrecisionRotationActive(false));
+        scoringPositionModeButton.whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -207,10 +212,6 @@ public class OperatorCommandMap {
                     drive.setPrecisionRotationActive(false);
                 });
 
-        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
-                () -> drive.setPrecisionRotationActive(true),
-                () -> drive.setPrecisionRotationActive(false));
-
         // Simple robot oriented drive
         StartEndCommand activateRobotOrientedDrive = new StartEndCommand(
                 () -> drive.setIsRobotOrientedDrive(true),
@@ -218,7 +219,6 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(drive.createUnlockFullDrivePowerCommand());
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
-        //oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
