@@ -1,16 +1,6 @@
 package competition.operator_interface;
 
-import competition.auto_programs.BasicMobilityPoints;
-import competition.auto_programs.BlueBottomScoringPath;
-import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
-import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
-import competition.auto_programs.EjectLowThenBalanceProgram;
-import competition.auto_programs.EjectLowThenBalanceWithMobilityProgram;
-import competition.auto_programs.EjectLowThenExitHighProgram;
-import competition.auto_programs.EjectLowThenExitLowProgram;
-import competition.auto_programs.ParameterizedAutonomousProgram;
-import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
-import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
+import competition.auto_programs.*;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -205,7 +195,8 @@ public class OperatorCommandMap {
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
-                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram) {
+                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram,
+                                        ScoreCubeHighThenExitCommunityAndBalance scoreCubeHighThenExitCommunityAndBalance) {
 
         // These three programs have all been tested to "work" on blocks at least once.
         var setPositionFiveToBalance = setAutonomousCommandProvider.get();
@@ -261,6 +252,11 @@ public class OperatorCommandMap {
         setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParamaterizedAutonomousProgram");
 
         // There are two autonomous
+
+        // Not sure where to put the program
+        var setScoreCubeHighThenExitCommunityAndBalance = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenExitCommunityAndBalance.setAutoCommand(scoreCubeHighThenExitCommunityAndBalance);
+        setScoreCubeHighThenExitCommunityAndBalance.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenExitCommunityAndBalance");
     }
 
     @Inject
