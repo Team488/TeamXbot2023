@@ -34,6 +34,8 @@ import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveToNearestScoringPositionCommand;
+import competition.subsystems.drive.commands.SwerveToNextScoringPositionCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
@@ -76,6 +78,7 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             SetRobotHeadingCommand resetHeadingCube,
             Provider<SetRobotHeadingCommand> headingProvider,
+            ChordTrigger.ChordTriggerFactory chordFactory,
             DriveSubsystem drive,
             PoseSubsystem pose,
             GoToNextActiveSwerveModuleCommand nextModule,
@@ -84,7 +87,10 @@ public class OperatorCommandMap {
             PositionMaintainerCommand positionMaintainer,
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
-            BrakeCommand setWheelsToXMode) {
+            BrakeCommand setWheelsToXMode,
+            SwerveToNearestScoringPositionCommand swerveNearestScoring,
+            Provider<SwerveToNextScoringPositionCommand> sweveNextScoringProvider
+    ) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -111,8 +117,8 @@ public class OperatorCommandMap {
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
 
-        oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
-        oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+        //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
+        //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
 
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
@@ -121,6 +127,32 @@ public class OperatorCommandMap {
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
+
+        var povDown = oi.driverGamepad.getPovIfAvailable(180);
+        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
+        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+        var scoringPositionModeButton = oi.driverGamepad.getifAvailable(XboxButton.Y);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povDown
+        ).whileTrue(swerveNearestScoring);
+        var swerveLeftScoringPosition = sweveNextScoringProvider.get();
+        swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
+        var swerveRightScoringPosition = sweveNextScoringProvider.get();
+        swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povLeft
+        ).whileTrue(swerveLeftScoringPosition);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povRight
+        ).whileTrue(swerveRightScoringPosition);
+
+        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
+                () -> drive.setPrecisionRotationActive(true),
+                () -> drive.setPrecisionRotationActive(false));
+        scoringPositionModeButton.whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -183,10 +215,6 @@ public class OperatorCommandMap {
                     drive.setPrecisionRotationActive(false);
                 });
 
-        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
-                () -> drive.setPrecisionRotationActive(true),
-                () -> drive.setPrecisionRotationActive(false));
-
         // Simple robot oriented drive
         StartEndCommand activateRobotOrientedDrive = new StartEndCommand(
                 () -> drive.setIsRobotOrientedDrive(true),
@@ -194,7 +222,6 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(drive.createUnlockFullDrivePowerCommand());
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
