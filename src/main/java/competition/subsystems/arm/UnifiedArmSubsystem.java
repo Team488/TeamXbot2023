@@ -110,6 +110,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
     final MechanismLigament2d ghostUpperArm;
 
     private boolean engageSpecialUpperArmOverride = false;
+    public boolean cubeMode = false;
 
     @Inject
     public UnifiedArmSubsystem(
@@ -563,6 +564,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
 
     public Command createSetGamePieceModeCommand(GamePieceMode gamePiece){
         return new InstantCommand(() -> setGamePieceMode(gamePiece));
+    }
+
+    public void checkGamePieceMode(boolean cubeMode){
+        this.cubeMode = cubeMode;
+    }
+
+    public boolean isCubeMode(){
+        return cubeMode;
     }
 
     public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {

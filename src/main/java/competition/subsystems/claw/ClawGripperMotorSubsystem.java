@@ -2,6 +2,7 @@ package competition.subsystems.claw;
 
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.command.NamedRunCommand;
 import xbot.common.controls.actuators.XCANSparkMax;
@@ -67,5 +68,15 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
         if (electricalContract.areClawMotorsReady()) {
             leaderMotor.set(intakePower.get());
         }
+    }
+
+    public Command setEject(double eject){
+        if(electricalContract.areClawMotorsReady()){
+            return new InstantCommand(() -> {
+                leaderMotor.set(eject);
+            });
+
+        }
+        return null;
     }
 }
