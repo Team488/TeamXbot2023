@@ -1,5 +1,6 @@
 package competition.subsystems.vision;
 
+import competition.subsystems.pose.PoseSubsystem;
 import competition.subsystems.pose.XbotPhotonPoseEstimator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -11,7 +12,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.logging.RobotAssertionManager;
 import xbot.common.logic.TimeStableValidator;
@@ -27,12 +27,9 @@ import java.util.Optional;
 public class VisionSubsystem extends BaseSubsystem {
 
     public static final String VISION_TABLE = "photonvision";
-    public static final String FIX_ACQUIRED_PROPERTY = "gloworm/hasTarget";
-    public static final String TARGET_YAW_PROPERTY = "gloworm/targetYaw";
-    public static final String TARGET_PITCH_PROPERTY = "gloworm/targetPitch";
 
-    public static final String TARGET_POSE = "TemporaryCam/targetPose";
-    public static final String LATENCY_MILLIS = "TemporaryCam/latencyMillis";
+    public static final String TARGET_POSE = "forwardAprilCamera/targetPose";
+    public static final String LATENCY_MILLIS = "forwardAprilCamera/latencyMillis";
 
     final PhotonCamera forwardAprilCamera;
 
@@ -73,54 +70,18 @@ public class VisionSubsystem extends BaseSubsystem {
             log.error("Could not load AprilTagFieldLayout!", e);
         }
 
-        //Cam mounted half a meter forward of center, half a meter up from center, and facing forward.
-        Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0));
+        //Cam mounted 1" forward of center, 17" up, 12.5" right.
+        Transform3d robotToCam = new Transform3d(new Translation3d(
+                1.0 / PoseSubsystem.INCHES_IN_A_METER,
+                -12.5 / PoseSubsystem.INCHES_IN_A_METER,
+                17 / PoseSubsystem.INCHES_IN_A_METER),
+                new Rotation3d(0,20,0));
         photonPoseEstimator = new XbotPhotonPoseEstimator(
             aprilTagFieldLayout, 
             XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
             forwardAprilCamera, 
             robotToCam);
         photonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
-    }
-
-    public double getBearingToHub() {
-        if (getFixAcquired()) {
-            return getYawToTarget();
-        } else {
-            return 0;
-        }
-    }
-
-    public double getPitchToHub() {
-        if (getFixAcquired()) {
-            return getPitchToTarget();
-        } else {
-            return 0;
-        }
-    }
-
-    public boolean getFixAcquired() {
-        boolean fixAcquired = visionTable.getEntry(FIX_ACQUIRED_PROPERTY).getBoolean(false);
-        boolean isStable = fixIsStable.checkStable(fixAcquired);
-
-        return fixAcquired && isStable;
-    }
-
-    private double getYawToTarget() {
-        double yawToTarget = (visionTable.getEntry(TARGET_YAW_PROPERTY).getDouble(0) + this.yawOffset.get()) * getInversionFactor();
-
-        return yawToTarget;
-    }
-
-    private double getPitchToTarget() {
-        return (visionTable.getEntry(TARGET_PITCH_PROPERTY).getDouble(0));
-    }
-
-    private double getInversionFactor() {
-        if (this.isInverted.get()) {
-            return -1;
-        }
-        return 1;
     }
 
     public XYPair getAprilCoordinates() {
@@ -145,8 +106,7 @@ public class VisionSubsystem extends BaseSubsystem {
     public Optional<EstimatedRobotPose> getPhotonVisionEstimatedPose(Pose2d previousEstimatedRobotPose) {
         if (visionWorking) {
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
-            //return photonPoseEstimator.update();
-            return Optional.empty();
+            return photonPoseEstimator.update();
         } else {
             return Optional.empty();
         }
