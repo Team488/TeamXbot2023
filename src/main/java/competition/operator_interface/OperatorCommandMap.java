@@ -346,10 +346,12 @@ public class OperatorCommandMap {
         var engageSpecialUpperArmOverride = arm.createEngageSpecialUpperArmOverride();
         var disableSpecialUpperArmOverride = arm.createDisableSpecialUpperArmOverride();
 
+        /*
         oi.operatorGamepad.getPovIfAvailable(0).onTrue(engageSpecialUpperArmOverride);
         oi.operatorGamepad.getPovIfAvailable(90).onTrue(engageSpecialUpperArmOverride);
         oi.operatorGamepad.getPovIfAvailable(180).onTrue(disableSpecialUpperArmOverride); // This is the disable!
         oi.operatorGamepad.getPovIfAvailable(270).onTrue(engageSpecialUpperArmOverride);
+         */
 
         var doubleJoystickButtonpress = chordTriggerFactory.create(
                 oi.operatorGamepad.getifAvailable(XboxButton.LeftStick),
@@ -456,7 +458,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                 () -> arm.isCubeMode());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(grabGamePiece);
         //reverse motor
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(gripperMotorSubsystem.setEject(-0.2));
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
@@ -472,11 +474,10 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
         moveDown.setDirection(new XYPair(0, -1));
 
-        /*oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
-         */
     }
 
 }
