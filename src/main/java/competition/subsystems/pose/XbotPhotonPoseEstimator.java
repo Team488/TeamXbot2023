@@ -77,7 +77,7 @@ public class XbotPhotonPoseEstimator {
     private Pose3d referencePose;
     private final Set<Integer> reportedErrors = new HashSet<>();
 
-    private static final double IMPOSSIBLY_HIGH_POSE_AMBIGUITY = 10.0;
+    public static final double IMPOSSIBLY_HIGH_POSE_AMBIGUITY = 10.0;
     private double maximumPoseAmbiguityThreshold = IMPOSSIBLY_HIGH_POSE_AMBIGUITY;
 
     /**

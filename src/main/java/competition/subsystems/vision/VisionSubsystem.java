@@ -116,9 +116,27 @@ public class VisionSubsystem extends BaseSubsystem {
             //customPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
-            return photonPoseEstimator.update();
+            var estimatedPose = photonPoseEstimator.update();
+            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+                return estimatedPose;
+            }
+            return Optional.empty();
         } else {
             return Optional.empty();
         }
+    }
+
+    private boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
+        if (estimatedPose.targetsUsed.size() == 0) {
+            return false;
+        }
+
+        // Two targets tends to be very reliable
+        if (estimatedPose.targetsUsed.size() > 1) {
+            return true;
+        }
+
+        // For a single target we need to be above reliability threshold
+        return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < XbotPhotonPoseEstimator.IMPOSSIBLY_HIGH_POSE_AMBIGUITY;
     }
 }
