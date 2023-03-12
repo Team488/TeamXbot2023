@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.logging.RobotAssertionManager;
 import xbot.common.logic.TimeStableValidator;
@@ -40,7 +41,8 @@ public class VisionSubsystem extends BaseSubsystem {
     final TimeStableValidator fixIsStable;
     NetworkTable visionTable;
     AprilTagFieldLayout aprilTagFieldLayout;
-    XbotPhotonPoseEstimator photonPoseEstimator;
+    XbotPhotonPoseEstimator customPhotonPoseEstimator;
+    PhotonPoseEstimator photonPoseEstimator;
     boolean visionWorking = false;
 
 
@@ -75,13 +77,19 @@ public class VisionSubsystem extends BaseSubsystem {
                 1.0 / PoseSubsystem.INCHES_IN_A_METER,
                 -12.5 / PoseSubsystem.INCHES_IN_A_METER,
                 17 / PoseSubsystem.INCHES_IN_A_METER),
-                new Rotation3d(0,20,0));
-        photonPoseEstimator = new XbotPhotonPoseEstimator(
+                new Rotation3d(0,0,0));
+        customPhotonPoseEstimator = new XbotPhotonPoseEstimator(
             aprilTagFieldLayout, 
             XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
             forwardAprilCamera, 
             robotToCam);
-        photonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
+        customPhotonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
+        photonPoseEstimator = new PhotonPoseEstimator(
+                aprilTagFieldLayout,
+                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
+                forwardAprilCamera,
+                robotToCam
+        );
     }
 
     public XYPair getAprilCoordinates() {
@@ -105,6 +113,8 @@ public class VisionSubsystem extends BaseSubsystem {
 
     public Optional<EstimatedRobotPose> getPhotonVisionEstimatedPose(Pose2d previousEstimatedRobotPose) {
         if (visionWorking) {
+            //customPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
+            //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             return photonPoseEstimator.update();
         } else {
