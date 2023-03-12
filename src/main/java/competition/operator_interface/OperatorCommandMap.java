@@ -334,10 +334,12 @@ public class OperatorCommandMap {
         var engageSpecialUpperArmOverride = arm.createEngageSpecialUpperArmOverride();
         var disableSpecialUpperArmOverride = arm.createDisableSpecialUpperArmOverride();
 
+        /*
         oi.operatorGamepad.getPovIfAvailable(0).onTrue(engageSpecialUpperArmOverride);
         oi.operatorGamepad.getPovIfAvailable(90).onTrue(engageSpecialUpperArmOverride);
         oi.operatorGamepad.getPovIfAvailable(180).onTrue(disableSpecialUpperArmOverride); // This is the disable!
         oi.operatorGamepad.getPovIfAvailable(270).onTrue(engageSpecialUpperArmOverride);
+         */
 
         var doubleJoystickButtonpress = chordTriggerFactory.create(
                 oi.operatorGamepad.getifAvailable(XboxButton.LeftStick),
@@ -371,7 +373,8 @@ public class OperatorCommandMap {
         var setSubstationXZ = simpleXZRouterCommandProvider.get();
         setSubstationXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
         var setPrepareToPickupFromCollectorXZ = simpleXZRouterCommandProvider.get();
-setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
+        setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(
+                KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
 
         var smartOrDumbCollectionMode = new ConditionalCommand(
                 setArmsToCollectPositionCommand,
@@ -403,7 +406,7 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(smartOrDumbScoreLow);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setPrepareToPickupFromCollectorXZ);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
@@ -415,7 +418,6 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     log.info("Setting cube mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
                     arm.checkGamePieceMode(true);
-                    claw.open();
                 });
 
         InstantCommand
@@ -425,7 +427,6 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     log.info("Setting cone mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
                     arm.checkGamePieceMode(false);
-                    claw.close();
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
@@ -442,9 +443,9 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
        ConditionalCommand grabGamePiece = new ConditionalCommand(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
                 closeClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
                 () -> arm.isCubeMode());
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(grabGamePiece);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(grabGamePiece);
         //reverse motor
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(gripperMotorSubsystem.setEject(-0.2));
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
@@ -460,11 +461,10 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
         moveDown.setDirection(new XYPair(0, -1));
 
-        /*oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
-         */
     }
 
 }
