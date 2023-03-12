@@ -61,12 +61,15 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
                 () -> UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
                 () -> UnifiedArmSubsystem.RobotFacing.Forward);
 
-        double coneEjectTimeInSeconds = 0.25;
-        var clawConeIntake = clawMotors.createIntakeCommand().withTimeout(coneEjectTimeInSeconds);
+        double coneEjectTimeInSeconds = 0.5;
+        var clawConeIntake = clawMotors.createIntakeCommand()
+                .withTimeout(coneEjectTimeInSeconds)
+                .andThen(clawMotors.createStopCommand().withTimeout(0.01));
+
         var collectorConeEject = collector.getEjectThenStopCommand()
                 .withTimeout(coneEjectTimeInSeconds);
 
-        var conePullSequence = (collectorConeEject.alongWith(clawConeIntake)).alongWith(conePullOutGamePieceCommand);
+        var conePullSequence = (collectorConeEject.alongWith(clawConeIntake)).andThen(conePullOutGamePieceCommand);
 
         var coneOrCubePullSequence = new ConditionalCommand(cubePullSequence, conePullSequence, () -> arms.isCubeMode());
 
