@@ -26,7 +26,21 @@ import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.CollectIfSafeCommand;
 import competition.subsystems.drive.DriveSubsystem;
-import competition.subsystems.drive.commands.*;
+import competition.subsystems.drive.commands.AutoBalanceCommand;
+import competition.subsystems.drive.commands.BrakeCommand;
+import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
+import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.ManualBalanceModeCommand;
+import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.PositionMaintainerCommand;
+import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
+import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveToNearestScoringPositionCommand;
+import competition.subsystems.drive.commands.SwerveToNextScoringPositionCommand;
+import competition.subsystems.drive.commands.SwerveToPointCommand;
+import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
+import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -114,7 +128,7 @@ public class OperatorCommandMap {
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).onTrue(setManualBalanceMode);
+        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
 
         var povDown = oi.driverGamepad.getPovIfAvailable(180);
         var povLeft = oi.driverGamepad.getPovIfAvailable(270);
