@@ -72,7 +72,7 @@ public class SubsystemDefaultCommandMap {
 
     @Inject
     public void setupClawSubsystem(ClawSubsystem claw, CloseClawCommand closeCommand) {
-        claw.setDefaultCommand(closeCommand);
+        //claw.setDefaultCommand(closeCommand);
     }
 
     @Inject

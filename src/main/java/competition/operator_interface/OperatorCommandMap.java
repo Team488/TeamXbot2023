@@ -20,6 +20,8 @@ import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.arm.commands.SimpleSafeArmRouterCommand;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.ClawGripperMotorSubsystem;
+import competition.subsystems.claw.ClawSubsystem;
+import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.CollectIfSafeCommand;
@@ -34,6 +36,8 @@ import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveToNearestScoringPositionCommand;
+import competition.subsystems.drive.commands.SwerveToNextScoringPositionCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.TurnLeft90DegreesCommand;
 import competition.subsystems.drive.commands.VelocityDriveWithJoysticksCommand;
@@ -59,6 +63,7 @@ import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.security.KeyStore;
 
 /**
  * Maps operator interface buttons to commands
@@ -75,6 +80,7 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             SetRobotHeadingCommand resetHeadingCube,
             Provider<SetRobotHeadingCommand> headingProvider,
+            ChordTrigger.ChordTriggerFactory chordFactory,
             DriveSubsystem drive,
             PoseSubsystem pose,
             GoToNextActiveSwerveModuleCommand nextModule,
@@ -84,9 +90,11 @@ public class OperatorCommandMap {
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
             BrakeCommand setWheelsToXMode,
+            SwerveToNearestScoringPositionCommand swerveNearestScoring,
+            Provider<SwerveToNextScoringPositionCommand> sweveNextScoringProvider,
             MoveLeftInchByInchCommand moveLeft,
-            MoveRightInchByInchCommand moveRight,
-            ChordTrigger.ChordTriggerFactory chordFactory) {
+            MoveRightInchByInchCommand moveRight
+            ) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -120,6 +128,10 @@ public class OperatorCommandMap {
                 brakesButton,
                 povRight).whileTrue(moveRight);
 
+        //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
+        //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+
+
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
@@ -127,6 +139,32 @@ public class OperatorCommandMap {
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
 
         brakesButton.whileTrue(setWheelsToXMode);
+
+        var povDown = oi.driverGamepad.getPovIfAvailable(180);
+        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
+        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+        var scoringPositionModeButton = oi.driverGamepad.getifAvailable(XboxButton.Y);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povDown
+        ).whileTrue(swerveNearestScoring);
+        var swerveLeftScoringPosition = sweveNextScoringProvider.get();
+        swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
+        var swerveRightScoringPosition = sweveNextScoringProvider.get();
+        swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povLeft
+        ).whileTrue(swerveLeftScoringPosition);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povRight
+        ).whileTrue(swerveRightScoringPosition);
+
+        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
+                () -> drive.setPrecisionRotationActive(true),
+                () -> drive.setPrecisionRotationActive(false));
+        scoringPositionModeButton.whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -189,10 +227,6 @@ public class OperatorCommandMap {
                     drive.setPrecisionRotationActive(false);
                 });
 
-        StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
-                () -> drive.setPrecisionRotationActive(true),
-                () -> drive.setPrecisionRotationActive(false));
-
         // Simple robot oriented drive
         StartEndCommand activateRobotOrientedDrive = new StartEndCommand(
                 () -> drive.setIsRobotOrientedDrive(true),
@@ -200,7 +234,6 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(drive.createUnlockFullDrivePowerCommand());
         oi.driverGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(activatePrecisionDriving);
-        oi.driverGamepad.getifAvailable(XboxButton.Y).whileTrue(activateJustPrecisionRotation);
     }
 
     @Inject
@@ -277,6 +310,8 @@ public class OperatorCommandMap {
             OperatorInterface oi,
             UnifiedArmSubsystem arm,
             OpenClawCommand openClaw,
+            CloseClawCommand closeClaw,
+            ClawSubsystem claw,
             ClawGripperMotorSubsystem gripperMotorSubsystem,
             Provider<SimpleSafeArmRouterCommand> armPositionCommandProvider,
             Provider<ControlEndEffectorPositionCommand> endEffectorPositionCommandProvider,
@@ -323,10 +358,12 @@ public class OperatorCommandMap {
         var engageSpecialUpperArmOverride = arm.createEngageSpecialUpperArmOverride();
         var disableSpecialUpperArmOverride = arm.createDisableSpecialUpperArmOverride();
 
+        /*
         oi.operatorGamepad.getPovIfAvailable(0).onTrue(engageSpecialUpperArmOverride);
         oi.operatorGamepad.getPovIfAvailable(90).onTrue(engageSpecialUpperArmOverride);
         oi.operatorGamepad.getPovIfAvailable(180).onTrue(disableSpecialUpperArmOverride); // This is the disable!
         oi.operatorGamepad.getPovIfAvailable(270).onTrue(engageSpecialUpperArmOverride);
+         */
 
         var doubleJoystickButtonpress = chordTriggerFactory.create(
                 oi.operatorGamepad.getifAvailable(XboxButton.LeftStick),
@@ -396,13 +433,15 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
         oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
+        //oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
                 () -> {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cube mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
+                    arm.checkGamePieceMode(true);
+                    claw.open();
                 });
 
         InstantCommand
@@ -411,6 +450,8 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cone mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
+                    arm.checkGamePieceMode(false);
+                    claw.close();
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
@@ -422,9 +463,14 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
-        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper)
-                .whileTrue(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()))
-                .onFalse(gripperMotorSubsystem.createIntakeBurstCommand());
+
+        //Left Bumper opens claw if cube, closes if cone and turns on motor
+       ConditionalCommand grabGamePiece = new ConditionalCommand(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
+                closeClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
+                () -> arm.isCubeMode());
+        oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(grabGamePiece);
+        //reverse motor
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
@@ -440,11 +486,10 @@ setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.P
         ControlEndEffectorPositionCommand moveDown = endEffectorPositionCommandProvider.get();
         moveDown.setDirection(new XYPair(0, -1));
 
-        /*oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
+        oi.operatorGamepad.getPovIfAvailable(0).whileTrue(moveUp);
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
-         */
     }
 
 }
