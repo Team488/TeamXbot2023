@@ -17,6 +17,7 @@ import competition.subsystems.arm.commands.ControlArmsWithJoyStickCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.SwerveToNearestScoringPositionCommand;
+import competition.subsystems.drive.commands.SwerveToNextScoringPositionCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.drive.swerve.SwerveSteeringMotorPidSubsystem;
@@ -41,6 +42,8 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract SwerveToPointCommand swerveToPointCommand();
 
     public abstract SwerveToNearestScoringPositionCommand swerveToNearestScoringPositionCommand();
+
+    public abstract SwerveToNextScoringPositionCommand swerveToNextScoringPositionCommand();
 
     public abstract SetSwerveMotorControllerPidParametersCommand setSwerveMotorControllerPidParametersCommand();
 

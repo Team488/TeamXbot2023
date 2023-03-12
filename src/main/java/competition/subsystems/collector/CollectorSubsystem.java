@@ -52,8 +52,9 @@ public class CollectorSubsystem extends BaseSubsystem {
         pf.setPrefix(this);
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
-        gamePieceCollected = pf.createEphemeralProperty("Game piece collected", false);
-        currentMotorVelocity = pf.createEphemeralProperty("Current collector motor velocity", 0);
+
+        currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
+        gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
     }
 
     private void changeCollector(CollectorState state) {
