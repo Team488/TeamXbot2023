@@ -33,6 +33,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         super(arms);
         this.arms = arms;
         this.interpolator = new SimpleTimeInterpolator();
+        pf.setPrefix(this);
         this.defaultSegmentVelocity = pf.createPersistentProperty("DefaultSegmentVelocity", 10);
     }
 
