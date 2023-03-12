@@ -61,7 +61,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
                 () -> UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
                 () -> UnifiedArmSubsystem.RobotFacing.Forward);
 
-        double coneEjectTimeInSeconds = 0.5;
+        double coneEjectTimeInSeconds = 0.35;
         var clawConeIntake = clawMotors.createIntakeCommand()
                 .withTimeout(coneEjectTimeInSeconds)
                 .andThen(clawMotors.createStopCommand().withTimeout(0.01));
