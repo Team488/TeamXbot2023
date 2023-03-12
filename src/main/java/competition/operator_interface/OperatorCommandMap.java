@@ -120,6 +120,11 @@ public class OperatorCommandMap {
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
+
+        var povDown = oi.driverGamepad.getPovIfAvailable(180);
+        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
+        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+
         var brakesButton = oi.driverGamepad.getifAvailable(XboxButton.X);
         chordFactory.create(
                 brakesButton,
@@ -140,9 +145,6 @@ public class OperatorCommandMap {
 
         brakesButton.whileTrue(setWheelsToXMode);
 
-        var povDown = oi.driverGamepad.getPovIfAvailable(180);
-        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
-        var povRight = oi.driverGamepad.getPovIfAvailable(90);
         var scoringPositionModeButton = oi.driverGamepad.getifAvailable(XboxButton.Y);
         chordFactory.create(
                 scoringPositionModeButton,
