@@ -131,12 +131,12 @@ public class VisionSubsystem extends BaseSubsystem {
             return false;
         }
 
-        // Two targets tends to be very reliable
+        // Two or more targets tends to be very reliable
         if (estimatedPose.targetsUsed.size() > 1) {
             return true;
         }
 
         // For a single target we need to be above reliability threshold
-        return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < XbotPhotonPoseEstimator.IMPOSSIBLY_HIGH_POSE_AMBIGUITY;
+        return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < customPhotonPoseEstimator.getMaximumPoseAmbiguityThreshold();
     }
 }

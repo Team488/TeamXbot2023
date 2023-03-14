@@ -200,6 +200,14 @@ public class XbotPhotonPoseEstimator {
     }
 
     /**
+     * Get the maximum PoseAmbiguity a target can have and still be used for pose updates.
+     * @return The value.
+     */
+    public double getMaximumPoseAmbiguityThreshold() {
+        return this.maximumPoseAmbiguityThreshold;
+    }
+
+    /**
      * Poll data from the configured cameras and update the estimated position of the robot. Returns
      * empty if there are no cameras set or no targets were found from the cameras.
      *

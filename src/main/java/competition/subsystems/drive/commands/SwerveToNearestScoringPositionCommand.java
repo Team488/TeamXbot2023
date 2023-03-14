@@ -48,8 +48,7 @@ public class SwerveToNearestScoringPositionCommand extends SwerveToPointCommand 
         targetPose = newPose;
         log.info(String.format("Current pose is: %s; Target pose is: %s", currentPose.toString(), this.targetPose.toString()));
 
-        Transform2d travel = newPose.minus(currentPose);
-        double distanceToTarget = travel.getTranslation().getNorm();
+        double distanceToTarget = currentPose.getTranslation().getDistance(newPose.getTranslation());
 
         if (distanceToTarget > this.maxTravelDistanceProp.get()) {
             log.warn(String.format(
@@ -60,7 +59,6 @@ public class SwerveToNearestScoringPositionCommand extends SwerveToPointCommand 
         }
 
         setTargetPosition(new XYPair(targetPose.getX(), targetPose.getY()), WrappedRotation2d.fromRotation2d(targetPose.getRotation()).getDegrees());
-
 
         super.initialize();
     }
