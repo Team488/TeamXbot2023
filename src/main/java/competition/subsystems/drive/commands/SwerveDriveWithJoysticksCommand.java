@@ -224,8 +224,12 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
                         suggestedRotatePower = 0;
                         break;
                     case MachineControl:
-                        desiredHeading = drive.getDesiredHeading();
-                        suggestedRotatePower = headingModule.calculateHeadingPower(desiredHeading);
+                        if (drive.isManualBalanceModeActive()) {
+                            suggestedRotatePower = 0;
+                        } else {
+                            desiredHeading = drive.getDesiredHeading();
+                            suggestedRotatePower = headingModule.calculateHeadingPower(desiredHeading);
+                        }
                         break;
                     default:
                         suggestedRotatePower = 0;
