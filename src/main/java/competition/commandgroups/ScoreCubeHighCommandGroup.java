@@ -21,7 +21,6 @@ import java.util.function.Supplier;
  */
 public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
 
-    DoubleProperty eject;
     @Inject
     ScoreCubeHighCommandGroup(ClawGripperMotorSubsystem claw,
                               Provider<SimpleXZRouterCommand> setArmPosProvider,
