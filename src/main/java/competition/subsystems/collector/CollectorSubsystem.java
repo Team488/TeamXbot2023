@@ -147,6 +147,8 @@ public class CollectorSubsystem extends BaseSubsystem {
             //if game piece is collected, rumble controller
             if(getGamePieceCollected()){
                 oi.operatorGamepad.getRumbleManager().rumbleGamepad(0.5,0.1);
+            }else{
+                oi.operatorGamepad.getRumbleManager().stopGamepadRumble();
             }
         }
     }
