@@ -1,6 +1,7 @@
 package competition.subsystems.collector;
 
 import competition.electrical_contract.ElectricalContract;
+import competition.operator_interface.OperatorInterface;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import xbot.common.command.BaseSubsystem;
@@ -30,6 +31,7 @@ public class CollectorSubsystem extends BaseSubsystem {
     boolean intake = false;
     private int loopCount;
 
+    final OperatorInterface oi;
     private XAnalogInput pressureSensor;
 
     public enum CollectorState {
@@ -40,8 +42,9 @@ public class CollectorSubsystem extends BaseSubsystem {
     @Inject
     public CollectorSubsystem(XCANSparkMax.XCANSparkMaxFactory sparkMaxFactory, PropertyFactory pf,
                               XSolenoid.XSolenoidFactory xSolenoidFactory, XAnalogInput.XAnalogInputFactory analogInputFactory,
-                              ElectricalContract eContract) {
+                              ElectricalContract eContract, OperatorInterface oi) {
         this.contract = eContract;
+        this.oi = oi;
         this.currentState = CollectorState.Retracted;
         if (contract.isCollectorReady()) {
             this.collectorMotor = sparkMaxFactory.create(eContract.getCollectorMotor(), getPrefix(), "CollectorMotor");
@@ -136,10 +139,14 @@ public class CollectorSubsystem extends BaseSubsystem {
                 log.info("PressureSensorValue:" + pressureSensor.getVoltage());
             }
             currentIntakeTime = XTimer.getFPGATimestamp();
-            if (currentIntakeTime - intakeTime > 0.5) {
-                //check current RPM is less than 0.5
+            if ((currentIntakeTime - intakeTime > 0.5) && intake) {
+                //check current RPM is less than 500
                 currentMotorVelocity.set(collectorMotor.getVelocity());
-                gamePieceCollected.set(currentMotorVelocity.get() < 0.5);
+                gamePieceCollected.set(currentMotorVelocity.get() < 500 );
+            }
+            //if game piece is collected, rumble controller
+            if(getGamePieceCollected()){
+                oi.operatorGamepad.getRumbleManager().rumbleGamepad(0.5,0.1);
             }
         }
     }
