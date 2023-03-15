@@ -30,6 +30,8 @@ import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.MoveLeftInchByInchCommand;
+import competition.subsystems.drive.commands.MoveRightInchByInchCommand;
 import competition.subsystems.drive.commands.ManualBalanceModeCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
@@ -91,7 +93,10 @@ public class OperatorCommandMap {
             BrakeCommand setWheelsToXMode,
             SwerveToNearestScoringPositionCommand swerveNearestScoring,
             Provider<SwerveToNextScoringPositionCommand> swerveNextScoringProvider,
-            ManualBalanceModeCommand setManualBalanceMode) {
+            MoveLeftInchByInchCommand moveLeft,
+            MoveRightInchByInchCommand moveRight,
+            ManualBalanceModeCommand setManualBalanceMode
+            ) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -118,6 +123,19 @@ public class OperatorCommandMap {
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
 
+        var povDown = oi.driverGamepad.getPovIfAvailable(180);
+        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
+        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+
+        var brakesButton = oi.driverGamepad.getifAvailable(XboxButton.X);
+        chordFactory.create(
+                brakesButton,
+                povLeft).whileTrue(moveLeft);
+        chordFactory.create(
+                brakesButton,
+                povRight).whileTrue(moveRight);
+        brakesButton.whileTrue(setWheelsToXMode);
+
         //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
@@ -127,12 +145,10 @@ public class OperatorCommandMap {
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
 
-        var povDown = oi.driverGamepad.getPovIfAvailable(180);
-        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
-        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+        brakesButton.whileTrue(setWheelsToXMode);
+
         var scoringPositionModeButton = oi.driverGamepad.getifAvailable(XboxButton.Y);
         chordFactory.create(
                 scoringPositionModeButton,
