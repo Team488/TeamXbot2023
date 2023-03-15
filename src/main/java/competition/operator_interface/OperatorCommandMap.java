@@ -157,7 +157,7 @@ public class OperatorCommandMap {
         var swerveLeftScoringPosition = swerveNextScoringProvider.get();
         swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
         var swerveRightScoringPosition = swerveNextScoringProvider.get();
-        swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
+        swerveRightScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
         chordFactory.create(
                 scoringPositionModeButton,
                 povLeft
