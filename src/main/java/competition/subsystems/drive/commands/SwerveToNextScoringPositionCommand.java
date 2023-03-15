@@ -1,5 +1,6 @@
 package competition.subsystems.drive.commands;
 
+import competition.operator_interface.OperatorInterface;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,9 +21,10 @@ public class SwerveToNextScoringPositionCommand extends SwerveToNearestScoringPo
             DriveSubsystem drive,
             PoseSubsystem pose,
             PropertyFactory pf,
-            HeadingModule.HeadingModuleFactory headingModuleFactory
+            HeadingModule.HeadingModuleFactory headingModuleFactory,
+            OperatorInterface oi
     ) {
-        super(drive, pose, pf, headingModuleFactory);
+        super(drive, pose, pf, headingModuleFactory, oi);
     }
 
     /**

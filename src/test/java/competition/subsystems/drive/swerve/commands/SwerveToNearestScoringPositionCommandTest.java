@@ -1,5 +1,6 @@
 package competition.subsystems.drive.swerve.commands;
 
+import competition.auto_programs.AutoLandmarks;
 import competition.subsystems.drive.commands.SwerveToNearestScoringPositionCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
 import competition.subsystems.pose.MockPoseSubsystem;
@@ -77,6 +78,45 @@ public class SwerveToNearestScoringPositionCommandTest extends BaseFullSwerveTes
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);
         assertEquals(Rotation2d.fromDegrees(0), nearestPose.getRotation());
         assertTrue(nearestPose.getX() > 325);
+    }
+
+    @Test
+    @Parameters({
+            "0.0",
+            "1.0",
+            "-1.0"
+    })
+    public void testSetTarget(double initialXOffset) {
+        pose.setAlliance(DriverStation.Alliance.Blue);
+        pose.setCurrentPosition(
+                AutoLandmarks.blueScoringPositionOne.getX() + initialXOffset,
+                AutoLandmarks.blueScoringPositionOne.getY());
+        pose.setCurrentHeading(AutoLandmarks.blueScoringPositionOne.getRotation().getDegrees());
+        setAllSteeringModuleAngles(0);
+
+        command.initialize();
+        command.execute();
+
+        assertEquals(AutoLandmarks.blueScoringPositionOne.getX(), command.getActiveTargetPosition().x, 0.01);
+        assertEquals(AutoLandmarks.blueScoringPositionOne.getY(), command.getActiveTargetPosition().y, 0.01);
+        assertEquals(AutoLandmarks.blueScoringPositionOne.getRotation().getDegrees(), command.getActiveHeading(), 0.01);
+    }
+
+    @Test
+    public void testSetTargetTooFarAway() {
+        pose.setAlliance(DriverStation.Alliance.Blue);
+        pose.setCurrentPosition(
+                AutoLandmarks.blueScoringPositionOne.getX() + 300,
+                AutoLandmarks.blueScoringPositionOne.getY());
+        pose.setCurrentHeading(27);
+        setAllSteeringModuleAngles(0);
+
+        command.initialize();
+        command.execute();
+
+        assertEquals(pose.getCurrentPose2d().getX(), command.getActiveTargetPosition().x, 0.01);
+        assertEquals(pose.getCurrentPose2d().getY(), command.getActiveTargetPosition().y, 0.01);
+        assertEquals(pose.getCurrentPose2d().getRotation().getDegrees(), command.getActiveHeading(), 0.01);
     }
 
 }

@@ -77,7 +77,7 @@ public class XbotPhotonPoseEstimator {
     private Pose3d referencePose;
     private final Set<Integer> reportedErrors = new HashSet<>();
 
-    private static final double IMPOSSIBLY_HIGH_POSE_AMBIGUITY = 10.0;
+    public static final double IMPOSSIBLY_HIGH_POSE_AMBIGUITY = 10.0;
     private double maximumPoseAmbiguityThreshold = IMPOSSIBLY_HIGH_POSE_AMBIGUITY;
 
     /**
@@ -197,6 +197,14 @@ public class XbotPhotonPoseEstimator {
      */
     public void setMaximumPoseAmbiguityThreshold(double maximumPoseAmbiguityThreshold) {
         this.maximumPoseAmbiguityThreshold = maximumPoseAmbiguityThreshold;
+    }
+
+    /**
+     * Get the maximum PoseAmbiguity a target can have and still be used for pose updates.
+     * @return The value.
+     */
+    public double getMaximumPoseAmbiguityThreshold() {
+        return this.maximumPoseAmbiguityThreshold;
     }
 
     /**
