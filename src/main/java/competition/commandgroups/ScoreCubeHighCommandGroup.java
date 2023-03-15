@@ -4,14 +4,14 @@ package competition.commandgroups;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.ClawGripperMotorSubsystem;
-import competition.subsystems.claw.OpenClawCommand;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.*;
-import xbot.common.properties.DoubleProperty;
-import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.function.Supplier;
 
 /**
  * Scores a game piece. Leaves the arm in scoring position with the claw open.
