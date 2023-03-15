@@ -32,6 +32,7 @@ import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
 import competition.subsystems.drive.commands.MoveLeftInchByInchCommand;
 import competition.subsystems.drive.commands.MoveRightInchByInchCommand;
+import competition.subsystems.drive.commands.ManualBalanceModeCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
@@ -93,7 +94,8 @@ public class OperatorCommandMap {
             SwerveToNearestScoringPositionCommand swerveNearestScoring,
             Provider<SwerveToNextScoringPositionCommand> sweveNextScoringProvider,
             MoveLeftInchByInchCommand moveLeft,
-            MoveRightInchByInchCommand moveRight
+            MoveRightInchByInchCommand moveRight,
+            ManualBalanceModeCommand setManualBalanceMode
             ) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
@@ -142,6 +144,8 @@ public class OperatorCommandMap {
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
+        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
+        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
 
         brakesButton.whileTrue(setWheelsToXMode);
 
@@ -150,9 +154,9 @@ public class OperatorCommandMap {
                 scoringPositionModeButton,
                 povDown
         ).whileTrue(swerveNearestScoring);
-        var swerveLeftScoringPosition = sweveNextScoringProvider.get();
+        var swerveLeftScoringPosition = swerveNextScoringProvider.get();
         swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
-        var swerveRightScoringPosition = sweveNextScoringProvider.get();
+        var swerveRightScoringPosition = swerveNextScoringProvider.get();
         swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
         chordFactory.create(
                 scoringPositionModeButton,

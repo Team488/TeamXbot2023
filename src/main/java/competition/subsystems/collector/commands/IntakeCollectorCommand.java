@@ -10,7 +10,7 @@ public class IntakeCollectorCommand extends BaseCommand {
     CollectorSubsystem collector;
     OperatorInterface oi;
     @Inject
-    public IntakeCollectorCommand(CollectorSubsystem collector, OperatorInterface oi) {
+    public IntakeCollectorCommand(CollectorSubsystem collector) {
         this.collector = collector;
         this.oi = oi;
         addRequirements(collector);
@@ -23,9 +23,5 @@ public class IntakeCollectorCommand extends BaseCommand {
         @Override
         public void execute() {
             collector.intake();
-            //if game piece is collected, rumble controller
-            if(collector.getGamePieceCollected()){
-                oi.operatorGamepad.getRumbleManager().rumbleGamepad(0.5,0.5);
-            }
         }
 }
