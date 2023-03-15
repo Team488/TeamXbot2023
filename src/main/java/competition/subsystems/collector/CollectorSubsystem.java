@@ -143,6 +143,8 @@ public class CollectorSubsystem extends BaseSubsystem {
                 //check current RPM is less than 500
                 currentMotorVelocity.set(collectorMotor.getVelocity());
                 gamePieceCollected.set(currentMotorVelocity.get() < 500 );
+            }else{
+                gamePieceCollected.set(false);
             }
             //if game piece is collected, rumble controller
             if(getGamePieceCollected()){
