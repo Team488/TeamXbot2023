@@ -70,11 +70,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
     // Key angles for the lower and upper arms (in degrees)
     public static XYPair fullyRetractedAngles = new XYPair(90, 0);
     public static XYPair lowerGoalCubeAngles = new XYPair(66, 33);
-    public static XYPair midGoalCubeAngles = new XYPair(77, 68);
-    public static XYPair highGoalCubeAngles = new XYPair(55, 121);
+    public static XYPair midGoalCubeAngles = new XYPair(85.5, 67.4);
+    public static XYPair highGoalCubeAngles = new XYPair(77.7, 104.2);
     public static XYPair lowerGoalConeAngles = new XYPair(49, 35);
-    public static XYPair midGoalConeAngles = new XYPair(82, 80);
-    public static XYPair highGoalConeAngles = new XYPair(60, 130);
+    public static XYPair midGoalConeAngles = new XYPair(82.3, 74.1);
+    public static XYPair highGoalConeAngles = new XYPair(65.1, 116.8);
     public static XYPair safeExternalTransitionAngles = new XYPair(
             100,
             90);
@@ -83,8 +83,8 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
     public static XYPair loadingTrayAngle = new XYPair(103, 51);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
     public static XYPair prepareToAcquireFromCollectorAngles = new XYPair(103, 35.5);
-    public static XYPair pickupCubeFromCollectorAngles = new XYPair(74, 17);
-    public static XYPair pickupConeFromCollectorAngles = new XYPair(73.1, 14.4);
+    public static XYPair pickupCubeFromCollectorAngles = new XYPair(82.7, 21.0);
+    public static XYPair pickupConeFromCollectorAngles = new XYPair(91.4, 19.0);
 
     // Interesting XZ positions;
     public static Translation2d specialMiddleTransitionPositionForward = new Translation2d(2.26, 11.76);
@@ -110,6 +110,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
     final MechanismLigament2d ghostUpperArm;
 
     private boolean engageSpecialUpperArmOverride = false;
+    public boolean cubeMode = false;
 
     @Inject
     public UnifiedArmSubsystem(
@@ -563,6 +564,14 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
 
     public Command createSetGamePieceModeCommand(GamePieceMode gamePiece){
         return new InstantCommand(() -> setGamePieceMode(gamePiece));
+    }
+
+    public void checkGamePieceMode(boolean cubeMode){
+        this.cubeMode = cubeMode;
+    }
+
+    public boolean isCubeMode(){
+        return cubeMode;
     }
 
     public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {

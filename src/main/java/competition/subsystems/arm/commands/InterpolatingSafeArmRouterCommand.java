@@ -41,6 +41,10 @@ public class InterpolatingSafeArmRouterCommand extends BaseSetpointCommand {
         var currentAngles = arms.getCurrentValue();
         armAngleInterpolator.initialize(new XbotArmAngles(currentAngles.toTranslation2d(), 1.0));
 
+        // New logic: get to any point in two steps.
+        // If the target point is higher than us, we first go to a transition point wih the same X value of our current
+        // position and a Z value of our target, then we go to the target point.
+
         // Now to build the key points
         ArrayList<XbotArmAngles> keyPoints = new ArrayList<>();
 

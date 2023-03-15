@@ -176,6 +176,16 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         move(fieldRelativeVector, rotation, centerOfRotationInches);
     }
 
+    boolean manualBalanceMode;
+
+    public void setManualBalanceMode(boolean isActive) {
+        manualBalanceMode = isActive;
+    }
+
+    public boolean isManualBalanceModeActive() {
+        return manualBalanceMode;
+    }
+
     boolean collectorOrientedRotationActive;
 
     public boolean isCollectorRotationActive() {

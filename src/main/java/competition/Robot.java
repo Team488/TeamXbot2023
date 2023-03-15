@@ -62,6 +62,13 @@ public class Robot extends BaseRobot {
     }
 
     @Override
+    protected void sharedPeriodic() {
+        super.sharedPeriodic();
+        getInjectorComponent().operatorInterface().driverGamepad.getRumbleManager().periodic();
+        getInjectorComponent().operatorInterface().operatorGamepad.getRumbleManager().periodic();
+    }
+
+    @Override
     public void disabledInit() {
         super.disabledInit();
         ((PoseSubsystem)getInjectorComponent().poseSubsystem()).updateAllianceFromDriverStation();

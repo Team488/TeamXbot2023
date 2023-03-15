@@ -155,7 +155,11 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         
         // Michael wants the triggers to be more precise pretty much all the time, so adding a trigger-only
         // power reduction
-        humanRotatePowerFromTriggers *= triggerOnlyPowerScaling.get();
+        if (drive.isUnlockFullDrivePowerActive()) {
+            // do nothing - unleash the full power of the machine!
+        } else {
+            humanRotatePowerFromTriggers *= triggerOnlyPowerScaling.get();
+        }
                 
         if (absoluteOrientationMode.get()) {
             // If we are using absolute orientation, we first need get the desired heading from the right joystick.
@@ -196,24 +200,13 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
                 if (pose.getHeadingResetRecently()) {
                     drive.setDesiredHeading(pose.getCurrentHeading().getDegrees());
                 } else {
-                    if (drive.isRotateToHubActive() && vision.getFixAcquired()) {
-                        drive.setDesiredHeading(pose.getCurrentHeading().getDegrees() + vision.getBearingToHub());
-                    } else {
-                        drive.setDesiredHeading(desiredHeading);
-                    }
+                    drive.setDesiredHeading(desiredHeading);
                 }
                 suggestedRotatePower = headingModule.calculateHeadingPower(desiredHeading);
                 decider.reset();
             } else {
                 // If the joystick isn't deflected enough, we use the last known heading or human input.
                 HumanVsMachineMode recommendedMode = decider.getRecommendedMode(humanRotatePowerFromTriggers);
-
-                if (drive.isRotateToHubActive() && vision.getFixAcquired()) {
-                    drive.setDesiredHeading(pose.getCurrentHeading().getDegrees() + vision.getBearingToHub());
-
-                    // Force recommended mode to machine control to avoid coast between machine taking over after target acquired
-                    recommendedMode = HumanVsMachineMode.MachineControl;
-                }
 
                 if (pose.getHeadingResetRecently()) {
                     drive.setDesiredHeading(pose.getCurrentHeading().getDegrees());
@@ -231,8 +224,12 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
                         suggestedRotatePower = 0;
                         break;
                     case MachineControl:
-                        desiredHeading = drive.getDesiredHeading();
-                        suggestedRotatePower = headingModule.calculateHeadingPower(desiredHeading);
+                        if (drive.isManualBalanceModeActive()) {
+                            suggestedRotatePower = 0;
+                        } else {
+                            desiredHeading = drive.getDesiredHeading();
+                            suggestedRotatePower = headingModule.calculateHeadingPower(desiredHeading);
+                        }
                         break;
                     default:
                         suggestedRotatePower = 0;
@@ -270,29 +267,16 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // Scale the power down if requested (typically used when novices are controlling the robot)
             translationIntent = translationIntent.scale(drivePowerFactor.get());
         }
-        suggestedRotatePower *= turnPowerFactor.get();
+        if (drive.isUnlockFullDrivePowerActive()) {
+            // do nothing - unleash the full power of the machine!
+        } else {
+            suggestedRotatePower *= turnPowerFactor.get();
+        }
 
         // Check if we need a different center of rotation
         XYPair centerOfRotationInches = new XYPair(0,0);
         if (drive.isCollectorRotationActive()) {
             centerOfRotationInches = new XYPair(arms.getCurrentXZCoordinates().x, 0);
-        }
-
-        // Rumble based on camera state
-        if (drive.isRotateToHubActive()) {
-            if(vision.getFixAcquired()) {
-                // if we're not at our goal yet, rumble gamepad so driver knows we're not there yet
-                if(!headingModule.isOnTarget()) {
-                    oi.driverGamepad.getRumbleManager().rumbleGamepad(0.2, 0.05);
-                } else {
-                    oi.driverGamepad.getRumbleManager().stopGamepadRumble();
-                }
-            } else {
-                // if driver is trying to align with vision, but no target acquired, rumble aggressively
-                oi.driverGamepad.getRumbleManager().rumbleGamepad(0.8, 0.1);
-            }
-        } else {
-            oi.driverGamepad.getRumbleManager().stopGamepadRumble();
         }
         
         if (drive.isRobotOrientedDriveActive()) {
