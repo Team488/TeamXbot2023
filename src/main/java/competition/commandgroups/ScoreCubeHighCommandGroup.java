@@ -36,9 +36,7 @@ public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
         var ejectGamePieceAndWait = new ParallelDeadlineGroup(new WaitCommand(1.0), (Command) ejectGamePiece);
         this.addCommands(ejectGamePieceAndWait);
 
-        InstantCommand stopClawCommand = new InstantCommand(() -> {
-            claw.setStopped();
-        });
+        var stopClawCommand = new InstantCommand(() -> claw.setStopped());
 
         this.addCommands(stopClawCommand);
     }
