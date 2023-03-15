@@ -92,7 +92,7 @@ public class OperatorCommandMap {
             VelocityDriveWithJoysticksCommand velocityDrive,
             BrakeCommand setWheelsToXMode,
             SwerveToNearestScoringPositionCommand swerveNearestScoring,
-            Provider<SwerveToNextScoringPositionCommand> sweveNextScoringProvider,
+            Provider<SwerveToNextScoringPositionCommand> swerveNextScoringProvider,
             MoveLeftInchByInchCommand moveLeft,
             MoveRightInchByInchCommand moveRight,
             ManualBalanceModeCommand setManualBalanceMode
@@ -134,6 +134,7 @@ public class OperatorCommandMap {
         chordFactory.create(
                 brakesButton,
                 povRight).whileTrue(moveRight);
+        brakesButton.whileTrue(setWheelsToXMode);
 
         //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
@@ -144,7 +145,6 @@ public class OperatorCommandMap {
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
 
         brakesButton.whileTrue(setWheelsToXMode);
