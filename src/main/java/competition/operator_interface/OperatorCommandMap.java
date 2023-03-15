@@ -393,7 +393,7 @@ public class OperatorCommandMap {
 
         var prepareToPickupAndOpenClaw = new ParallelCommandGroup(
                 setPrepareToPickupFromCollectorXZ,
-                new InstantCommand(claw::open)
+                new InstantCommand(claw::open, claw)
         );
 
         var smartOrDumbCollectionMode = new ConditionalCommand(
