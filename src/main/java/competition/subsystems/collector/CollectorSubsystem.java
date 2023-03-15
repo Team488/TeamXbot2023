@@ -150,7 +150,7 @@ public class CollectorSubsystem extends BaseSubsystem {
 
             double intensity = 0.5;
             if (currentState == CollectorState.Retracted) {
-                intensity = 0.2;
+                intensity = 0.1;
             }
 
             if(getGamePieceCollected()){
