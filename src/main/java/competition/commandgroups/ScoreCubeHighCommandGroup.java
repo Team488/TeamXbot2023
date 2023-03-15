@@ -23,7 +23,7 @@ public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
 
     DoubleProperty eject;
     @Inject
-    ScoreCubeHighCommandGroup(Provider<ClawGripperMotorSubsystem> clawProvider,
+    ScoreCubeHighCommandGroup(ClawGripperMotorSubsystem claw,
                               Provider<SimpleXZRouterCommand> setArmPosProvider,
                               UnifiedArmSubsystem arm) {
         // Set scoring mode to the relevant game piece
@@ -36,8 +36,7 @@ public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
 
         this.addCommands(moveArmToPosition.withTimeout(5.0));
 
-        var ejectGamePiece = clawProvider.get();
-        ejectGamePiece.setEject(-1);
+        var ejectGamePiece = claw.setEject(-1);
         var ejectGamePieceAndWait = new ParallelDeadlineGroup(new WaitCommand(1.0), (Command) ejectGamePiece);
 
         this.addCommands(ejectGamePieceAndWait);
