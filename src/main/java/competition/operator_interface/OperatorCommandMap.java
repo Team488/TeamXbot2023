@@ -386,9 +386,15 @@ public class OperatorCommandMap {
         setRetractXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
         var setSubstationXZ = simpleXZRouterCommandProvider.get();
         setSubstationXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+
         var setPrepareToPickupFromCollectorXZ = simpleXZRouterCommandProvider.get();
         setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(
                 KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
+
+        var prepareToPickupAndOpenClaw = new ParallelCommandGroup(
+                setPrepareToPickupFromCollectorXZ,
+                new InstantCommand(claw::open)
+        );
 
         var smartOrDumbCollectionMode = new ConditionalCommand(
                 setArmsToCollectPositionCommand,
@@ -420,10 +426,10 @@ public class OperatorCommandMap {
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setPrepareToPickupFromCollectorXZ);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(prepareToPickupAndOpenClaw);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(smartOrDumbCollectionMode);
         //oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
