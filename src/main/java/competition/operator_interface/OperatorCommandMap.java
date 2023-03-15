@@ -134,7 +134,13 @@ public class OperatorCommandMap {
         chordFactory.create(
                 brakesButton,
                 povRight).whileTrue(moveRight);
-        brakesButton.whileTrue(setWheelsToXMode);
+        chordFactory.create(
+                chordFactory.create(
+                        povLeft.negate(),
+                        povRight.negate()
+                ),
+                brakesButton
+        ).whileTrue(setWheelsToXMode);
 
         //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
