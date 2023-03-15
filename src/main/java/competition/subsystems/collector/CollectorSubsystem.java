@@ -147,8 +147,14 @@ public class CollectorSubsystem extends BaseSubsystem {
                 gamePieceCollected.set(false);
             }
             //if game piece is collected, rumble controller
+
+            double intensity = 0.5;
+            if (currentState == CollectorState.Retracted) {
+                intensity = 0.2;
+            }
+
             if(getGamePieceCollected()){
-                oi.operatorGamepad.getRumbleManager().rumbleGamepad(0.5,0.1);
+                oi.operatorGamepad.getRumbleManager().rumbleGamepad(intensity,0.1);
             }else{
                 oi.operatorGamepad.getRumbleManager().stopGamepadRumble();
             }
