@@ -55,7 +55,7 @@ public class SwerveToNearestScoringPositionCommand extends SwerveToPointCommand 
                     "Target position is %f inches from current position. This exceeds our maximum travel of %f. Not moving.",
                     distanceToTarget, this.maxTravelDistanceProp.get()));
             targetPose = currentPose;
-            rumbleManager.rumbleGamepad(0.8, 0.3);
+            rumbleManager.rumbleGamepad(1.0, 0.75);
         }
 
         setTargetPosition(new XYPair(targetPose.getX(), targetPose.getY()), WrappedRotation2d.fromRotation2d(targetPose.getRotation()).getDegrees());
@@ -66,6 +66,12 @@ public class SwerveToNearestScoringPositionCommand extends SwerveToPointCommand 
     @Override
     public final void execute() {
         super.execute();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        rumbleManager.stopGamepadRumble();
     }
 
     protected Pose2d getTargetPose() {
