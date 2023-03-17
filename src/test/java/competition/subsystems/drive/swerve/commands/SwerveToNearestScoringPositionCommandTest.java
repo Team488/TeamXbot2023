@@ -101,6 +101,8 @@ public class SwerveToNearestScoringPositionCommandTest extends BaseFullSwerveTes
         assertEquals(AutoLandmarks.blueScoringPositionOne.getX(), command.getKeyPoints().get(1).keyPose.getX(), 0.01);
         assertEquals(AutoLandmarks.blueScoringPositionOne.getY(), command.getKeyPoints().get(1).keyPose.getY(), 0.01);
         assertEquals(AutoLandmarks.blueScoringPositionOne.getRotation().getDegrees(), command.getKeyPoints().get(1).keyPose.getRotation().getDegrees(), 0.01);
+
+        assertTrue(command.getKeyPoints().get(0).keyPose.getX() > command.getKeyPoints().get(1).keyPose.getX());
     }
 
     @Test
