@@ -11,7 +11,7 @@ public class MoveRightInchByInchCommand extends SequentialCommandGroup {
     MoveRightInchByInchCommand(Provider<SwerveToPointCommand> swerveToPointCommandProvider){
         var moveLeft = swerveToPointCommandProvider.get();
         moveLeft.setRobotRelativeMotion();
-        moveLeft.setTargetPosition(new XYPair(0,2), 0);
-        this.addCommands(moveLeft);
+        moveLeft.setTargetPosition(new XYPair(0,3), 0);
+        this.addCommands(moveLeft.withTimeout(1.0));
     }
 }
