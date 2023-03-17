@@ -4,6 +4,7 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.command.BaseCommand;
@@ -15,6 +16,7 @@ import xbot.common.subsystems.drive.control_logic.HeadingModule;
 import xbot.common.subsystems.drive.control_logic.HeadingModule.HeadingModuleFactory;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -86,7 +88,18 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         previousTimestamp = XTimer.getFPGATimestamp();
         targetIndex = 0;
         accumulatedProductiveSeconds = 0;
+    }
 
+    private Trajectory generateTrajectory(List<XbotSwervePoint> swervePoints) {
+        ArrayList<Trajectory.State> wpiStates = new ArrayList<>();
+        for (XbotSwervePoint point : swervePoints) {
+            Trajectory.State state = new Trajectory.State();
+            state.poseMeters = point.keyPose;
+            state.velocityMetersPerSecond = 0;
+            state.accelerationMetersPerSecondSq = 0;
+            wpiStates.add(state);
+        }
+        return new Trajectory(wpiStates);
     }
 
     @Override
