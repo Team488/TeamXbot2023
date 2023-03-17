@@ -73,6 +73,8 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         this.maxTurningPower = maxTurningPower;
     }
 
+    public List<XbotSwervePoint> getKeyPoints() { return this.keyPointsProvider.get(); }
+
     // --------------------------------------------------------------
     // Major Command Elements
     // --------------------------------------------------------------
