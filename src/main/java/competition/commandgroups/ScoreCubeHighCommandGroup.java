@@ -3,15 +3,15 @@ package competition.commandgroups;
 
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
-import competition.subsystems.claw.CloseClawCommand;
-import competition.subsystems.claw.OpenClawCommand;
+import competition.subsystems.claw.ClawGripperMotorSubsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.function.Supplier;
 
 /**
  * Scores a game piece. Leaves the arm in scoring position with the claw open.
@@ -19,10 +19,9 @@ import java.util.function.Supplier;
 public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
 
     @Inject
-    ScoreCubeHighCommandGroup(OpenClawCommand openClaw,
+    ScoreCubeHighCommandGroup(ClawGripperMotorSubsystem claw,
                               Provider<SimpleXZRouterCommand> setArmPosProvider,
                               UnifiedArmSubsystem arm) {
-
         // Set scoring mode to the relevant game piece
         this.addCommands(arm.createSetGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode.Cube));
 
@@ -33,8 +32,12 @@ public class ScoreCubeHighCommandGroup extends SequentialCommandGroup {
 
         this.addCommands(moveArmToPosition.withTimeout(5.0));
 
-        var openClawAndWait = new ParallelDeadlineGroup(new WaitCommand(0.5), openClaw);
+        var ejectGamePiece = claw.setEject(-1);
+        var ejectGamePieceAndWait = new ParallelDeadlineGroup(new WaitCommand(1.0), (Command) ejectGamePiece);
+        this.addCommands(ejectGamePieceAndWait);
 
-        this.addCommands(openClawAndWait);
+        var stopClawCommand = new InstantCommand(() -> claw.setStopped());
+
+        this.addCommands(stopClawCommand);
     }
 }
