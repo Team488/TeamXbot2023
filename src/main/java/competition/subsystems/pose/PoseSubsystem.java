@@ -191,7 +191,9 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // Pull out the new estimated pose from odometry. Note that for now, we only pull out X and Y
         // and trust the gyro implicitly. Eventually, we should allow the gyro to be updated via vision
         // if we have a lot of confidence in the vision data.
-        var estimatedPosition = swerveOdometry.getEstimatedPosition();
+        var estimatedPosition = new Pose2d(
+                swerveOdometry.getEstimatedPosition().getTranslation(),
+                getCurrentHeading());
 
         // Convert back to inches
         double prevTotalDistanceX = totalDistanceX.get();
