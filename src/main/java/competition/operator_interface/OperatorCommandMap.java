@@ -470,8 +470,8 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
