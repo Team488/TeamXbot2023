@@ -11,7 +11,6 @@ import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -37,16 +36,16 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         this.defaultSegmentVelocity = pf.createPersistentProperty("DefaultSegmentVelocity", 10);
     }
 
-    public void setKeyPointsProvider(Supplier<XbotArmPoint> keyPointsProvider) {
+    public void setKeyPointProvider(Supplier<XbotArmPoint> keyPointsProvider) {
         this.keyPointsProvider = keyPointsProvider;
     }
 
     public void setKeyPoint(XbotArmPoint keyPoint) {
-        setKeyPointsProvider(() -> keyPoint);
+        setKeyPointProvider(() -> keyPoint);
     }
 
     public void setKeyPointFromDirectAngles(XYPair keyPoint) {
-        setKeyPointsProvider(
+        setKeyPointProvider(
                 () -> new XbotArmPoint(
                         arms.convertOldArmAnglesToXZPositions(keyPoint),
                         defaultSegmentTime)
@@ -56,13 +55,13 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     public void setKeyPointFromKeyArmPosition(
             UnifiedArmSubsystem.KeyArmPosition keyArmPosition,
             UnifiedArmSubsystem.RobotFacing facing) {
-        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), defaultSegmentTime));
+        setKeyPointProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), defaultSegmentTime));
     }
 
     public void setKeyPointFromKeyArmPositionProvider(
             Supplier<UnifiedArmSubsystem.KeyArmPosition> keyArmPositionProvider,
             Supplier<UnifiedArmSubsystem.RobotFacing> facingProvider) {
-        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPositionProvider.get(), facingProvider.get()), defaultSegmentTime));
+        setKeyPointProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPositionProvider.get(), facingProvider.get()), defaultSegmentTime));
     }
 
     @Override

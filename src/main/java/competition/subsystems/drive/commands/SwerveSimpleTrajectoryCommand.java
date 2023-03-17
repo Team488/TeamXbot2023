@@ -90,18 +90,6 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         accumulatedProductiveSeconds = 0;
     }
 
-    private Trajectory generateTrajectory(List<XbotSwervePoint> swervePoints) {
-        ArrayList<Trajectory.State> wpiStates = new ArrayList<>();
-        for (XbotSwervePoint point : swervePoints) {
-            Trajectory.State state = new Trajectory.State();
-            state.poseMeters = point.keyPose;
-            state.velocityMetersPerSecond = 0;
-            state.accelerationMetersPerSecondSq = 0;
-            wpiStates.add(state);
-        }
-        return new Trajectory(wpiStates);
-    }
-
     @Override
     public void execute() {
 
