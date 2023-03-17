@@ -12,6 +12,7 @@ import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
+import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
@@ -259,7 +260,13 @@ public class OperatorCommandMap {
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
-                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram) {
+                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram,
+                                        ScoreCubeMidCommandGroup scoreCubeMid) {
+
+        var scoreCubeMidThenStop = setAutonomousCommandProvider.get();
+        scoreCubeMidThenStop.setAutoCommand(scoreCubeMid);
+        scoreCubeMidThenStop.includeOnSmartDashboard("AutoPrograms/ScoreCubeMidThenStop");
+        oi.experimentalGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(scoreCubeMidThenStop);
 
         // These three programs have all been tested to "work" on blocks at least once.
         var setPositionFiveToBalance = setAutonomousCommandProvider.get();
@@ -330,6 +337,7 @@ public class OperatorCommandMap {
             Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             SimpleSafeArmRouterCommand router,
             ScoreCubeHighThenLeaveProgram scoreCubeHigh,
+            ScoreCubeMidCommandGroup scoreCubeMid,
             CollectorSubsystem collector,
             CollectIfSafeCommand collectIfSafe,
             MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup,
