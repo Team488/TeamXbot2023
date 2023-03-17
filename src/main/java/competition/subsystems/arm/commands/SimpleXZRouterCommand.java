@@ -140,6 +140,10 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         } else {
             arms.setTargetValue(arms.getCurrentValue());
         }
+
+        if (lastResult.isOnFinalPoint) {
+            arms.setDisableBrake(false);
+        }
     }
 
     @Override
