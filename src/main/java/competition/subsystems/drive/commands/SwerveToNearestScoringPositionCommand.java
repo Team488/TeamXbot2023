@@ -46,7 +46,7 @@ public class SwerveToNearestScoringPositionCommand extends SwerveSimpleTrajector
         Pose2d currentPose = this.pose.getCurrentPose2d();
         Pose2d newPose = getTargetPose();
 
-        double bufferAllianceMultiplier = (pose.getAlliance() == DriverStation.Alliance.Blue) ? 1.0 : -1.0;
+        double bufferAllianceMultiplier = (pose.getAlliance() == DriverStation.Alliance.Blue) ? -1.0 : 1.0;
         Pose2d intermediatePoint = currentPose
                 .interpolate(newPose, 0.5)
                 .transformBy(new Transform2d(
