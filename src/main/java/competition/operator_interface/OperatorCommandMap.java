@@ -1,6 +1,17 @@
 package competition.operator_interface;
 
-import competition.auto_programs.*;
+import competition.auto_programs.BasicMobilityPoints;
+import competition.auto_programs.BlueBottomScoringPath;
+import competition.auto_programs.ScoreCubeHighThenExitCommunityAndBalance;
+import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
+import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
+import competition.auto_programs.EjectLowThenBalanceProgram;
+import competition.auto_programs.EjectLowThenBalanceWithMobilityProgram;
+import competition.auto_programs.EjectLowThenExitHighProgram;
+import competition.auto_programs.EjectLowThenExitLowProgram;
+import competition.auto_programs.ParameterizedAutonomousProgram;
+import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
+import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
