@@ -47,6 +47,7 @@ public class ScoreConeHighThenScoreCubeHighProgram extends SequentialCommandGrou
             return new XYPair(XY.getX(),XY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
 
+        //score cube high
         var driveToScoreCube = new ParallelCommandGroup(moveToScore,scoreCubeHigh);
         this.addCommands(driveToScoreCube);
 
