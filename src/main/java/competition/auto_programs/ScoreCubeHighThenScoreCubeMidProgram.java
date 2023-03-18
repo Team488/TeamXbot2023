@@ -25,7 +25,7 @@ import javax.inject.Provider;
 
 public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup {
     @Inject
-    ScoreCubeHighThenScoreCubeMidProgram(ScoreCubeHighThenLeaveProgram scoreCubeHigh,
+    ScoreCubeHighThenScoreCubeMidProgram(ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave,
                                          CollectionSequenceCommandGroup collect,
                                          SwerveToPointCommand moveToGamePiece,
                                          SwerveToPointCommand driveToScoreMid,
@@ -35,15 +35,7 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
                                          ClawGripperMotorSubsystem claw,
                                          CloseClawCommand closeClaw,
                                          PoseSubsystem pose) {
-        this.addCommands(scoreCubeHigh);
-        //retract arm before moving
-        retractArm.setKeyPointFromKeyArmPosition(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted,
-                UnifiedArmSubsystem.RobotFacing.Forward);
-        var retractArmAndCloseClaw = new SequentialCommandGroup(
-                new WaitCommand(1),
-                new ParallelCommandGroup(retractArm, closeClaw).deadlineWith(new WaitCommand(5))
-        );
-        this.addCommands(retractArmAndCloseClaw);
+        this.addCommands(scoreCubeHighThenLeave);
 
         moveToGamePiece.setFieldRelativeMotion();
         moveToGamePiece.setMaxPower(0.5);
@@ -69,6 +61,10 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
 
         //score cube mid then retract arm
         this.addCommands(scoreCubeMid);
+        var retractArmAndCloseClaw = new SequentialCommandGroup(
+                new WaitCommand(1),
+                new ParallelCommandGroup(retractArm, closeClaw).deadlineWith(new WaitCommand(5))
+        );
         this.addCommands(retractArmAndCloseClaw);
 
 
