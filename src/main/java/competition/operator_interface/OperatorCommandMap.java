@@ -262,7 +262,8 @@ public class OperatorCommandMap {
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
                                         ParameterizedAutonomousProgram parameterizedAutonomousProgram,
-                                        ScoreCubeMidCommandGroup scoreCubeMid) {
+                                        ScoreCubeMidCommandGroup scoreCubeMid,
+                                        ScoreCubeHighThenExitCommunityAndBalance scoreCubeHighThenExitCommunityAndBalance) {
 
         var scoreCubeMidThenStop = setAutonomousCommandProvider.get();
         scoreCubeMidThenStop.setAutoCommand(scoreCubeMid);
