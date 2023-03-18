@@ -17,6 +17,7 @@ import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.math.PIDManager;
 import xbot.common.math.PIDManager.PIDManagerFactory;
+import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
@@ -33,6 +34,8 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
     private final DoubleProperty targetVelocity;
     private final DoubleProperty currentVelocity;
 
+
+
     private XCANSparkMax motorController;
 
     @Inject
@@ -41,13 +44,13 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
             SwerveDriveMotorPidSubsystem pidConfigSubsystem) {
         this.label = swerveInstance.getLabel();
         log.info("Creating SwerveDriveSubsystem " + this.label);
-        
+
         // Create properties shared among all instances
         pf.setPrefix(super.getPrefix());
         this.contract = electricalContract;
         this.pid = pidf.create(super.getPrefix() + "PID", 1.0, 0.0, 0.0, -1.0, 1.0);
         this.inchesPerMotorRotation = pf.createPersistentProperty("InchesPerMotorRotation", 2.02249);
-        
+
         // Create properties unique to this instance.
         pf.setPrefix(this);
         this.targetVelocity = pf.createEphemeralProperty("TargetVelocity", 0.0);
@@ -80,7 +83,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
                 this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus1, 20 /* default 20 */);
                 this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus2, 20 /* default 20 */);
                 this.motorController.getInternalSparkMax().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500 /* default 50 */);
-                
+
                 this.motorController.clearFaults();
             }
         }
@@ -143,7 +146,9 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
     public boolean isCalibrated() {
         return true;
     }
-    
+
+
+
 
     public XCANSparkMax getSparkMax() {
         return this.motorController;
@@ -152,7 +157,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
     public void resetPid() {
         this.pid.reset();
     }
-    
+
     public double calculatePower() {
         return this.pid.calculate(this.getTargetValue(), this.getCurrentValue());
     }
@@ -176,5 +181,8 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
             setupStatusFrames();
             this.motorController.periodic();
         }
+
     }
+
+
 }

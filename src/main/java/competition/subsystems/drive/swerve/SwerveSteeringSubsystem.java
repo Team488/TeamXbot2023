@@ -20,6 +20,7 @@ import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.controls.sensors.XCANCoder;
 import xbot.common.controls.sensors.XCANCoder.XCANCoderFactory;
+import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.MathUtils;
 import xbot.common.math.PIDManager;
 import xbot.common.math.WrappedRotation2d;
@@ -45,12 +46,18 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
     private final BooleanProperty useMotorControllerPid;
     private final DoubleProperty maxMotorEncoderDrift;
 
+    private final BooleanProperty isSwerveBusted;
+
     private Rotation2d currentModuleHeadingRotation2d;
     private XCANSparkMax motorController;
     private XCANCoder encoder;
 
     private boolean calibrated = false;
     private boolean canCoderUnavailable = false;
+
+    private double targetDegrees;
+
+    private TimeStableValidator checkSwerve = new TimeStableValidator(5);
 
     @Inject
     public SwerveSteeringSubsystem(SwerveInstance swerveInstance, XCANSparkMaxFactory sparkMaxFactory, XCANCoderFactory canCoderFactory,
@@ -69,6 +76,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         this.degreesPerMotorRotation = pf.createPersistentProperty("DegreesPerMotorRotation", 28.1503);
         this.useMotorControllerPid = pf.createPersistentProperty("UseMotorControllerPID", true);
         this.maxMotorEncoderDrift = pf.createPersistentProperty("MaxEncoderDriftDegrees", 1.0);
+        this.isSwerveBusted = pf.createPersistentProperty("isSwerveBusted?", false);
 
         // Create properties that are unique to each instance
         pf.setPrefix(this);
@@ -325,7 +333,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
             double currentPositionDegrees = getBestEncoderPositionInDegrees();
             double changeInDegrees = MathUtil.inputModulus(targetDegrees - currentPositionDegrees, -90, 90);
             double targetPosition = this.motorController.getPosition() + (changeInDegrees / degreesPerMotorRotation.get());
-
+            this.targetDegrees = targetPosition;
             REVLibError error = this.motorController.setReference(targetPosition, ControlType.kPosition, 0);
             if (error != REVLibError.kOk) {
                 log.error("Error setting PID target: " + error.name());
@@ -359,5 +367,10 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         double positionInDegrees = getBestEncoderPositionInDegrees();
         currentModuleHeading.set(positionInDegrees);
         currentModuleHeadingRotation2d = Rotation2d.fromDegrees(positionInDegrees);
+
+
+        isSwerveBusted =  checkSwerve(if(Math.abs(targetDegrees- currentModuleHeading.get()) > 40 ))
+
+
     }
 }
