@@ -11,6 +11,7 @@ import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
+import competition.auto_programs.support.AutonomousOracle;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -251,6 +252,7 @@ public class OperatorCommandMap {
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
+                                        AutonomousOracle oracle,
                                         ParameterizedAutonomousProgram parameterizedAutonomousProgram,
                                         ScoreCubeMidCommandGroup scoreCubeMid) {
 
@@ -311,6 +313,9 @@ public class OperatorCommandMap {
         var setParameterizedAutonomousProgram = setAutonomousCommandProvider.get();
         setParameterizedAutonomousProgram.setAutoCommand(parameterizedAutonomousProgram);
         setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParamaterizedAutonomousProgram");
+
+        var configureOmniAuto = oracle.createTopLaneOmniAuto();
+        SmartDashboard.putData("AutoPrograms/ConfigureOmniAuto", configureOmniAuto);
 
         // There are two autonomous
     }

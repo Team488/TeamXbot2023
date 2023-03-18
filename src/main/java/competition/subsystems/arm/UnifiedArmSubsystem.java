@@ -134,11 +134,11 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
         solver = new ArmPositionSolver(armConfig);
         pf.setPrefix(this);
 
+        refreshDataFrame();
         targetPosition = getCurrentValue();
         areBrakesEngaged = true;
         calibratedProp = pf.createEphemeralProperty("Calibrated", true);
         brakeDisabled = pf.createEphemeralProperty("Brake disable override", false);
-        targetPosition = getCurrentValue();
 
         // Maximum extents based on frame perimeter being 15in from lower arm joint, joint being 8in above ground.
         // Rules are: Max height: 6ft6in (78in), max extension 48in. Using 2 inches as buffer space since position

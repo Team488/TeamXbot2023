@@ -61,6 +61,7 @@ public class LowerArmSegment extends ArmSegment {
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.createWithoutProperties(eContract.getLowerArmLeftMotor(), prefix,"LeftMotor");
             this.rightMotor = sparkMaxFactory.create(eContract.getLowerArmRightMotor(), prefix,"RightMotor",motorPidDefaults);
+            rightMotor.enableVoltageCompensation(12);
 
             leftMotor.follow(rightMotor, contract.getLowerArmLeftMotor().inverted);
 

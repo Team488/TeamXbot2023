@@ -53,7 +53,7 @@ public class UpperArmSegment extends ArmSegment {
         if(contract.isLowerArmReady()){
             this.leftMotor = sparkMaxFactory.createWithoutProperties(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
             this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor", motorPidDefaults);
-
+            rightMotor.enableVoltageCompensation(12);
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);
 
             configureCommonMotorProperties();
