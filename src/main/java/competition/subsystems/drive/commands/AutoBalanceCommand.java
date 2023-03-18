@@ -8,6 +8,7 @@ import xbot.common.command.BaseCommand;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.math.PIDManager;
 import xbot.common.math.PIDManager.PIDManagerFactory;
+import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
 
@@ -18,8 +19,9 @@ public class AutoBalanceCommand extends BaseCommand {
     private final PIDManager pidManager;
 
     private boolean drivingAgainstPositiveAngle = true;
-    final double firstAttemptSpeed = 0.35;
-    double currentAttemptSpeed = firstAttemptSpeed;
+    final DoubleProperty firstAttemptSpeedProperty;
+    final DoubleProperty speedMultiplierProperty;
+    double currentAttemptSpeed;
     double lastDetectedFallTime = -1000;
     double initialAnalyzedAngle = 0;
     double angleThresholdForBalance = 1.5;
@@ -41,15 +43,17 @@ public class AutoBalanceCommand extends BaseCommand {
                               PropertyFactory pf) {
         this.drive = drive;
         this.pose = pose;
-        this.pidManager = pidFactory.create(
-                this.getPrefix(),
-                0.01,// P
-                0, // I
-                0, // D
-                0.25, // Max Output
-                -0.25); // Min Output
         pf.setPrefix(this);
-
+        this.pidManager = pidFactory.create(
+            this.getPrefix(),
+            0.01,// P
+            0, // I
+            0, // D
+            0.25, // Max Output
+            -0.25); // Min Output
+            
+        this.firstAttemptSpeedProperty = pf.createPersistentProperty("firstAttemptSpeed", 0.35);
+        speedMultiplierProperty = pf.createPersistentProperty("speedMultiplier", 0.5);
         balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");
     }
 
@@ -67,7 +71,7 @@ public class AutoBalanceCommand extends BaseCommand {
         pidManager.reset();
 
         drivingAgainstPositiveAngle = getAngle() > 0.0;
-        currentAttemptSpeed = firstAttemptSpeed;
+        currentAttemptSpeed = firstAttemptSpeedProperty.get();
         currentBalanceState = BalanceState.Analyzing;
     }
 
@@ -130,7 +134,7 @@ public class AutoBalanceCommand extends BaseCommand {
                 log.info("Fall detected");
                 // We've detected a fall, so we need to stop driving and wait for a bit.
                 // We'll also slow down the drive speed for the next attempt.
-                currentAttemptSpeed = currentAttemptSpeed * 0.5;
+                currentAttemptSpeed = currentAttemptSpeed * speedMultiplierProperty.get();
                 currentBalanceState = BalanceState.Waiting;
                 lastDetectedFallTime = XTimer.getFPGATimestamp();
                 velocityGoal = 0;

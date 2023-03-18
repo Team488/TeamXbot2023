@@ -151,17 +151,17 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public DeviceInfo getLeftClawMotor() {
-        return new DeviceInfo(33, false, 1);
+        return new DeviceInfo(34, true, 1);
     }
 
     @Override
     public DeviceInfo getRightClawMotor() {
-        return new DeviceInfo(34, false, 1);
+        return new DeviceInfo(33, false, 1);
     }
 
     @Override
     public boolean areClawMotorsReady() {
-        return false;
+        return true;
     }
 
     @Override

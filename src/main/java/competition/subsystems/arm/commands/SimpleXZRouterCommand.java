@@ -7,9 +7,10 @@ import competition.trajectory.XbotArmPoint;
 import edu.wpi.first.math.geometry.Translation2d;
 import xbot.common.command.BaseSetpointCommand;
 import xbot.common.math.XYPair;
+import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -19,30 +20,32 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     UnifiedArmSubsystem arms;
     SimpleTimeInterpolator interpolator;
     private Supplier<XbotArmPoint> keyPointsProvider;
-    private ArrayList<Translation2d> pointsToConsider = new ArrayList<>();
     SimpleTimeInterpolator.InterpolationResult lastResult;
     private ArrayList<XbotArmPoint> pointsToInterpolate;
     private UnifiedArmSubsystem.KeyArmPosition targetArmPosition;
     private UnifiedArmSubsystem.RobotFacing targetRobotFacing;
     private double defaultSegmentTime = 0.5;
+    private final DoubleProperty defaultSegmentVelocity;
 
     @Inject
-    public SimpleXZRouterCommand(UnifiedArmSubsystem arms) {
+    public SimpleXZRouterCommand(UnifiedArmSubsystem arms, PropertyFactory pf) {
         super(arms);
         this.arms = arms;
         this.interpolator = new SimpleTimeInterpolator();
+        pf.setPrefix(this);
+        this.defaultSegmentVelocity = pf.createPersistentProperty("DefaultSegmentVelocity", 10);
     }
 
-    public void setKeyPointsProvider(Supplier<XbotArmPoint> keyPointsProvider) {
+    public void setKeyPointProvider(Supplier<XbotArmPoint> keyPointsProvider) {
         this.keyPointsProvider = keyPointsProvider;
     }
 
     public void setKeyPoint(XbotArmPoint keyPoint) {
-        setKeyPointsProvider(() -> keyPoint);
+        setKeyPointProvider(() -> keyPoint);
     }
 
     public void setKeyPointFromDirectAngles(XYPair keyPoint) {
-        setKeyPointsProvider(
+        setKeyPointProvider(
                 () -> new XbotArmPoint(
                         arms.convertOldArmAnglesToXZPositions(keyPoint),
                         defaultSegmentTime)
@@ -52,87 +55,58 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
     public void setKeyPointFromKeyArmPosition(
             UnifiedArmSubsystem.KeyArmPosition keyArmPosition,
             UnifiedArmSubsystem.RobotFacing facing) {
-        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), defaultSegmentTime));
+        setKeyPointProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPosition, facing), defaultSegmentTime));
     }
 
     public void setKeyPointFromKeyArmPositionProvider(
             Supplier<UnifiedArmSubsystem.KeyArmPosition> keyArmPositionProvider,
             Supplier<UnifiedArmSubsystem.RobotFacing> facingProvider) {
-        setKeyPointsProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPositionProvider.get(), facingProvider.get()), defaultSegmentTime));
+        setKeyPointProvider(() -> new XbotArmPoint(arms.getKeyArmXZ(keyArmPositionProvider.get(), facingProvider.get()), defaultSegmentTime));
     }
 
     @Override
     public void initialize() {
         log.info("Intializing");
-        // Now that we have XZ control, we can go to a much smarter "safe" point.
-        // Basic idea - there are three "safe" points, and each should be easily reachable
-        // from the others.
-        // When we start, we compare our current position to the three safe points as well as our target point,
-        // and go to the nearest one.
-        // Each time we use a safe point, we remove it from consideration, and repeat the process.
-        // Whenever the target point is the closest point, we go there and stop building a list of points.
 
-        pointsToConsider = new ArrayList<>();
-
-        var lowSafe = UnifiedArmSubsystem.lowSafePosition;
-        var highSafe = UnifiedArmSubsystem.highSafePosition;
-        var superHighSafe = UnifiedArmSubsystem.superHighSafePosition;
-        pointsToConsider.add(lowSafe);
-        //pointsToConsider.add(UnifiedArmSubsystem.midSafePosition);
-        pointsToConsider.add(highSafe);
-
-        pointsToConsider.add(superHighSafe);
-        //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.lowSafePosition));
-        //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.midSafePosition));
-        //pointsToConsider.add(UnifiedArmSubsystem.mirrorXZPoints(UnifiedArmSubsystem.highSafePosition));
-
-        // The transition points need to be handled carefully, as this simple routing algorithm will
-        // always choose the nearest point, and these are just a few inches from each other.
-        // In the routine below, whenever we remove one from consideration, we need to remove the other.
-        //var specialPointForward = UnifiedArmSubsystem.specialMiddleTransitionPositionForward;
-        //var specialPointBackward = UnifiedArmSubsystem.mirrorXZPoints(specialPointForward);
-        //pointsToConsider.add(specialPointForward);
-        //pointsToConsider.add(specialPointBackward);
+        // New logic: get to any point in two steps.
+        // If the target point is higher than us, we first go to a transition point wih the same X value of our current
+        // position and a Z value of our target, then we go to the target point. (up, then over).
+        // If the target position is below us, we first go to a transition point with the same Z value of our current
+        // position and a X value of our target, then we go to the target point. (over, then down).
 
         var targetTranslation = keyPointsProvider.get().getTranslation2d();
-        pointsToConsider.add(targetTranslation);
-
         var currentArmCoordinates = arms.getCurrentXZCoordinatesAsTranslation2d();
-        var originPoint = currentArmCoordinates;
-
-        // Now, find the next nearest waypoint/final point.
-        Translation2d nearest = new Translation2d();
-
         ArrayList<XbotArmPoint> waypoints = new ArrayList<>();
 
-        int escape = 0;
-        while (nearest != targetTranslation) {
-            nearest = originPoint.nearest(pointsToConsider);
-
-            // Only both going to one safe position
-            if (nearest == lowSafe || nearest == highSafe) {
-                pointsToConsider.remove(lowSafe);
-                pointsToConsider.remove(highSafe);
-            }
-
-            // As mentioned above, the special points need to be removed together.
-            /*if (nearest == specialPointForward || nearest == specialPointBackward) {
-                pointsToConsider.remove(specialPointBackward);
-                pointsToConsider.remove(specialPointForward);
-            } else {*/
-                pointsToConsider.remove(nearest);
-            //}
-            log.info("Adding point to path: " + nearest);
-            waypoints.add(new XbotArmPoint(nearest, defaultSegmentTime));
-            originPoint = nearest;
-            escape++;
-            // Just in case we do something very wrong, every while loop needs an escape hatch.
-            // Otherwise, we run the risk of the robot getting stuck in some loop instead of driving around.
-            if (escape > 20) {
-                break;
-            }
+        // Check if we are above or below the target
+        Translation2d transitionPoint2d = null;
+        if (targetTranslation.getY() > currentArmCoordinates.getY()) {
+            // The target is above us, so we need to go up, then over.
+            transitionPoint2d = new Translation2d(currentArmCoordinates.getX(), targetTranslation.getY());
+        } else {
+            // The target is below us, so we need to go over, then down.
+            transitionPoint2d = new Translation2d(targetTranslation.getX(), currentArmCoordinates.getY());
         }
 
+        // Calculate the segment time using the desired velocity. We can get the distance between our current position
+        // and our target position, and then divide that by the desired velocity to get the time.
+        double distanceToTransitionPoint = currentArmCoordinates.getDistance(transitionPoint2d);
+        var velocity = defaultSegmentVelocity.get();
+        double firstSegmentTime = 1.0;
+        if (velocity != 0) {
+            firstSegmentTime = distanceToTransitionPoint / velocity;
+        }
+        waypoints.add(new XbotArmPoint(transitionPoint2d, firstSegmentTime));
+
+        // Similarly, for the second segment, we can get the distance between the transition point and the target point.
+        double distanceToTarget = transitionPoint2d.getDistance(targetTranslation);
+        double secondSegmentTime = 1.0;
+        if (velocity != 0) {
+            secondSegmentTime = distanceToTarget / velocity;
+        }
+
+        waypoints.add(new XbotArmPoint(targetTranslation, secondSegmentTime));
+        
         pointsToInterpolate = waypoints;
         interpolator.setKeyPoints(waypoints);
         interpolator.initialize(new XbotArmPoint(currentArmCoordinates, defaultSegmentTime));
@@ -164,6 +138,10 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
                     newTargets.getUpperJointRotation().getDegrees()));
         } else {
             arms.setTargetValue(arms.getCurrentValue());
+        }
+
+        if (lastResult.isOnFinalPoint) {
+            arms.setDisableBrake(false);
         }
     }
 

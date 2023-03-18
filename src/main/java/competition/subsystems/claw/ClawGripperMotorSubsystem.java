@@ -2,6 +2,7 @@ package competition.subsystems.claw;
 
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.command.NamedRunCommand;
 import xbot.common.controls.actuators.XCANSparkMax;
@@ -34,10 +35,10 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
             leaderMotor = sparkMaxFactory.create(eContract.getRightClawMotor(), getPrefix(), "Leader claw motor");
             followerMotor = sparkMaxFactory.create(eContract.getLeftClawMotor(), getPrefix(), "Follower claw motor");
 
-            leaderMotor.setSmartCurrentLimit(5);
-            followerMotor.setSmartCurrentLimit(5);
+            leaderMotor.setSmartCurrentLimit(40);
+            followerMotor.setSmartCurrentLimit(40);
 
-            followerMotor.follow(leaderMotor);
+            followerMotor.follow(leaderMotor, eContract.getLeftClawMotor().inverted);
         }
     }
 
@@ -67,5 +68,15 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
         if (electricalContract.areClawMotorsReady()) {
             leaderMotor.set(intakePower.get());
         }
+    }
+
+    public NamedRunCommand setEject(double eject){
+        if(electricalContract.areClawMotorsReady()){
+            return new NamedRunCommand("Claw Eject", () -> {
+                leaderMotor.set(eject);
+            });
+
+        }
+        return null;
     }
 }

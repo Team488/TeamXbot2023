@@ -3,6 +3,9 @@ package competition.auto_programs;
 import competition.auto_programs.support.AutonomousOracle;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.commandgroups.ScoreCubeHighCommandGroup;
+import competition.commandgroups.ScoreGamepieceCommandGroupFactory;
+import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.EjectCollectorCommand;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
@@ -29,8 +32,11 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
     public ParameterizedAutonomousProgram(
             AutonomousOracle oracle,
             PoseSubsystem pose,
-            Provider<EjectCollectorCommand> ejectCollectorCommandProvider,
+            UnifiedArmSubsystem arms,
             CollectorSubsystem collector,
+            Provider<EjectCollectorCommand> ejectCollectorCommandProvider,
+            ScoreGamepieceCommandGroupFactory scoreGamepieceCommandGroupFactory,
+            Provider<SimpleXZRouterCommand> setArmPosProvider,
             Provider<ScoreCubeHighCommandGroup> scoreCubeHighProvider,
             Provider<SwerveSimpleTrajectoryCommand> swerveSimpleTrajectoryCommandProvider,
             AutoBalanceCommand autoBalance,
@@ -42,6 +48,8 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Set initial position
         // ----------------------------
 
+        // TODO: If we trust the april tags, we should have a branch here where we don't force the initial position (and
+        // potentially the initial heading, if the april tags pose estimation gets really good).
         var setInitialPosition = new InstantCommand(
                 () -> {
                     pose.setCurrentPoseInMeters(oracle.getInitialPoseInMeters());
@@ -50,6 +58,13 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
         this.addCommands(setInitialPosition);
 
+        var setInitialGamepiece = new InstantCommand(
+                () -> {
+                    arms.setGamePieceMode(oracle.getInitialGamePiece());
+                }
+        );
+        this.addCommands(setInitialGamepiece);
+
         // ----------------------------
         // Score the initial game piece, either by ejecting or by using the arm.
         // ----------------------------
@@ -57,11 +72,10 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // TODO: may want to use different collector powers or durations for the different game pieces
         var scoreViaEjecting = ejectCollectorCommandProvider.get().withTimeout(1).andThen(new InstantCommand(collector::stop));;
 
-        // TODO: Eventually have this be a generic command that also reads from the oracle about which game piece to score
-        // and at which location.
-        var scoreViaArm = scoreCubeHighProvider.get();
+        var scoreViaArm = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, true);
 
-        // OnTrue, OnFalse, and the condition.
+        // OnTrue, OnFalse, and the condition. This pattern will repeat throughout this class, as there are a lot of forks
+        // in this autonomous program.
         var scoreSomehow = new ConditionalCommand(
                 scoreViaEjecting,
                 scoreViaArm,
@@ -130,7 +144,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var scoreViaEjectingAgain = ejectCollectorCommandProvider.get().withTimeout(1).andThen(new InstantCommand(collector::stop));
-        var scoreHighAgain = scoreCubeHighProvider.get();
+        var scoreHighAgain = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, true);
 
         var scoreAgain = new ConditionalCommand(
                 scoreViaEjectingAgain,

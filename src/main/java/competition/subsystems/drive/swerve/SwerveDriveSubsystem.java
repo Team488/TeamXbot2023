@@ -2,6 +2,7 @@ package competition.subsystems.drive.swerve;
 
 import javax.inject.Inject;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
@@ -59,6 +60,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
             setMotorControllerPositionPidParameters();
             setupStatusFrames();
             this.motorController.setSmartCurrentLimit(45);
+            this.motorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
         }
     }
 
