@@ -95,12 +95,12 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
         // This is only supposed to take 2.5 seconds. Set a timeout just in case.
         this.addCommands(mantleChargePlate.withTimeout(3.0));
 
-        // (Slight edit) With a 15-second budget, and subtracting 1 second for scoring, *2 seconds to exit community*,
+        // (Slight edit) With a 15-second budget, and subtracting 1 second for scoring,
+        // *2 seconds to get over charge station and exit community*,
         // and 3 seconds for mantle, we have 9 seconds to balance.
         // to make 100% sure we engage the brakes, set a timeout for just under that.
 
-        // ^ Pasted everything from the comment, so it could be very inaccurate. Not sure if mantle is both ways
-        // In which case there'd be 6 seconds of mantling charge station and very little time to balance.
+        // 2 seconds is completely pulled out of thin air, not sure if it'll need more time.
         var balance = new ParallelRaceGroup(
                 autoBalance,
                 velocityMaintainer,
