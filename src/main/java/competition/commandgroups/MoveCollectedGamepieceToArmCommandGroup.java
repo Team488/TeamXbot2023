@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -23,7 +25,13 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
             CollectorSubsystem collector,
             Provider<SetArmsToKeyArmPositionCommand> setArmsToKeyArmPositionCommandProvider,
             ClawGripperMotorSubsystem clawMotors,
-            UnifiedArmSubsystem arms) {
+            UnifiedArmSubsystem arms,
+            PropertyFactory pf) {
+
+        pf.setPrefix(this.getClass().getName());
+        DoubleProperty coneClawIntakeTime = pf.createPersistentProperty("Cone claw intake time", 0.35);
+        DoubleProperty coneCollectorEjectTime = pf.createPersistentProperty("Cone collector eject time", 0.35);
+        DoubleProperty cubeCollectorEjectTime = pf.createPersistentProperty("Cube collector eject time", 0.25);
 
         // Open claw and wait
         this.addCommands(openClawCommand.withTimeout(0.5));
@@ -52,7 +60,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
 
         var waitThenPullArm = new WaitCommand(0.1).andThen(cubePullOutGamePieceCommand);
         var cubePullSequence = collector.getEjectThenStopCommand()
-                .withTimeout(0.25)
+                .withTimeout(cubeCollectorEjectTime.get())
                 .alongWith(waitThenPullArm);
 
         // Now, the cone scenario
@@ -61,13 +69,12 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
                 () -> UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
                 () -> UnifiedArmSubsystem.RobotFacing.Forward);
 
-        double coneEjectTimeInSeconds = 0.35;
         var clawConeIntake = clawMotors.createIntakeCommand()
-                .withTimeout(coneEjectTimeInSeconds)
+                .withTimeout(coneClawIntakeTime.get())
                 .andThen(clawMotors.createStopCommand().withTimeout(0.01));
 
         var collectorConeEject = collector.getEjectThenStopCommand()
-                .withTimeout(coneEjectTimeInSeconds);
+                .withTimeout(coneCollectorEjectTime.get());
 
         var conePullSequence = (collectorConeEject.alongWith(clawConeIntake)).andThen(conePullOutGamePieceCommand);
 
