@@ -79,6 +79,12 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         this.constantVelocity = constantVelocity;
     }
 
+    public List<XbotSwervePoint> getKeyPoints() { return this.keyPointsProvider.get(); }
+
+    public List<XbotSwervePoint> getResolvedKeyPoints() {
+        return keyPoints;
+    }
+
     // --------------------------------------------------------------
     // Major Command Elements
     // --------------------------------------------------------------
@@ -101,9 +107,6 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     }
 
-    public List<XbotSwervePoint> getKeyPoints() {
-        return keyPoints;
-    }
 
     private List<XbotSwervePoint> getVelocityAdjustedSwervePoints(
             XbotSwervePoint initialPoint,
