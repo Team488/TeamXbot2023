@@ -461,5 +461,4 @@ public class AutonomousOracle {
     public void setTrajectoryForDisplay(String trajectoryName, List<XbotSwervePoint> swervePoints) {
         setTrajectoryForDisplay(trajectoryName, XbotSwervePoint.generateTrajectory(swervePoints));
     }
-
 }

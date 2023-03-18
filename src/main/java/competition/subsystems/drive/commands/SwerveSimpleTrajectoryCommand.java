@@ -4,14 +4,10 @@ import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import competition.trajectory.SimpleTimeInterpolator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import xbot.common.command.BaseCommand;
-import xbot.common.controls.sensors.XTimer;
 import xbot.common.math.XYPair;
-import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.subsystems.drive.control_logic.HeadingModule;
 import xbot.common.subsystems.drive.control_logic.HeadingModule.HeadingModuleFactory;
@@ -36,6 +32,9 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     private final SimpleTimeInterpolator interpolator = new SimpleTimeInterpolator();
     SimpleTimeInterpolator.InterpolationResult lastResult;
+
+    private boolean enableConstantVelocity = false;
+    private double constantVelocity = 10;
 
     private final Field2d ghostDisplay;
 
@@ -72,6 +71,14 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         this.maxTurningPower = maxTurningPower;
     }
 
+    public void setEnableConstantVelocity(boolean enableConstantVelocity) {
+        this.enableConstantVelocity = enableConstantVelocity;
+    }
+
+    public void setConstantVelocity(double constantVelocity) {
+        this.constantVelocity = constantVelocity;
+    }
+
     // --------------------------------------------------------------
     // Major Command Elements
     // --------------------------------------------------------------
@@ -81,8 +88,50 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         log.info("Initializing");
         keyPoints = keyPointsProvider.get();
         log.info("Key points size: " + keyPoints.size());
+
+        var initialPoint = new XbotSwervePoint(pose.getCurrentPose2d(), 0);
+
+        if (enableConstantVelocity) {
+            keyPoints = getVelocityAdjustedSwervePoints(initialPoint, keyPoints, constantVelocity);
+        }
+
+
         interpolator.setKeyPoints(keyPoints);
-        interpolator.initialize(new XbotSwervePoint(pose.getCurrentPose2d(), 0));
+        interpolator.initialize(initialPoint);
+
+    }
+
+    public List<XbotSwervePoint> getKeyPoints() {
+        return keyPoints;
+    }
+
+    private List<XbotSwervePoint> getVelocityAdjustedSwervePoints(
+            XbotSwervePoint initialPoint,
+            List<XbotSwervePoint> swervePoints,
+            double velocity) {
+        // Normally each swerve point has a duration, but it will probably be easier to tune if we control overall velocity instead.
+        // To do this, we will need to iterate though each point, dividing the distance between the current point and the next
+        // point by the velocity to get a new duration.
+
+        // The first point is a special case, since it's dynamic depending on where the robot actually is to start.
+        ArrayList<XbotSwervePoint> velocityAdjustedPoints = new ArrayList<>();
+
+        // Now, the rest follow this general pattern. Compare the current point to the next point, and adjust the duration.
+        for (int i = 0; i < swervePoints.size(); i++) {
+
+            XbotSwervePoint previous = initialPoint;
+            if (i > 0) {
+                // If we've moved on to later points, we can now safely get previous entries in the list.
+                previous = swervePoints.get(i - 1);
+            }
+            var current = swervePoints.get(i);
+
+            double distance = previous.getTranslation2d().getDistance(current.getTranslation2d());
+            double velocityAdjustedDuration = distance / velocity;
+            velocityAdjustedPoints.add(new XbotSwervePoint(swervePoints.get(i).keyPose, velocityAdjustedDuration));
+        }
+
+        return velocityAdjustedPoints;
     }
 
     @Override
