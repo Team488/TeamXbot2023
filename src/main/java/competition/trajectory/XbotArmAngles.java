@@ -1,5 +1,6 @@
 package competition.trajectory;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import xbot.common.math.XYPair;
 
@@ -22,5 +23,10 @@ public class XbotArmAngles implements ProvidesInterpolationData{
     @Override
     public Translation2d getTranslation2d() {
         return angles;
+    }
+
+    @Override
+    public Rotation2d getRotation2d() {
+        return null; // Not relevant for arm
     }
 }

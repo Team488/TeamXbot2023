@@ -467,7 +467,6 @@ public class OperatorCommandMap {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cube mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
-                    arm.checkGamePieceMode(true);
                 });
 
         InstantCommand
@@ -476,7 +475,6 @@ public class OperatorCommandMap {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cone mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
-                    arm.checkGamePieceMode(false);
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
