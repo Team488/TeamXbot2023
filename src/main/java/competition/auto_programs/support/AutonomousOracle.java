@@ -110,9 +110,21 @@ public class AutonomousOracle {
         oracleField = new Field2d();
         SmartDashboard.putData("OracleField", oracleField);
 
-        setEnableAcquireGamePiece(true);
+        // Set some initial defaults - even if the driver doesn't have time to punch anything in, we should
+        // do something.
+
+        setEnableDrivePhaseOne(false);
+        setEnableAcquireGamePiece(false);
+        setEnableMoveToScore(false);
+        setEnableSecondScore(false);
+        setEnableBalance(true);
+
+        setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+        setInitialScoringMode(ScoringMode.High);
         setInitialScoringLocationIndex(6);
-        setLane(Lane.Top);
+        setLane(Lane.Middle);
+
+        setMantlePrepPosition(MantlePrepPosition.InsideCommunity);
 
         oracleField.setRobotPose(getInitialPoseInMeters());
         setTrajectoryForDisplay("Phase1", getTrajectoryForDrivePhaseOne());

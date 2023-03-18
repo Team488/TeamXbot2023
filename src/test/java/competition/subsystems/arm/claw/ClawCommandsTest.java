@@ -30,6 +30,8 @@ public class ClawCommandsTest extends BaseCompetitionTest {
         setUpperArmAngles(90);
         arms.upperArm.setAbsoluteEncoderOffsetInDegrees(0);
         arms.lowerArm.setAbsoluteEncoderOffsetInDegrees(0);
+
+        arms.refreshDataFrame();
     }
 
     @Test
@@ -132,5 +134,6 @@ public class ClawCommandsTest extends BaseCompetitionTest {
 
     private void setUpperArmAngles(double upperArmAngle) {
         ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
+        arms.refreshDataFrame();
     }
 }

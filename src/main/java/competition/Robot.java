@@ -28,6 +28,8 @@ public class Robot extends BaseRobot {
         dataFrameRefreshables.add((DriveSubsystem)getInjectorComponent().driveSubsystem());
         dataFrameRefreshables.add(getInjectorComponent().poseSubsystem());
         dataFrameRefreshables.add(getInjectorComponent().unifiedArmSubsystem());
+        dataFrameRefreshables.add(getInjectorComponent().collectorSubsystem());
+        dataFrameRefreshables.add(getInjectorComponent().clawGripperMotorSubsystem());
     }
 
     protected BaseRobotComponent createDaggerComponent() {

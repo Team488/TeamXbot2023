@@ -64,7 +64,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         this.maxMotorEncoderDrift = pf.createPersistentProperty("MaxEncoderDriftDegrees", 1.0);
 
         if (electricalContract.isDriveReady()) {
-            this.motorController = sparkMaxFactory.createWithoutProperties(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
+            this.motorController = sparkMaxFactory.createWithoutProperties(electricalContract.getSteeringNeo(swerveInstance), "", "SteeringNeo");
         }
         if (electricalContract.areCanCodersReady()) {
             this.encoder = canCoderFactory.create(electricalContract.getSteeringEncoder(swerveInstance), this.getPrefix());
@@ -326,7 +326,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         }
 
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
-                this.getName()+"BestEncoderPositionDegrees",
+                this.getPrefix()+"BestEncoderPositionDegrees",
                 getBestEncoderPositionInDegrees());
     }
 

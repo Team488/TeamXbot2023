@@ -4,6 +4,8 @@ import competition.electrical_contract.ElectricalContract;
 import competition.operator_interface.OperatorInterface;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
+import xbot.common.advantage.DataFrameRefreshable;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XSolenoid;
@@ -17,17 +19,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class CollectorSubsystem extends BaseSubsystem {
+public class CollectorSubsystem extends BaseSubsystem implements DataFrameRefreshable {
     public XCANSparkMax collectorMotor;
     public XSolenoid collectorSolenoid;
     public DoubleProperty intakePower;
     public DoubleProperty ejectPower;
     private CollectorState currentState;
     final ElectricalContract contract;
-    public final DoubleProperty currentMotorVelocity;
     public double intakeTime;
     public double currentIntakeTime;
-    private final BooleanProperty gamePieceCollected;
+    private boolean gamePieceCollected;
     boolean intake = false;
     private int loopCount;
 
@@ -55,9 +56,6 @@ public class CollectorSubsystem extends BaseSubsystem {
         pf.setPrefix(this);
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
-
-        currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
-        gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
     }
 
     private void changeCollector(CollectorState state) {
@@ -132,19 +130,22 @@ public class CollectorSubsystem extends BaseSubsystem {
     }
 
     @Override
-    public void periodic() {
-        loopCount++;
+    public void refreshDataFrame() {
         if (contract.isCollectorReady()) {
-            if (loopCount % 250 == 0) {
-                log.info("PressureSensorValue:" + pressureSensor.getVoltage());
-            }
+            collectorMotor.refreshDataFrame();
+        }
+    }
+
+    @Override
+    public void periodic() {
+        if (contract.isCollectorReady()) {
+
             currentIntakeTime = XTimer.getFPGATimestamp();
             if ((currentIntakeTime - intakeTime > 0.5) && intake) {
                 //check current RPM is less than 500
-                currentMotorVelocity.set(collectorMotor.getVelocity());
-                gamePieceCollected.set(currentMotorVelocity.get() < 500 );
+                gamePieceCollected = collectorMotor.getVelocity() < 500;
             }else{
-                gamePieceCollected.set(false);
+                gamePieceCollected = false;
             }
             //if game piece is collected, rumble controller
 
@@ -159,9 +160,13 @@ public class CollectorSubsystem extends BaseSubsystem {
                 oi.operatorGamepad.getRumbleManager().stopGamepadRumble();
             }
         }
+
+        Logger.getInstance().recordOutput(this.getPrefix() + "CollectorState", currentState.toString());
+        Logger.getInstance().recordOutput(this.getPrefix() + "GamePieceCollected", gamePieceCollected);
+        Logger.getInstance().recordOutput(this.getPrefix() + "Pressure", pressureSensor.getVoltage());
     }
 
     public boolean getGamePieceCollected() {
-        return gamePieceCollected.get();
+        return gamePieceCollected;
     }
 }

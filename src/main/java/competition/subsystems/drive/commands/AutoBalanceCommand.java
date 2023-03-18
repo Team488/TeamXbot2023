@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
+import org.littletonrobotics.junction.Logger;
 import xbot.common.command.BaseCommand;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.math.PIDManager;
@@ -34,8 +35,6 @@ public class AutoBalanceCommand extends BaseCommand {
         Complete
     }
 
-    private final StringProperty balanceStateProp;
-
     private BalanceState currentBalanceState = BalanceState.Analyzing;
 
     @Inject
@@ -54,7 +53,6 @@ public class AutoBalanceCommand extends BaseCommand {
             
         this.firstAttemptSpeedProperty = pf.createPersistentProperty("firstAttemptSpeed", 0.35);
         speedMultiplierProperty = pf.createPersistentProperty("speedMultiplier", 0.5);
-        balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");
     }
 
     // Basic idea:
@@ -161,7 +159,7 @@ public class AutoBalanceCommand extends BaseCommand {
                 break;
         }
 
-        balanceStateProp.set(currentBalanceState.toString());
+        Logger.getInstance().recordOutput(getPrefix()+"BalanceState", currentBalanceState.toString());
         drive.setVelocityMaintainerXTarget(velocityGoal);
     }
 

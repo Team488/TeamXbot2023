@@ -3,6 +3,7 @@ package competition.subsystems.claw;
 import competition.electrical_contract.ElectricalContract;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import xbot.common.advantage.DataFrameRefreshable;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.command.NamedRunCommand;
 import xbot.common.controls.actuators.XCANSparkMax;
@@ -13,7 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class ClawGripperMotorSubsystem extends BaseSubsystem {
+public class ClawGripperMotorSubsystem extends BaseSubsystem implements DataFrameRefreshable {
     private final ElectricalContract electricalContract;
 
     private final DoubleProperty intakePower;
@@ -78,5 +79,13 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
 
         }
         return null;
+    }
+
+    @Override
+    public void refreshDataFrame() {
+        if (electricalContract.areClawMotorsReady()) {
+            leaderMotor.refreshDataFrame();
+            followerMotor.refreshDataFrame();
+        }
     }
 }

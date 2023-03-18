@@ -180,5 +180,6 @@ public class ControlEndEffectorPositionCommandTest extends BaseCompetitionTest {
     private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
         ((MockDutyCycleEncoder)arm.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
         ((MockDutyCycleEncoder)arm.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
+        arm.refreshDataFrame();
     }
 }

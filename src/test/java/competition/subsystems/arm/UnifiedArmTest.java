@@ -144,5 +144,6 @@ public class UnifiedArmTest extends BaseCompetitionTest {
     private void setArmAngles(double lowerArmAngle, double upperArmAngle) {
         ((MockDutyCycleEncoder)arms.lowerArm.absoluteEncoder).setRawPosition(lowerArmAngle/360.0);
         ((MockDutyCycleEncoder)arms.upperArm.absoluteEncoder).setRawPosition(upperArmAngle/360.0);
+        arms.refreshDataFrame();
     }
 }

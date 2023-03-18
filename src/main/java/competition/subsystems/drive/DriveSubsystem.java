@@ -319,6 +319,11 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
                 this.getPrefix() + "RotationTargetRadPerSec", targetRotationRadiansPerSecond);
 
+        ChassisSpeeds targetMotion = new ChassisSpeeds(targetXmetersPerSecond, targetYmetersPerSecond, targetRotationRadiansPerSecond);
+
+        /* For now, commenting all this out, as we have been driving with the baesline code for a very long time now.
+        // No need to shake the boat.
+        //
         // The WPI Swerve kinematics library has a fundamental issue (see https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/22)
         // for more details) where adding rotation to a translation will "drift" translation in the direction of the rotation.
         // The CheesyPoofs have an interesting solution: project your desired position "ahead" of you by multiplying your commanded velocities
@@ -346,11 +351,13 @@ public class DriveSubsystem extends BaseDriveSubsystem implements DataFrameRefre
         org.littletonrobotics.junction.Logger.getInstance().recordOutput(
                 this.getPrefix() + "TwistedRot", twistedChassisSpeeds.omegaRadiansPerSecond);
 
+         */
+
         // One optional step - we can choose to rotate around a specific point, rather than the center of the robot.
         Translation2d centerOfRotationTranslationMeters = new Translation2d(
                 centerOfRotationInches.x / BasePoseSubsystem.INCHES_IN_A_METER,
                 centerOfRotationInches.y / BasePoseSubsystem.INCHES_IN_A_METER);
-        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(twistedChassisSpeeds, centerOfRotationTranslationMeters);
+        SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(targetMotion, centerOfRotationTranslationMeters);
 
         // Another potentially optional step - it's possible that in the calculations above, one or more swerve modules could be asked to
         // move at higer than its maximum speed. At this point, we have a choice. Either:

@@ -88,9 +88,6 @@ public class OperatorCommandMap {
             GoToNextActiveSwerveModuleCommand nextModule,
             DebuggingSwerveWithJoysticksCommand debugSwerve,
             SwerveDriveWithJoysticksCommand regularSwerve,
-            PositionMaintainerCommand positionMaintainer,
-            PositionDriveWithJoysticksCommand positionDrive,
-            VelocityDriveWithJoysticksCommand velocityDrive,
             BrakeCommand setWheelsToXMode,
             SwerveToNearestScoringPositionCommand swerveNearestScoring,
             Provider<SwerveToNextScoringPositionCommand> swerveNextScoringProvider,
@@ -98,8 +95,6 @@ public class OperatorCommandMap {
             MoveRightInchByInchCommand moveRight,
             ManualBalanceModeCommand setManualBalanceMode
             ) {
-
-        resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
         SetRobotHeadingCommand backwardHeading = headingProvider.get();
         SetRobotHeadingCommand resetHeading = headingProvider.get();
@@ -183,12 +178,12 @@ public class OperatorCommandMap {
             AutoBalanceCommand balanceCommand) {
         //oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
         //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
+        //velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject
     public void setupGeneralSwerveCommands(SetSwerveMotorControllerPidParametersCommand setSteeringPidValues) {
-        setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
+        // setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
     }
 
     @Inject
