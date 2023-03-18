@@ -25,8 +25,8 @@ public class CollectorSubsystem extends BaseSubsystem {
     private CollectorState currentState;
     final ElectricalContract contract;
     public final DoubleProperty currentMotorVelocity;
-    public double intakeTime;
-    public double currentIntakeTime;
+    public DoubleProperty intakeTime;
+    public DoubleProperty currentIntakeTime;
     private final BooleanProperty gamePieceCollected;
     boolean intake = false;
     private int loopCount;
@@ -56,6 +56,8 @@ public class CollectorSubsystem extends BaseSubsystem {
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -1);
 
+        currentIntakeTime = pf.createEphemeralProperty("currentIntakeTime", 0);
+        intakeTime = pf.createEphemeralProperty("intakeTime", 0);
         currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
         gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
     }
@@ -90,7 +92,7 @@ public class CollectorSubsystem extends BaseSubsystem {
     public void intake() {
         setMotorPower(intakePower.get());
         if (!intake) {
-            intakeTime = XTimer.getFPGATimestamp();
+            intakeTime.set(XTimer.getFPGATimestamp());
         }
         intake = true;
     }
@@ -138,8 +140,8 @@ public class CollectorSubsystem extends BaseSubsystem {
             if (loopCount % 250 == 0) {
                 log.info("PressureSensorValue:" + pressureSensor.getVoltage());
             }
-            currentIntakeTime = XTimer.getFPGATimestamp();
-            if ((currentIntakeTime - intakeTime > 0.5) && intake) {
+            currentIntakeTime.set(XTimer.getFPGATimestamp());
+            if ((currentIntakeTime.get() - intakeTime.get() > 0.5) && intake) {
                 //check current RPM is less than 500
                 currentMotorVelocity.set(collectorMotor.getVelocity());
                 gamePieceCollected.set(currentMotorVelocity.get() < 500 );
