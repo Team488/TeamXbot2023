@@ -12,6 +12,7 @@ import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
+import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
 import competition.subsystems.arm.UnifiedArmSubsystem.RobotFacing;
@@ -30,6 +31,8 @@ import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
 import competition.subsystems.drive.commands.DebuggingSwerveWithJoysticksCommand;
 import competition.subsystems.drive.commands.GoToNextActiveSwerveModuleCommand;
+import competition.subsystems.drive.commands.MoveLeftInchByInchCommand;
+import competition.subsystems.drive.commands.MoveRightInchByInchCommand;
 import competition.subsystems.drive.commands.ManualBalanceModeCommand;
 import competition.subsystems.drive.commands.PositionDriveWithJoysticksCommand;
 import competition.subsystems.drive.commands.PositionMaintainerCommand;
@@ -91,7 +94,10 @@ public class OperatorCommandMap {
             BrakeCommand setWheelsToXMode,
             SwerveToNearestScoringPositionCommand swerveNearestScoring,
             Provider<SwerveToNextScoringPositionCommand> swerveNextScoringProvider,
-            ManualBalanceModeCommand setManualBalanceMode) {
+            MoveLeftInchByInchCommand moveLeft,
+            MoveRightInchByInchCommand moveRight,
+            ManualBalanceModeCommand setManualBalanceMode
+            ) {
 
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
@@ -118,6 +124,25 @@ public class OperatorCommandMap {
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
 
+        var povDown = oi.driverGamepad.getPovIfAvailable(180);
+        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
+        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+
+        var brakesButton = oi.driverGamepad.getifAvailable(XboxButton.X);
+        chordFactory.create(
+                brakesButton,
+                povLeft).whileTrue(moveLeft);
+        chordFactory.create(
+                brakesButton,
+                povRight).whileTrue(moveRight);
+        chordFactory.create(
+                chordFactory.create(
+                        povLeft.negate(),
+                        povRight.negate()
+                ),
+                brakesButton
+        ).whileTrue(setWheelsToXMode);
+
         //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
         //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
@@ -127,12 +152,10 @@ public class OperatorCommandMap {
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.X).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
 
-        var povDown = oi.driverGamepad.getPovIfAvailable(180);
-        var povLeft = oi.driverGamepad.getPovIfAvailable(270);
-        var povRight = oi.driverGamepad.getPovIfAvailable(90);
+        brakesButton.whileTrue(setWheelsToXMode);
+
         var scoringPositionModeButton = oi.driverGamepad.getifAvailable(XboxButton.Y);
         chordFactory.create(
                 scoringPositionModeButton,
@@ -141,7 +164,7 @@ public class OperatorCommandMap {
         var swerveLeftScoringPosition = swerveNextScoringProvider.get();
         swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
         var swerveRightScoringPosition = swerveNextScoringProvider.get();
-        swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
+        swerveRightScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Right);
         chordFactory.create(
                 scoringPositionModeButton,
                 povLeft
@@ -237,7 +260,13 @@ public class OperatorCommandMap {
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
-                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram) {
+                                        ParameterizedAutonomousProgram parameterizedAutonomousProgram,
+                                        ScoreCubeMidCommandGroup scoreCubeMid) {
+
+        var scoreCubeMidThenStop = setAutonomousCommandProvider.get();
+        scoreCubeMidThenStop.setAutoCommand(scoreCubeMid);
+        scoreCubeMidThenStop.includeOnSmartDashboard("AutoPrograms/ScoreCubeMidThenStop");
+        oi.experimentalGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(scoreCubeMidThenStop);
 
         // These three programs have all been tested to "work" on blocks at least once.
         var setPositionFiveToBalance = setAutonomousCommandProvider.get();
@@ -308,6 +337,7 @@ public class OperatorCommandMap {
             Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             SimpleSafeArmRouterCommand router,
             ScoreCubeHighThenLeaveProgram scoreCubeHigh,
+            ScoreCubeMidCommandGroup scoreCubeMid,
             CollectorSubsystem collector,
             CollectIfSafeCommand collectIfSafe,
             MoveCollectedGamepieceToArmCommandGroup moveCollectedGamepieceToArmCommandGroup,
@@ -386,9 +416,15 @@ public class OperatorCommandMap {
         setRetractXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.FullyRetracted, RobotFacing.Forward);
         var setSubstationXZ = simpleXZRouterCommandProvider.get();
         setSubstationXZ.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+
         var setPrepareToPickupFromCollectorXZ = simpleXZRouterCommandProvider.get();
         setPrepareToPickupFromCollectorXZ.setKeyPointFromKeyArmPosition(
                 KeyArmPosition.PrepareToAcquireFromCollector, RobotFacing.Forward);
+
+        var prepareToPickupAndOpenClaw = new ParallelCommandGroup(
+                setPrepareToPickupFromCollectorXZ,
+                new InstantCommand(claw::open, claw)
+        );
 
         var smartOrDumbCollectionMode = new ConditionalCommand(
                 setArmsToCollectPositionCommand,
@@ -420,10 +456,10 @@ public class OperatorCommandMap {
                 arm::getEngageSpecialUpperArmOverride
         );
 
-        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(setPrepareToPickupFromCollectorXZ);
+        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(prepareToPickupAndOpenClaw);
         oi.operatorGamepad.getifAvailable(XboxButton.B).onTrue(smartOrDumbScoreMedium);
         oi.operatorGamepad.getifAvailable(XboxButton.Y).onTrue(smartOrDumbScoreHigh);
-        oi.operatorGamepad.getifAvailable(XboxButton.X).onTrue(smartOrDumbCollectionMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.A).onTrue(smartOrDumbCollectionMode);
         //oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).onTrue(smartOrDumbCollectFromSubstation);
 
         InstantCommand setCubeMode = new InstantCommand(
@@ -431,7 +467,6 @@ public class OperatorCommandMap {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cube mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cube);
-                    arm.checkGamePieceMode(true);
                 });
 
         InstantCommand
@@ -440,7 +475,6 @@ public class OperatorCommandMap {
                     Logger log = LogManager.getLogger(OperatorCommandMap.class);
                     log.info("Setting cone mode");
                     arm.setGamePieceMode(UnifiedArmSubsystem.GamePieceMode.Cone);
-                    arm.checkGamePieceMode(false);
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
@@ -448,8 +482,8 @@ public class OperatorCommandMap {
         armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
-        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setConeMode);
-        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setCubeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
+        oi.operatorGamepad.getifAvailable(XboxButton.Start).onTrue(setCubeMode);
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 

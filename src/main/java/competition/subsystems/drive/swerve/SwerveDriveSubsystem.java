@@ -1,7 +1,6 @@
 package competition.subsystems.drive.swerve;
 
-import javax.inject.Inject;
-
+import com.revrobotics.CANSparkMax;
 import competition.electrical_contract.ElectricalContract;
 import competition.injection.swerve.SwerveInstance;
 import competition.injection.swerve.SwerveSingleton;
@@ -13,6 +12,8 @@ import xbot.common.controls.actuators.XCANSparkMax.XCANSparkMaxFactory;
 import xbot.common.math.PIDManager.PIDManagerFactory;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
+
+import javax.inject.Inject;
 
 @SwerveSingleton
 public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
@@ -48,6 +49,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
             this.motorController = sparkMaxFactory.createWithoutProperties(electricalContract.getDriveNeo(swerveInstance), this.getPrefix(), "DriveNeo");
             setupStatusFramesAsNeeded();
             this.motorController.setSmartCurrentLimit(45);
+            this.motorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
         }
     }
 

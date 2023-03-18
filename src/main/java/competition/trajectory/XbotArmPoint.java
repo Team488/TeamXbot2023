@@ -1,5 +1,6 @@
 package competition.trajectory;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class XbotArmPoint implements ProvidesInterpolationData {
@@ -21,5 +22,10 @@ public class XbotArmPoint implements ProvidesInterpolationData {
     @Override
     public double getSecondsForSegment() {
         return secondsForSegment;
+    }
+
+    @Override
+    public Rotation2d getRotation2d() {
+        return null; // Not relevant for arm
     }
 }

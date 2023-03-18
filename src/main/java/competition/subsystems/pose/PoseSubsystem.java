@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -136,7 +137,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
         if (getAlliance() == DriverStation.Alliance.Red && isAllianceAwareField()) {
             log.info("Detected red alliance and AllianceAwareField. Rotating angle 180 degrees.");
-            return rotation.rotateBy(Rotation2d.fromDegrees(180));
+            return Rotation2d.fromDegrees(rotation.getDegrees() - (rotation.getDegrees() - 90.0) * 2);
         }
         return rotation;
     }
@@ -186,7 +187,9 @@ public class PoseSubsystem extends BasePoseSubsystem {
         // Pull out the new estimated pose from odometry. Note that for now, we only pull out X and Y
         // and trust the gyro implicitly. Eventually, we should allow the gyro to be updated via vision
         // if we have a lot of confidence in the vision data.
-        var estimatedPosition = swerveOdometry.getEstimatedPosition();
+        var estimatedPosition = new Pose2d(
+                swerveOdometry.getEstimatedPosition().getTranslation(),
+                getCurrentHeading());
 
         // Convert back to inches
         double prevTotalDistanceX = totalDistanceX;
@@ -319,13 +322,13 @@ public class PoseSubsystem extends BasePoseSubsystem {
         return robotOrientedVelocityVector.x;
     }
 
+    public DoubleProperty getMatchTime(){
+        return matchTime;
+    }
+
     @Override
     public void periodic() {
         super.periodic();
         Logger.getInstance().recordOutput(this.getPrefix()+ "MatchTime", DriverStation.getMatchTime());
     }
-    public double getMatchTime(){
-        return DriverStation.getMatchTime();
-    }
-
 }

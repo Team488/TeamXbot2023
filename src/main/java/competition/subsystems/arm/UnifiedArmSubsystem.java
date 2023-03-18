@@ -24,6 +24,7 @@ import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.function.Supplier;
 
 @Singleton
 public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implements DataFrameRefreshable {
@@ -566,12 +567,12 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> implement
         return new InstantCommand(() -> setGamePieceMode(gamePiece));
     }
 
-    public void checkGamePieceMode(boolean cubeMode){
-        this.cubeMode = cubeMode;
+    public Command createSetGamePieceModeCommandFromSupplier(Supplier<GamePieceMode> gamePieceSupplier){
+        return new InstantCommand(() -> setGamePieceMode(gamePieceSupplier.get()));
     }
 
     public boolean isCubeMode(){
-        return cubeMode;
+        return gamePieceMode == GamePieceMode.Cube;
     }
 
     public Translation2d convertOldArmAnglesToXZPositions(XYPair oldArmAngles) {

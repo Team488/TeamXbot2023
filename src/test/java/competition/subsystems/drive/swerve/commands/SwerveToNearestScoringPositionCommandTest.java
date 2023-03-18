@@ -97,9 +97,12 @@ public class SwerveToNearestScoringPositionCommandTest extends BaseFullSwerveTes
         command.initialize();
         command.execute();
 
-        assertEquals(AutoLandmarks.blueScoringPositionOne.getX(), command.getActiveTargetPosition().x, 0.01);
-        assertEquals(AutoLandmarks.blueScoringPositionOne.getY(), command.getActiveTargetPosition().y, 0.01);
-        assertEquals(AutoLandmarks.blueScoringPositionOne.getRotation().getDegrees(), command.getActiveHeading(), 0.01);
+        assertEquals(2, command.getKeyPoints().size());
+        assertEquals(AutoLandmarks.blueScoringPositionOne.getX(), command.getKeyPoints().get(1).keyPose.getX(), 0.01);
+        assertEquals(AutoLandmarks.blueScoringPositionOne.getY(), command.getKeyPoints().get(1).keyPose.getY(), 0.01);
+        assertEquals(AutoLandmarks.blueScoringPositionOne.getRotation().getDegrees(), command.getKeyPoints().get(1).keyPose.getRotation().getDegrees(), 0.01);
+
+        assertTrue(command.getKeyPoints().get(0).keyPose.getX() > command.getKeyPoints().get(1).keyPose.getX());
     }
 
     @Test
@@ -114,9 +117,10 @@ public class SwerveToNearestScoringPositionCommandTest extends BaseFullSwerveTes
         command.initialize();
         command.execute();
 
-        assertEquals(pose.getCurrentPose2d().getX(), command.getActiveTargetPosition().x, 0.01);
-        assertEquals(pose.getCurrentPose2d().getY(), command.getActiveTargetPosition().y, 0.01);
-        assertEquals(pose.getCurrentPose2d().getRotation().getDegrees(), command.getActiveHeading(), 0.01);
+        assertEquals(1, command.getKeyPoints().size());
+        assertEquals(pose.getCurrentPose2d().getX(), command.getKeyPoints().get(0).keyPose.getX(), 0.01);
+        assertEquals(pose.getCurrentPose2d().getY(), command.getKeyPoints().get(0).keyPose.getY(), 0.01);
+        assertEquals(pose.getCurrentPose2d().getRotation().getDegrees(), command.getKeyPoints().get(0).keyPose.getRotation().getDegrees(), 0.01);
     }
 
 }

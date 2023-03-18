@@ -21,6 +21,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     private final DoubleProperty lowerArmErrorThresholdToEngageBrake;
     private final DoubleProperty lowerArmErrorThresholdToDisengageBrake;
     private final TimeStableValidator lowerArmBrakeValidator;
+    private DoubleProperty upperArmPowerLimiter;
 
     @Inject
     public UnifiedArmMaintainer(
@@ -35,6 +36,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
         lowerArmErrorThresholdToEngageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToEngageBrake",2.0);
         lowerArmErrorThresholdToDisengageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToDisengageBrake",4.0);
         lowerArmBrakeValidator = new TimeStableValidator(1);
+        upperArmPowerLimiter = pf.createPersistentProperty("UpperArmPowerLimiter",0.5);
     }
 
     @Override
@@ -46,6 +48,10 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     protected void humanControlAction() {
         // If the human is trying to move the arm, we should disable the brake.
         double lowerArmHumanInput = getHumanInput().x;
+        double upperArmHumanInput = getHumanInput().y;
+        if (upperArmHumanInput<0) { //If the human is trying to upper arm down, limit the power because it is too fast
+            upperArmHumanInput*=upperArmPowerLimiter.get();
+        }
         if (Math.abs(lowerArmHumanInput) > decider.getDeadband())
         {
             boolean engageBrake = false;
