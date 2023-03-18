@@ -104,10 +104,6 @@ public class OperatorCommandMap {
         SetRobotHeadingCommand backwardHeading = headingProvider.get();
         SetRobotHeadingCommand resetHeading = headingProvider.get();
         resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
-        forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
-        backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
-        forwardHeading.includeOnSmartDashboard("setHeadingForward");
-        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
@@ -147,9 +143,9 @@ public class OperatorCommandMap {
         //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
 
 
-        positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
-        velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
-        positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
+        //positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
+        //velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
+        //positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
@@ -216,8 +212,8 @@ public class OperatorCommandMap {
                     return angleTarget.get();
                 });
 
-        swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
-        swerveToPoint.setMaxPower(0.35);
+        //swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
+        //swerveToPoint.setMaxPower(0.35);
 
         // Precision Commands
         StartEndCommand activatePrecisionDriving = new StartEndCommand(

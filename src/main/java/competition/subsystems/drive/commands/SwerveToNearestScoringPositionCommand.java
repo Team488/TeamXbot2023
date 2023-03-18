@@ -37,6 +37,7 @@ public class SwerveToNearestScoringPositionCommand extends SwerveSimpleTrajector
         super(drive, pose, pf, headingModuleFactory);
         this.rumbleManager = oi.driverGamepad.getRumbleManager();
 
+        pf.setPrefix("SwerveToNearestScoringPositionCommand");
         maxTravelDistanceProp = pf.createPersistentProperty("Maximum travel distance inches", 100);
         bufferSpaceProp = pf.createPersistentProperty("Buffer space", 2);
     }

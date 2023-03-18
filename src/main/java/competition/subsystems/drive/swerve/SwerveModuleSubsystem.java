@@ -27,8 +27,8 @@ public class SwerveModuleSubsystem extends BaseSubsystem {
     private final SwerveDriveSubsystem driveSubsystem;
     private final SwerveSteeringSubsystem steeringSubsystem;
 
-    private final DoubleProperty xOffsetInches;
-    private final DoubleProperty yOffsetInches;
+    private double xOffsetInches;
+    private double yOffsetInches;
 
     private final Translation2d moduleTranslation;
 
@@ -45,12 +45,12 @@ public class SwerveModuleSubsystem extends BaseSubsystem {
         this.steeringSubsystem = steeringSubsystem;
 
         XYPair defaultModuleOffsets = contract.getSwerveModuleOffsets(swerveInstance);
-        this.xOffsetInches = pf.createPersistentProperty("XOffsetInches", defaultModuleOffsets.x);
-        this.yOffsetInches = pf.createPersistentProperty("YOffsetInches", defaultModuleOffsets.y);
+        this.xOffsetInches = defaultModuleOffsets.x;
+        this.yOffsetInches = defaultModuleOffsets.y;
 
         this.moduleTranslation = new Translation2d(
-            xOffsetInches.get() / BasePoseSubsystem.INCHES_IN_A_METER,
-            yOffsetInches.get() / BasePoseSubsystem.INCHES_IN_A_METER);
+            xOffsetInches / BasePoseSubsystem.INCHES_IN_A_METER,
+            yOffsetInches / BasePoseSubsystem.INCHES_IN_A_METER);
 
         this.targetState = new SwerveModuleState();
     }

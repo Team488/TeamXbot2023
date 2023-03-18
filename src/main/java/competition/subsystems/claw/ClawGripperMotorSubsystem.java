@@ -32,8 +32,8 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
         electricalContract = eContract;
 
         if (eContract.areClawMotorsReady()) {
-            leaderMotor = sparkMaxFactory.create(eContract.getRightClawMotor(), getPrefix(), "Leader claw motor");
-            followerMotor = sparkMaxFactory.create(eContract.getLeftClawMotor(), getPrefix(), "Follower claw motor");
+            leaderMotor = sparkMaxFactory.createWithoutProperties(eContract.getRightClawMotor(), getPrefix(), "Leader claw motor");
+            followerMotor = sparkMaxFactory.createWithoutProperties(eContract.getLeftClawMotor(), getPrefix(), "Follower claw motor");
 
             leaderMotor.setSmartCurrentLimit(40);
             followerMotor.setSmartCurrentLimit(40);

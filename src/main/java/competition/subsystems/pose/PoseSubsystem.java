@@ -322,10 +322,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
         return robotOrientedVelocityVector.x;
     }
 
-    public DoubleProperty getMatchTime(){
-        return matchTime;
-    }
-
     @Override
     public void periodic() {
         super.periodic();

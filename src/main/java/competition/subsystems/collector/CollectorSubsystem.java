@@ -47,7 +47,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         this.oi = oi;
         this.currentState = CollectorState.Retracted;
         if (contract.isCollectorReady()) {
-            this.collectorMotor = sparkMaxFactory.create(eContract.getCollectorMotor(), getPrefix(), "CollectorMotor");
+            this.collectorMotor = sparkMaxFactory.createWithoutProperties(eContract.getCollectorMotor(), getPrefix(), "CollectorMotor");
             this.collectorSolenoid = xSolenoidFactory.create(eContract.getCollectorSolenoid().channel);
             collectorMotor.setSmartCurrentLimit(5);
             pressureSensor = analogInputFactory.create(eContract.getPressureSensor().channel);
