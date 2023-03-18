@@ -47,7 +47,6 @@ public class AutoLandmarks {
 
     // Other useful landmarks
     public static Pose2d blueNorthOfChargingStationOutsideCommunity = new Pose2d(185, 180, Rotation2d.fromDegrees(0));
-    public static Pose2d blueNorthOfChargingStationGamePiece = new Pose2d(266, 180,Rotation2d.fromDegrees(0));
 
     private static Pose2d convertBluetoRed(Pose2d blueCoordinates){
         double fieldMidpoint = 325.0;

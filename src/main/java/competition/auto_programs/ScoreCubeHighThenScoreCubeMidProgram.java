@@ -41,7 +41,7 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
         moveToGamePiece.setMaxTurningPower(0.5);
         //move to game piece
         moveToGamePiece.setTargetSupplier(() -> {
-            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueNorthOfChargingStationGamePiece).getTranslation();
+            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
             return new XYPair(XY.getX(), XY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
 
