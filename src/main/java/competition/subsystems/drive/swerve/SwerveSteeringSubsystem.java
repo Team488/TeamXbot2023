@@ -76,7 +76,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         this.degreesPerMotorRotation = pf.createPersistentProperty("DegreesPerMotorRotation", 28.1503);
         this.useMotorControllerPid = pf.createPersistentProperty("UseMotorControllerPID", true);
         this.maxMotorEncoderDrift = pf.createPersistentProperty("MaxEncoderDriftDegrees", 1.0);
-        this.isSwerveBusted = pf.createPersistentProperty("isSwerveBusted?", false);
+        this.isSwerveBusted = pf.createEphemeralProperty("isSwerveBusted", false);
 
         // Create properties that are unique to each instance
         pf.setPrefix(this);
@@ -369,8 +369,12 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         currentModuleHeadingRotation2d = Rotation2d.fromDegrees(positionInDegrees);
 
 
-        isSwerveBusted =  checkSwerve(if(Math.abs(targetDegrees- currentModuleHeading.get()) > 40 ))
+        isSwerveBusted.set(checkSwerve.checkStable(WrappedRotation2d.fromDegrees(targetDegrees-currentModuleHeading.get()).getDegrees() >3));
 
 
+    }
+
+    public boolean getIsSwerveBusted(){
+        return isSwerveBusted.get();
     }
 }

@@ -130,6 +130,20 @@ public class SwerveSteeringSubsystemTest extends BaseCompetitionTest {
 
         assertEquals("CanCoder position should be 10", 10, subsystem.getAbsoluteEncoderPositionInDegrees(), 0.001);
         assertEquals("Neo encoder should not be updated since robot is in motion", 50, subsystem.getMotorControllerEncoderPosiitonInDegrees(), 0.001);
+
+
+    }
+    @Test
+    public void testSwerveIsBrokenCheck(){
+        absoluteEncoder.setAbsolutePosition(179);
+        subsystem.setTargetValue(100.0);
+        subsystem.periodic();
+        assertEquals(false, subsystem.getIsSwerveBusted() );
+
+        timer.advanceTimeInSecondsBy(6);
+        subsystem.periodic();
+        assertEquals(true, subsystem.getIsSwerveBusted() );
+
     }
 
 }
