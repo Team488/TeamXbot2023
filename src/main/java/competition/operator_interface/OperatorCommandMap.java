@@ -13,6 +13,7 @@ import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
 import competition.auto_programs.support.AutonomousOracle;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
+import competition.commandgroups.ScoreConeHighCommandGroup;
 import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -263,13 +264,18 @@ public class OperatorCommandMap {
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
                                         ParameterizedAutonomousProgram parameterizedAutonomousProgram,
                                         AutonomousOracle oracle,
-                                        ScoreCubeMidCommandGroup scoreCubeMid) {
+                                        ScoreCubeMidCommandGroup scoreCubeMid,
+                                        ScoreConeHighCommandGroup scoreConeHigh) {
 
         var scoreCubeMidThenStop = setAutonomousCommandProvider.get();
         scoreCubeMidThenStop.setAutoCommand(scoreCubeMid);
         scoreCubeMidThenStop.includeOnSmartDashboard("AutoPrograms/ScoreCubeMidThenStop");
         oi.experimentalGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(scoreCubeMidThenStop);
 
+        var scoreConeHighThenStop = setAutonomousCommandProvider.get();
+        scoreConeHighThenStop.setAutoCommand(scoreConeHigh);
+        scoreConeHighThenStop.includeOnSmartDashboard("AutoPrograms/ScoreConeHighThenStop");
+        oi.experimentalGamepad.getifAvailable(XboxButton.RightBumper).onTrue(scoreConeHighThenStop);
         // These three programs have all been tested to "work" on blocks at least once.
         var setPositionFiveToBalance = setAutonomousCommandProvider.get();
         setPositionFiveToBalance.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
