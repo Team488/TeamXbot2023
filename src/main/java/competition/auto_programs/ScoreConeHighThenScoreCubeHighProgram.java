@@ -2,6 +2,8 @@ package competition.auto_programs;
 
 import competition.commandgroups.CollectionSequenceCommandGroup;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
+import competition.commandgroups.ScoreCubeHighCommandGroup;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.CloseClawCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
@@ -17,13 +19,16 @@ public class ScoreConeHighThenScoreCubeHighProgram extends SequentialCommandGrou
                                           CloseClawCommand closeClaw,
                                           PoseSubsystem pose,
                                           SwerveToPointCommand moveToGamePiece,
-                                          CollectionSequenceCommandGroup collect
+                                          SwerveToPointCommand moveToScore,
+                                          CollectionSequenceCommandGroup collect,
+                                          ScoreCubeHighCommandGroup scoreCubeHigh
                                           ){
         //score cone high
 
         //move to game piece
         moveToGamePiece.setFieldRelativeMotion();
         moveToGamePiece.setMaxPower(0.5);
+        moveToGamePiece.setMaxTurningPower(0.5);
         moveToGamePiece.setTargetSupplier(()->{
             var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
                     return new XYPair(XY.getX(), XY.getY());
@@ -31,5 +36,23 @@ public class ScoreConeHighThenScoreCubeHighProgram extends SequentialCommandGrou
 
         var collectGamePiece = new SequentialCommandGroup(new ParallelCommandGroup(moveToGamePiece,collect), moveGamePieceToClaw);
         this.addCommands(collectGamePiece);
+
+        //move to scoring position
+        moveToScore.setFieldRelativeMotion();
+        moveToScore.setMaxPower(0.5);
+        moveToScore.setMaxTurningPower(0.5);
+
+        moveToScore.setTargetSupplier(() -> {
+            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight).getTranslation();
+            return new XYPair(XY.getX(),XY.getY());
+        }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
+
+        var driveToScoreCube = new ParallelCommandGroup(moveToScore,scoreCubeHigh);
+        this.addCommands(driveToScoreCube);
+
+        //retract arm and close claw
+        retractArm.setKeyPointFromKeyArmPosition(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted, UnifiedArmSubsystem.RobotFacing.Forward);
+        var retractArmAndClaw = new ParallelCommandGroup(retractArm, closeClaw);
+        this.addCommands(retractArmAndClaw);
     }
 }
