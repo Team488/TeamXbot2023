@@ -1,6 +1,7 @@
 package competition.auto_programs;
 
 import competition.commandgroups.CollectionSequenceCommandGroup;
+import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.commandgroups.ScoreCubeHighCommandGroup;
 import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -27,9 +28,9 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
     ScoreCubeHighThenScoreCubeMidProgram(ScoreCubeHighThenLeaveProgram scoreCubeHigh,
                                          CollectionSequenceCommandGroup collect,
                                          SwerveToPointCommand moveToGamePiece,
-                                         TurnLeft180DegreesCommand turnToCube,
                                          SwerveToPointCommand driveToScoreMid,
                                          ScoreCubeMidCommandGroup scoreCubeMid,
+                                         MoveCollectedGamepieceToArmCommandGroup moveGamePieceToClaw,
                                          SimpleXZRouterCommand retractArm,
                                          ClawGripperMotorSubsystem claw,
                                          CloseClawCommand closeClaw,
@@ -43,15 +44,11 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
         moveToGamePiece.setTargetSupplier(() -> {
             var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
             return new XYPair(XY.getX(), XY.getY());
-        }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
+        }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
 
-        var driveToGamePieceAndCollect = new SequentialCommandGroup(new ParallelCommandGroup(moveToGamePiece, turnToCube), collect);
+        var driveToGamePieceAndCollect = new SequentialCommandGroup(new ParallelCommandGroup(moveToGamePiece, collect),moveGamePieceToClaw);
         this.addCommands(driveToGamePieceAndCollect);
 
-        //grab onto cube
-        var grabCube = new InstantCommand(() -> claw.setIntake());
-        var grabCubeAndWait = new ParallelDeadlineGroup(new WaitCommand(3),grabCube);
-        this.addCommands(grabCubeAndWait);
         //drive to mid scoring position
         driveToScoreMid.setFieldRelativeMotion();
         driveToScoreMid.setMaxPower(0.5);
