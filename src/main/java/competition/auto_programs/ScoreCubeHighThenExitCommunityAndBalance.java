@@ -29,7 +29,9 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
             ScoreCubeHighCommandGroup scoreCubeHigh,
             SimpleXZRouterCommand retractArm,
             CloseClawCommand closeClaw,
+            SwerveSimpleTrajectoryCommand turnTowardsField,
             SwerveSimpleTrajectoryCommand exitCommunity,
+            SwerveSimpleTrajectoryCommand turnTowardsCommunity,
             SwerveSimpleTrajectoryCommand mantleChargePlate,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
@@ -62,6 +64,22 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
 
         this.addCommands(retractArmAndCloseClaw);
 
+        turnTowardsField.setMaxPower(1.0);
+        turnTowardsField.setMaxTurningPower(0.5);
+        turnTowardsField.setKeyPointsProvider(
+                () -> {
+                    // Turn around while backing up to prepare for mantling
+                    var backOffFromScoringPositionsAndTurnAround =
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationMantleFromLeft);
+                    XbotSwervePoint backOffAndTurnAround = new XbotSwervePoint(
+                            backOffFromScoringPositionsAndTurnAround.getX(),
+                            backOffFromScoringPositionsAndTurnAround.getY(),
+                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
+                            1.0);
+                    return new ArrayList<>(List.of(backOffAndTurnAround));
+                });
+        this.addCommands(turnTowardsField);
+
         exitCommunity.setMaxPower(1.0);
         exitCommunity.setMaxTurningPower(0.5);
         exitCommunity.setKeyPointsProvider(
@@ -72,11 +90,28 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                     XbotSwervePoint getOnChargeStationAndExit = new XbotSwervePoint(
                             mantleChargeStationAndExitCommunity.getX(),
                             mantleChargeStationAndExitCommunity.getY(),
-                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
+                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
                             2.0);
                     return new ArrayList<>(List.of(getOnChargeStationAndExit));
                 });
         this.addCommands(exitCommunity);
+
+
+        turnTowardsCommunity.setMaxPower(1.0);
+        turnTowardsCommunity.setMaxTurningPower(0.5);
+        turnTowardsCommunity.setKeyPointsProvider(
+                () -> {
+                    // Turn around in place from the right side of charge station to prepare for mantling
+                    var turnAroundInPlace =
+                            AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationMantleFromRight);
+                    XbotSwervePoint turnAround = new XbotSwervePoint(
+                            turnAroundInPlace.getX(),
+                            turnAroundInPlace.getY(),
+                            pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
+                            1.0);
+                    return new ArrayList<>(List.of(turnAround));
+                });
+        this.addCommands(turnTowardsCommunity);
 
         mantleChargePlate.setMaxPower(1.0);
         mantleChargePlate.setMaxTurningPower(0.5);
@@ -96,15 +131,16 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
         this.addCommands(mantleChargePlate.withTimeout(3.0));
 
         // (Slight edit) With a 15-second budget, and subtracting 1 second for scoring,
-        // *2 seconds to get over charge station and exit community*,
-        // and 3 seconds for mantle, we have 9 seconds to balance.
+        // * 2 seconds to get over charge station and exit community*,
+        // * 2 total seconds to turn the robot around and prepare for the climb*,
+        // and 3 seconds for mantle, we have 7 seconds to balance.
         // to make 100% sure we engage the brakes, set a timeout for just under that.
 
         // 2 seconds is completely pulled out of thin air, not sure if it'll need more time.
         var balance = new ParallelRaceGroup(
                 autoBalance,
                 velocityMaintainer,
-                new WaitCommand(8.75)
+                new WaitCommand(6.75)
         );
         this.addCommands(balance);
         this.addCommands(brake);
