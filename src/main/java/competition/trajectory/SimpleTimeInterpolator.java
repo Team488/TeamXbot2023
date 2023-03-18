@@ -66,14 +66,14 @@ public class SimpleTimeInterpolator {
         // If we somehow have no points to visit, don't do anything.
         if (keyPoints.size() == 0) {
             log.warn("No key points to visit!");
-            return new InterpolationResult(currentLocation, true);
+            return new InterpolationResult(currentLocation, true, Rotation2d.fromDegrees(0));
         }
 
         var targetKeyPoint = keyPoints.get(index);
 
         if (targetKeyPoint.getSecondsForSegment() <= 0) {
             log.warn("Cannot have a keypoint with a time of 0 or less!");
-            return new InterpolationResult(currentLocation, true);
+            return new InterpolationResult(currentLocation, true, targetKeyPoint.getRotation2d());
         }
 
         // First, assume we are just going to our target. (This is what all trajectories will eventually
