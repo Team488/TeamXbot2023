@@ -1,5 +1,6 @@
 package competition.trajectory;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,9 +23,18 @@ public class SimpleTimeInterpolator {
         public Translation2d chasePoint;
         public boolean isOnFinalPoint;
 
+        public Rotation2d chaseHeading;
+
         public InterpolationResult(Translation2d chasePoint, boolean isOnFinalPoint) {
             this.chasePoint = chasePoint;
             this.isOnFinalPoint = isOnFinalPoint;
+            chaseHeading = null;
+        }
+
+        public InterpolationResult(Translation2d chasePoint, boolean isOnFinalPoint, Rotation2d chaseHeading) {
+            this.chasePoint = chasePoint;
+            this.isOnFinalPoint = isOnFinalPoint;
+            this.chaseHeading = chaseHeading;
         }
     }
 
@@ -103,7 +113,7 @@ public class SimpleTimeInterpolator {
         }
 
         boolean targetingFinalPoint = index == keyPoints.size()-1 && lerpFraction >= 1;
-        return new InterpolationResult(chasePoint, targetingFinalPoint);
+        return new InterpolationResult(chasePoint, targetingFinalPoint, targetKeyPoint.getRotation2d());
     }
 
 

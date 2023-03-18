@@ -1,15 +1,17 @@
 package competition.subsystems.drive.commands;
 
 import competition.subsystems.pose.PoseSubsystem;
+import competition.trajectory.ProvidesInterpolationData;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import xbot.common.math.WrappedRotation2d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class XbotSwervePoint {
+public class XbotSwervePoint implements ProvidesInterpolationData {
 
     public Pose2d keyPose;
 
@@ -41,4 +43,19 @@ public class XbotSwervePoint {
         }
         return new Trajectory(wpiStates);
     }
+
+    @Override
+    public Translation2d getTranslation2d() {
+        return keyPose.getTranslation();
+    }
+
+    @Override
+    public double getSecondsForSegment() {
+        return secondsToPoint;
+    }
+
+    @Override
+    public Rotation2d getRotation2d() {
+        return keyPose.getRotation();
+     }
 }
