@@ -1,5 +1,6 @@
 package competition.auto_programs;
 
+import competition.commandgroups.ScoreConeHighCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.claw.CloseClawCommand;
@@ -21,6 +22,7 @@ public class ScoreConeHighThenLeave extends SequentialCommandGroup {
     @Inject
     ScoreConeHighThenLeave(SimpleXZRouterCommand retractArm,
                            SwerveToPointCommand moveOutOfCommunity,
+                           ScoreConeHighCommandGroup scoreConeHigh,
                            DriveSubsystem drive,
                            PoseSubsystem pose){
         var forcePosition = new InstantCommand(() -> {
@@ -33,7 +35,7 @@ public class ScoreConeHighThenLeave extends SequentialCommandGroup {
         this.addCommands(forcePosition);
 
         //score cone high
-
+        this.addCommands(scoreConeHigh);
         //drive out of community
         moveOutOfCommunity.setFieldRelativeMotion();
         moveOutOfCommunity.setMaxPower(0.5);

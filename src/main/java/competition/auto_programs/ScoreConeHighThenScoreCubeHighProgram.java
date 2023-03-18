@@ -21,10 +21,11 @@ public class ScoreConeHighThenScoreCubeHighProgram extends SequentialCommandGrou
                                           SwerveToPointCommand moveToGamePiece,
                                           SwerveToPointCommand moveToScore,
                                           CollectionSequenceCommandGroup collect,
-                                          ScoreCubeHighCommandGroup scoreCubeHigh
+                                          ScoreCubeHighCommandGroup scoreCubeHigh,
+                                          ScoreConeHighThenLeave scoreConeHighThenLeave
                                           ){
         //score cone high
-
+        this.addCommands(scoreConeHighThenLeave);
         //move to game piece
         moveToGamePiece.setFieldRelativeMotion();
         moveToGamePiece.setMaxPower(0.5);
