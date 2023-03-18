@@ -11,6 +11,7 @@ import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
+import competition.auto_programs.support.AutonomousOracle;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
@@ -143,8 +144,8 @@ public class OperatorCommandMap {
                 brakesButton
         ).whileTrue(setWheelsToXMode);
 
-        //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
-        //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.Start).onTrue(enableCollectorRotation);
+        oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(disableCollectorRotation);
 
 
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
@@ -261,6 +262,7 @@ public class OperatorCommandMap {
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
                                         ParameterizedAutonomousProgram parameterizedAutonomousProgram,
+                                        AutonomousOracle oracle,
                                         ScoreCubeMidCommandGroup scoreCubeMid) {
 
         var scoreCubeMidThenStop = setAutonomousCommandProvider.get();
@@ -319,9 +321,8 @@ public class OperatorCommandMap {
 
         var setParameterizedAutonomousProgram = setAutonomousCommandProvider.get();
         setParameterizedAutonomousProgram.setAutoCommand(parameterizedAutonomousProgram);
-        setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParamaterizedAutonomousProgram");
-
-        // There are two autonomous
+        setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParameterizedAutonomousProgram");
+        SmartDashboard.putData("AutoPrograms/ConfigureOmniAuto", oracle.createTopLaneOmniAuto());
     }
 
     @Inject

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import xbot.common.command.NamedInstantCommand;
@@ -429,7 +430,7 @@ public class AutonomousOracle {
     // Autonomous "plans", mostly meant for testing
     // -------------------------------------------
 
-    public NamedInstantCommand createTopLaneOmniAuto() {
+    public WrapperCommand createTopLaneOmniAuto() {
         return new NamedInstantCommand("Top Lane Omni Auto", () -> {
             setLane(Lane.Top);
             setInitialScoringLocationIndex(7);
@@ -447,7 +448,7 @@ public class AutonomousOracle {
             setEnableMoveToScore(true);
             setEnableSecondScore(true);
             setEnableBalance(true);
-        });
+        }).ignoringDisable(true);
     }
 
     // -------------------------------------------
