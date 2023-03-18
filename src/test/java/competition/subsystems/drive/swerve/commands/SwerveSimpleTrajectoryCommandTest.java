@@ -1,6 +1,5 @@
 package competition.subsystems.drive.swerve.commands;
 
-import competition.BaseCompetitionTest;
 import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.XbotSwervePoint;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class SwerveSimpleTrajectoryCommandTest extends BaseFullSwerveTest {
         command.setKeyPoints(points);
 
         command.initialize();
-        var results = command.getKeyPoints();
+        var results = command.getResolvedKeyPoints();
 
         assertEquals(50, results.get(1).getSecondsForSegment(), 0.001);
     }
