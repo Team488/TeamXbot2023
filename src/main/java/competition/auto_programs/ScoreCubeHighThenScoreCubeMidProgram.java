@@ -36,6 +36,14 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
                                          CloseClawCommand closeClaw,
                                          PoseSubsystem pose) {
         this.addCommands(scoreCubeHigh);
+        //retract arm before moving
+        retractArm.setKeyPointFromKeyArmPosition(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted,
+                UnifiedArmSubsystem.RobotFacing.Forward);
+        var retractArmAndCloseClaw = new SequentialCommandGroup(
+                new WaitCommand(1),
+                new ParallelCommandGroup(retractArm, closeClaw).deadlineWith(new WaitCommand(5))
+        );
+        this.addCommands(retractArmAndCloseClaw);
 
         moveToGamePiece.setFieldRelativeMotion();
         moveToGamePiece.setMaxPower(0.5);
@@ -61,13 +69,6 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
 
         //score cube mid then retract arm
         this.addCommands(scoreCubeMid);
-
-        retractArm.setKeyPointFromKeyArmPosition(UnifiedArmSubsystem.KeyArmPosition.FullyRetracted,
-                UnifiedArmSubsystem.RobotFacing.Forward);
-        var retractArmAndCloseClaw = new SequentialCommandGroup(
-                new WaitCommand(1),
-                new ParallelCommandGroup(retractArm, closeClaw).deadlineWith(new WaitCommand(5))
-        );
         this.addCommands(retractArmAndCloseClaw);
 
 
