@@ -18,14 +18,14 @@ import xbot.common.properties.StringProperty;
 @Singleton
 public class LightsCommunicationSubsystem extends BaseSubsystem {
 
-    XDigitalOutput dio0;
-    XDigitalOutput dio1;
-    XDigitalOutput dio2;
-    XDigitalOutput dio3;
-    XDigitalOutput allianceDio;
-    XPWM analogOutput;
+    final XDigitalOutput dio0;
+    final XDigitalOutput dio1;
+    final XDigitalOutput dio2;
+    final XDigitalOutput dio3;
+    final XDigitalOutput dio4;
+    final XDigitalOutput allianceDio;
 
-    XDigitalOutput[] dioOutputs;
+    final XDigitalOutput[] dioOutputs;
 
     private int loopCounter;
     private final int loopMod = 5;
@@ -35,6 +35,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final BooleanProperty dio1Property;
     private final BooleanProperty dio2Property;
     private final BooleanProperty dio3Property;
+    private final BooleanProperty dio4Property;
     private final BooleanProperty allianceDioProperty;
 
     public enum ArduinoStateMessage {
@@ -61,9 +62,10 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio1 = digitalOutputFactory.create(contract.getArduinoDio1().channel);
         dio2 = digitalOutputFactory.create(contract.getArduinoDio2().channel);
         dio3 = digitalOutputFactory.create(contract.getArduinoDio3().channel);
+        dio4 = digitalOutputFactory.create(contract.getArduinoDio4().channel);
         allianceDio = digitalOutputFactory.create(contract.getArduinoAllianceDio().channel);
 
-        dioOutputs = new XDigitalOutput[] { dio3, dio2, dio1, dio0 };
+        dioOutputs = new XDigitalOutput[] { dio0, dio1, dio2, dio3, dio4 };
         loopCounter = 0;
 
         pf.setPrefix(this);
@@ -72,6 +74,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio1Property = pf.createEphemeralProperty("DIO1", false);
         dio2Property = pf.createEphemeralProperty("DIO2", false);
         dio3Property = pf.createEphemeralProperty("DIO3", false);
+        dio4Property = pf.createEphemeralProperty("DIO4", false);
         allianceDioProperty = pf.createEphemeralProperty("AllianceDIO", false);
 
         this.register();
@@ -101,14 +104,9 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
             currentState = ArduinoStateMessage.RobotEnabled;
         }
 
-        // Go through the bits of the state and set the appropriate dio
-        // We start at the right and work our way left, so we start at
-        // index 3 (picking up that leftmost 1). The dioOutputs array is ordered
-        // such that the element at index 3 is dio0 to match how the arduino currently
-        // parses the binary data.
         int stateValue = currentState.getValue();
-        for (int i = 3; i >= 0; i--) {
-            dioOutputs[3 - i].set(!((stateValue & (1 << i)) != 0));
+        for (int i = 0; i < dioOutputs.length; i++) {
+            dioOutputs[i].set(((stateValue & (1 << i)) != 0));
         }
 
         chosenState.set(currentState.toString());
@@ -116,6 +114,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio1Property.set(dio1.get());
         dio2Property.set(dio2.get());
         dio3Property.set(dio3.get());
+        dio4Property.set(dio4.get());
         allianceDioProperty.set(allianceDio.get());
     }
 }
