@@ -105,7 +105,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         }
 
         int stateValue = currentState.getValue();
-        for (int i = 0; i > dioOutputs.length; i++) {
+        for (int i = 0; i < dioOutputs.length; i++) {
             dioOutputs[i].set(((stateValue & (1 << i)) != 0));
         }
 
