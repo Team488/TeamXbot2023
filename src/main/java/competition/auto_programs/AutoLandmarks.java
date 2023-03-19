@@ -39,7 +39,7 @@ public class AutoLandmarks {
     public static Pose2d blueScoringPositionOne = new Pose2d(66, 20, Rotation2d.fromDegrees(-180));
     public static Pose2d blueScoringPositionTwo = new Pose2d(66, 42, Rotation2d.fromDegrees(-180));
     public static Pose2d blueScoringPositionThree = new Pose2d(66, 64, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionFour = new Pose2d(66, 88, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionFour = new Pose2d(66, 86, Rotation2d.fromDegrees(-180));
     public static Pose2d blueScoringPositionFive = new Pose2d(66, 108, Rotation2d.fromDegrees(-180));
     public static Pose2d blueScoringPositionSix = new Pose2d(66, 130, Rotation2d.fromDegrees(-180));
     public static Pose2d blueScoringPositionSeven = new Pose2d(66, 152, Rotation2d.fromDegrees(-180));
