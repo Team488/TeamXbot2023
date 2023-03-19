@@ -178,29 +178,32 @@ public class CompetitionContract extends ElectricalContract {
 
     @Override
     public DeviceInfo getArduinoDio0() {
-        return new DeviceInfo(4);
-    }
-
-    @Override
-    public DeviceInfo getArduinoDio1() {
         return new DeviceInfo(5);
     }
 
     @Override
-    public DeviceInfo getArduinoDio2() {
+    public DeviceInfo getArduinoDio1() {
         return new DeviceInfo(6);
     }
 
     @Override
-    public DeviceInfo getArduinoDio3() {
-        return new DeviceInfo(7); // something on the navX, just out of the way
+    public DeviceInfo getArduinoDio2() {
+        return new DeviceInfo(7);
     }
 
-    public DeviceInfo getArduinoDio4() {return new DeviceInfo(8);}
+    @Override
+    public DeviceInfo getArduinoDio3() {
+        return new DeviceInfo(8); // something on the navX, just out of the way
+    }
+
+    @Override
+    public DeviceInfo getArduinoDio4() {
+        return new DeviceInfo(9); // something on the navX, just out of the way
+    }
 
     @Override
     public DeviceInfo getArduinoAllianceDio() {
-        return new DeviceInfo(9);
+        return new DeviceInfo(4);
     }
 
     public DeviceInfo getPressureSensor() {return new DeviceInfo(3);}
