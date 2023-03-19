@@ -74,10 +74,10 @@ public class VisionSubsystem extends BaseSubsystem {
 
         //Cam mounted 1" forward of center, 17" up, 12.5" right.
         Transform3d robotToCam = new Transform3d(new Translation3d(
-                1.0 / PoseSubsystem.INCHES_IN_A_METER,
-                -12.5 / PoseSubsystem.INCHES_IN_A_METER,
-                17 / PoseSubsystem.INCHES_IN_A_METER),
-                new Rotation3d(0,0,0));
+                1.395 / PoseSubsystem.INCHES_IN_A_METER,
+                -11.712 / PoseSubsystem.INCHES_IN_A_METER,
+                16.421 / PoseSubsystem.INCHES_IN_A_METER),
+                new Rotation3d(0, Math.toRadians(62.5), Math.toRadians(7.595)));
         customPhotonPoseEstimator = new XbotPhotonPoseEstimator(
             aprilTagFieldLayout, 
             XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
