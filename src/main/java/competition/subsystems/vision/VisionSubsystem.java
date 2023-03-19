@@ -137,6 +137,8 @@ public class VisionSubsystem extends BaseSubsystem {
         }
 
         // For a single target we need to be above reliability threshold
-        return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < customPhotonPoseEstimator.getMaximumPoseAmbiguityThreshold();
+        var singleTarget = estimatedPose.targetsUsed.get(0);
+        return singleTarget.getPoseAmbiguity() < 0.001
+                && singleTarget.getBestCameraToTarget().getTranslation().getX() < 1.5;
     }
 }
