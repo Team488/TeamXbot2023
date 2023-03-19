@@ -33,6 +33,7 @@ public class VisionSubsystem extends BaseSubsystem {
     public static final String LATENCY_MILLIS = "forwardAprilCamera/latencyMillis";
 
     final PhotonCamera forwardAprilCamera;
+    final PhotonCamera rearAprilCamera;
 
     final RobotAssertionManager assertionManager;
     final BooleanProperty isInverted;
@@ -43,6 +44,7 @@ public class VisionSubsystem extends BaseSubsystem {
     AprilTagFieldLayout aprilTagFieldLayout;
     XbotPhotonPoseEstimator customPhotonPoseEstimator;
     PhotonPoseEstimator photonPoseEstimator;
+    PhotonPoseEstimator rearPhotonPoseEstimator;
     boolean visionWorking = false;
 
 
@@ -63,6 +65,7 @@ public class VisionSubsystem extends BaseSubsystem {
         // we need to handle cases like not having the AprilTag data loaded.
 
         forwardAprilCamera = new PhotonCamera("forwardAprilCamera");
+        rearAprilCamera = new PhotonCamera("rearAprilCamera");
 
         try {
             aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
@@ -95,6 +98,12 @@ public class VisionSubsystem extends BaseSubsystem {
                 forwardAprilCamera,
                 robotToCam
         );
+        rearPhotonPoseEstimator = new PhotonPoseEstimator(
+                aprilTagFieldLayout,
+                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
+                rearAprilCamera,
+                robotToRearCam
+        );
     }
 
     public XYPair getAprilCoordinates() {
@@ -122,6 +131,19 @@ public class VisionSubsystem extends BaseSubsystem {
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
+            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+                return estimatedPose;
+            }
+            return Optional.empty();
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<EstimatedRobotPose> getRearPhotonVisionEstimatedPose(Pose2d previousEstimatedRobotPose) {
+        if (visionWorking) {
+            rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
+            var estimatedPose = rearPhotonPoseEstimator.update();
             if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
                 return estimatedPose;
             }
