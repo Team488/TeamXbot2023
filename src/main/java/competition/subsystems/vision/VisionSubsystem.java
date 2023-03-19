@@ -83,7 +83,7 @@ public class VisionSubsystem extends BaseSubsystem {
             XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
             forwardAprilCamera, 
             robotToCam);
-        customPhotonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.2);
+        customPhotonPoseEstimator.setMaximumPoseAmbiguityThreshold(0.00001);
         photonPoseEstimator = new PhotonPoseEstimator(
                 aprilTagFieldLayout,
                 PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,

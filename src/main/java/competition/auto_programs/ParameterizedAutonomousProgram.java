@@ -88,7 +88,8 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var drivePhaseOne = swerveSimpleTrajectoryCommandProvider.get();
-        drivePhaseOne.setMaxPower(0.50);
+        drivePhaseOne.setMaxPower(0.25);
+        drivePhaseOne.setMaxTurningPower(0.25);
         drivePhaseOne.setKeyPointsProvider(oracle::getTrajectoryForDrivePhaseOne);
 
         var drivePhaseOneOrNot = new ConditionalCommand(
@@ -118,7 +119,8 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var driveForScoring = swerveSimpleTrajectoryCommandProvider.get();
-        driveForScoring.setMaxPower(0.50);
+        driveForScoring.setMaxPower(0.25);
+        driveForScoring.setMaxTurningPower(0.25);
         driveForScoring.setKeyPointsProvider(oracle::getTrajectoryForScoring);
 
         // If we're planning on scoring using the arm, we should move the game piece to the claw.
@@ -164,20 +166,24 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var driveToBalance = swerveSimpleTrajectoryCommandProvider.get();
-        driveToBalance.setMaxPower(0.65); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
+        driveToBalance.setMaxPower(0.25); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
+        driveToBalance.setMaxTurningPower(0.25);
         driveToBalance.setKeyPointsProvider(oracle::getTrajectoryForBalance);
 
 
         var balance = new ParallelRaceGroup(
                 autoBalance,
-                velocityMaintainer,
-                new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
-        );
+                velocityMaintainer);
+                //new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
+        //);
 
         var balanceOrNot = new ConditionalCommand(
                 driveToBalance,
                 new InstantCommand(),
                 oracle::getEnableBalance
         );
+
+        this.addCommands(balanceOrNot);
+        this.addCommands(balance);
     }
 }
