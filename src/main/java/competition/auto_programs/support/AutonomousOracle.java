@@ -245,11 +245,11 @@ public class AutonomousOracle {
 
         switch (lane) {
             case Top:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueGamePieceUpper, Rotation2d.fromDegrees(0), 1.0));
                 break;
             case Bottom:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueGamePieceLower, Rotation2d.fromDegrees(0), 1.0));
                 break;
             default: // default to middle
@@ -268,12 +268,12 @@ public class AutonomousOracle {
 
         switch (lane) {
             case Top:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 // Turn around, prepare to mantle
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 break;
             case Bottom:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 // Turn around, prepare to mantle
                 points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 break;
@@ -291,30 +291,34 @@ public class AutonomousOracle {
     public List<XbotSwervePoint> getTrajectoryForScoring() {
         ArrayList<XbotSwervePoint> points = new ArrayList<>();
 
+        // Take the right route back.
         switch (lane) {
             case Top:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(
-                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
                 break;
             case Bottom:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
                 points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(
-                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
                 break;
             default: // default to middle
             case Middle:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(
-                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
                 break;
         }
+
+        // Go to the actual scoring location.
+        points.add(createXbotSwervePoint(
+                createLandmarkJustBeforeScoringPosition(
+                        (int)secondScoringLocationIndex.get(),
+                        Rotation2d.fromDegrees(-180),
+                        8.0), Rotation2d.fromDegrees(-180), 1.0));
+        points.add(createXbotSwervePoint(
+                getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
 
         return points;
     }
@@ -461,5 +465,10 @@ public class AutonomousOracle {
 
     public void setTrajectoryForDisplay(String trajectoryName, List<XbotSwervePoint> swervePoints) {
         setTrajectoryForDisplay(trajectoryName, XbotSwervePoint.generateTrajectory(swervePoints));
+    }
+
+    private Pose2d createLandmarkJustBeforeScoringPosition(int scoringIndex, Rotation2d heading, double inchesPulledBack) {
+        var scoringPosition = getLocationForScoringPositionIndex(scoringIndex);
+        return new Pose2d(new Translation2d(scoringPosition.getX()+inchesPulledBack, scoringPosition.getY()), heading);
     }
 }

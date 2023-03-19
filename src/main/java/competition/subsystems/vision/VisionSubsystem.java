@@ -77,7 +77,7 @@ public class VisionSubsystem extends BaseSubsystem {
                 1.395 / PoseSubsystem.INCHES_IN_A_METER,
                 -11.712 / PoseSubsystem.INCHES_IN_A_METER,
                 16.421 / PoseSubsystem.INCHES_IN_A_METER),
-                new Rotation3d(0, Math.toRadians(62.5), Math.toRadians(7.595)));
+                new Rotation3d(0, 0, Math.toRadians(7.595)));
         customPhotonPoseEstimator = new XbotPhotonPoseEstimator(
             aprilTagFieldLayout, 
             XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
@@ -138,7 +138,7 @@ public class VisionSubsystem extends BaseSubsystem {
 
         // For a single target we need to be above reliability threshold
         var singleTarget = estimatedPose.targetsUsed.get(0);
-        return singleTarget.getPoseAmbiguity() < 0.001
+        return singleTarget.getPoseAmbiguity() < 0.1
                 && singleTarget.getBestCameraToTarget().getTranslation().getX() < 1.5;
     }
 }

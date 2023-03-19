@@ -48,6 +48,8 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Set initial position
         // ----------------------------
 
+        double defaultVelocity = 80;
+
         // TODO: If we trust the april tags, we should have a branch here where we don't force the initial position (and
         // potentially the initial heading, if the april tags pose estimation gets really good).
         var setInitialPosition = new InstantCommand(
@@ -88,9 +90,11 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var drivePhaseOne = swerveSimpleTrajectoryCommandProvider.get();
-        drivePhaseOne.setMaxPower(0.25);
-        drivePhaseOne.setMaxTurningPower(0.25);
+        drivePhaseOne.setMaxPower(0.75);
+        drivePhaseOne.setMaxTurningPower(0.33);
         drivePhaseOne.setKeyPointsProvider(oracle::getTrajectoryForDrivePhaseOne);
+        drivePhaseOne.setEnableConstantVelocity(true);
+        drivePhaseOne.setConstantVelocity(defaultVelocity);
 
         var drivePhaseOneOrNot = new ConditionalCommand(
                 drivePhaseOne,
@@ -119,9 +123,11 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var driveForScoring = swerveSimpleTrajectoryCommandProvider.get();
-        driveForScoring.setMaxPower(0.25);
-        driveForScoring.setMaxTurningPower(0.25);
+        driveForScoring.setMaxPower(0.75);
+        driveForScoring.setMaxTurningPower(0.33);
         driveForScoring.setKeyPointsProvider(oracle::getTrajectoryForScoring);
+        driveForScoring.setEnableConstantVelocity(true);
+        driveForScoring.setConstantVelocity(defaultVelocity);
 
         // If we're planning on scoring using the arm, we should move the game piece to the claw.
 
@@ -166,9 +172,11 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var driveToBalance = swerveSimpleTrajectoryCommandProvider.get();
-        driveToBalance.setMaxPower(0.25); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
-        driveToBalance.setMaxTurningPower(0.25);
+        driveToBalance.setMaxPower(0.75); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
+        driveToBalance.setMaxTurningPower(0.33);
         driveToBalance.setKeyPointsProvider(oracle::getTrajectoryForBalance);
+        driveToBalance.setEnableConstantVelocity(true);
+        driveToBalance.setConstantVelocity(defaultVelocity);
 
 
         var balance = new ParallelRaceGroup(
