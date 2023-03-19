@@ -316,7 +316,7 @@ public class AutonomousOracle {
                 createLandmarkJustBeforeScoringPosition(
                         (int)secondScoringLocationIndex.get(),
                         Rotation2d.fromDegrees(-180),
-                        8.0), Rotation2d.fromDegrees(-180), 1.0));
+                        2*12), Rotation2d.fromDegrees(-180), 1.0));
         points.add(createXbotSwervePoint(
                 getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
 

@@ -101,7 +101,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
             keyPoints = getVelocityAdjustedSwervePoints(initialPoint, keyPoints, constantVelocity);
         }
 
-
+        interpolator.setMaximumDistanceFromChasePointInInches(24);
         interpolator.setKeyPoints(keyPoints);
         interpolator.initialize(initialPoint);
 
