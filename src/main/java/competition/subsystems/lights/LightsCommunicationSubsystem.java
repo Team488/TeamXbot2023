@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import competition.electrical_contract.ElectricalContract;
+import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import xbot.common.command.BaseSubsystem;
@@ -38,10 +40,16 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final BooleanProperty dio4Property;
     private final BooleanProperty allianceDioProperty;
 
+    private final CollectorSubsystem collector;
+    private final UnifiedArmSubsystem arm;
+
     public enum ArduinoStateMessage {
         RobotNotBooted(0),
         RobotDisabled(1),
-        RobotEnabled(2);
+        ConeMode(2),
+        CubeMode(3),
+        ConeCollected(4),
+        CubeCollected(5);
 
         private int value;
 
@@ -56,7 +64,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
     @Inject
     public LightsCommunicationSubsystem(XDigitalOutputFactory digitalOutputFactory, XPWMFactory pwmFactory,
-            ElectricalContract contract, PropertyFactory pf) {
+            ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm) {
 
         dio0 = digitalOutputFactory.create(contract.getArduinoDio0().channel);
         dio1 = digitalOutputFactory.create(contract.getArduinoDio1().channel);
@@ -76,6 +84,9 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio3Property = pf.createEphemeralProperty("DIO3", false);
         dio4Property = pf.createEphemeralProperty("DIO4", false);
         allianceDioProperty = pf.createEphemeralProperty("AllianceDIO", false);
+
+        this.collector = collector;
+        this.arm = arm;
 
         this.register();
     }
@@ -97,11 +108,25 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
         ArduinoStateMessage currentState = ArduinoStateMessage.RobotNotBooted;
 
+        boolean isCube = arm.isCubeMode();
+
         // Figure out what we want to send to the arduino
         if (!dsEnabled) {
             currentState = ArduinoStateMessage.RobotDisabled;
+        } else if (collector.getGamePieceCollected()) {
+            if(isCube) {
+                currentState = ArduinoStateMessage.CubeCollected;
+            }
+            else {
+                currentState = ArduinoStateMessage.ConeCollected;
+            }
         } else if (dsEnabled) {
-            currentState = ArduinoStateMessage.RobotEnabled;
+            if(isCube) {
+                currentState = ArduinoStateMessage.CubeMode;
+            }
+            else {
+                currentState = ArduinoStateMessage.ConeMode;
+            }
         }
 
         int stateValue = currentState.getValue();
