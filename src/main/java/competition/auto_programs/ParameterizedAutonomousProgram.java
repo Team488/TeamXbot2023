@@ -75,7 +75,13 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // TODO: may want to use different collector powers or durations for the different game pieces
         var scoreViaEjecting = ejectCollectorCommandProvider.get().withTimeout(1).andThen(new InstantCommand(collector::stop));;
 
-        var scoreViaArm = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, false);
+        var scoreViaArmThenRetract = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, true);
+        var scoreviaArmWithoutRetract = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, false);
+        var scoreViaArm = new ConditionalCommand(
+                scoreViaArmThenRetract,
+                scoreviaArmWithoutRetract,
+                // If we're not doing any fany driving and are just going to balance, better retract the arm.
+                () -> !oracle.getEnableDrivePhaseOne() && oracle.getEnableBalance());
 
         // OnTrue, OnFalse, and the condition. This pattern will repeat throughout this class, as there are a lot of forks
         // in this autonomous program.
@@ -85,6 +91,13 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
                 () -> oracle.getInitialScoringMode() == AutonomousOracle.ScoringMode.Eject);
 
         this.addCommands(scoreSomehow);
+
+        var setSecondGamepiece = new InstantCommand(
+                () -> {
+                    arms.setGamePieceMode(oracle.getSecondGamePiece());
+                }
+        );
+        this.addCommands(setSecondGamepiece);
 
         // ----------------------------
         // Optionally acquire a game piece
@@ -132,6 +145,8 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         );
 
         this.addCommands(drivePhaseOneOrNot);
+
+
 
         // ----------------------------
         // Optionally drive back to scoring or other useful position

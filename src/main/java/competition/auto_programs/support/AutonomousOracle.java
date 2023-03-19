@@ -160,6 +160,10 @@ public class AutonomousOracle {
         secondGamePieceProp.set(gamePiece.toString());
     }
 
+    public UnifiedArmSubsystem.GamePieceMode getSecondGamePiece() {
+        return secondGamePiece;
+    }
+
     public void setSecondScoringMode(ScoringMode scoringMode) {
         this.secondScoringMode = scoringMode;
         secondScoringModeProp.set(scoringMode.toString());
