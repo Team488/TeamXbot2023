@@ -36,15 +36,15 @@ public class AutoLandmarks {
 
     // Every single blue scoring position
     // Each position is 22in from the next
-    public static Pose2d blueScoringPositionOne = new Pose2d(66, 20, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionTwo = new Pose2d(66, 42, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionThree = new Pose2d(66, 64, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionFour = new Pose2d(66, 88, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionFive = new Pose2d(66, 108, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionSix = new Pose2d(66, 130, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionSeven = new Pose2d(66, 152, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionEight = new Pose2d(66, 174, Rotation2d.fromDegrees(-180));
-    public static Pose2d blueScoringPositionNine = new Pose2d(66, 196, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionOne = new Pose2d(66.5, 20, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionTwo = new Pose2d(66.5, 42, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionThree = new Pose2d(66.5, 64, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionFour = new Pose2d(66.5, 86, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionFive = new Pose2d(66.5, 108, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionSix = new Pose2d(66.5, 130, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionSeven = new Pose2d(66.5, 152, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionEight = new Pose2d(66.5, 174, Rotation2d.fromDegrees(-180));
+    public static Pose2d blueScoringPositionNine = new Pose2d(66.5, 196, Rotation2d.fromDegrees(-180));
 
     // Other useful landmarks
     public static Pose2d blueNorthOfChargingStationOutsideCommunity = new Pose2d(185, 180, Rotation2d.fromDegrees(0));
