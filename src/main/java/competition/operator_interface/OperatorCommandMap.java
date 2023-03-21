@@ -143,10 +143,6 @@ public class OperatorCommandMap {
                 brakesButton
         ).whileTrue(setWheelsToXMode);
 
-        oi.driverGamepad.getifAvailable(XboxButton.Start).onTrue(enableCollectorRotation);
-        oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(disableCollectorRotation);
-
-
         positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
         velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
         positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
