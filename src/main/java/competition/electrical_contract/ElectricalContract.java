@@ -40,11 +40,12 @@ public abstract class ElectricalContract {
     
     public abstract DeviceInfo getLowerArmBrakeSolenoid();
 
-    public abstract DeviceInfo getArduinoDio0();
-    public abstract DeviceInfo getArduinoDio1();
-    public abstract DeviceInfo getArduinoDio2();
-    public abstract DeviceInfo getArduinoDio3();
-    public abstract DeviceInfo getArduinoDio4();
-    public abstract DeviceInfo getArduinoAllianceDio();
+    public abstract DeviceInfo getLightsDio0();
+    public abstract DeviceInfo getLightsDio1();
+    public abstract DeviceInfo getLightsDio2();
+    public abstract DeviceInfo getLightsDio3();
+    public abstract DeviceInfo getLightsDio4();
+    public abstract DeviceInfo getLightsCubeDio();
+    
     public abstract DeviceInfo getPressureSensor();
 }
