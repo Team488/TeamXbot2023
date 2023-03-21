@@ -7,10 +7,8 @@ import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.controls.actuators.XDigitalOutput;
-import xbot.common.controls.actuators.XPWM;
 import xbot.common.controls.actuators.XDigitalOutput.XDigitalOutputFactory;
 import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
@@ -25,7 +23,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     final XDigitalOutput dio2;
     final XDigitalOutput dio3;
     final XDigitalOutput dio4;
-    final XDigitalOutput allianceDio;
+    final XDigitalOutput cubeDio;
 
     final XDigitalOutput[] dioOutputs;
 
@@ -38,22 +36,21 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final BooleanProperty dio2Property;
     private final BooleanProperty dio3Property;
     private final BooleanProperty dio4Property;
-    private final BooleanProperty allianceDioProperty;
+    private final BooleanProperty cubeDioProperty;
 
     private final CollectorSubsystem collector;
     private final UnifiedArmSubsystem arm;
 
-    public enum ArduinoStateMessage {
-        RobotNotBooted(0),
+    public enum LightsStateMessage {
+        // when no code is running, all the dios are high by default so the max value is what's sent
+        RobotNotBooted(31),
         RobotDisabled(1),
-        ConeMode(2),
-        CubeMode(3),
-        ConeCollected(4),
-        CubeCollected(5);
+        Enabled(2),
+        GamePieceCollected(3);
 
         private int value;
 
-        private ArduinoStateMessage(final int value) {
+        private LightsStateMessage(final int value) {
             this.value = value;
         }
 
@@ -66,12 +63,12 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     public LightsCommunicationSubsystem(XDigitalOutputFactory digitalOutputFactory, XPWMFactory pwmFactory,
             ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm) {
 
-        dio0 = digitalOutputFactory.create(contract.getArduinoDio0().channel);
-        dio1 = digitalOutputFactory.create(contract.getArduinoDio1().channel);
-        dio2 = digitalOutputFactory.create(contract.getArduinoDio2().channel);
-        dio3 = digitalOutputFactory.create(contract.getArduinoDio3().channel);
-        dio4 = digitalOutputFactory.create(contract.getArduinoDio4().channel);
-        allianceDio = digitalOutputFactory.create(contract.getArduinoAllianceDio().channel);
+        dio0 = digitalOutputFactory.create(contract.getLightsDio0().channel);
+        dio1 = digitalOutputFactory.create(contract.getLightsDio1().channel);
+        dio2 = digitalOutputFactory.create(contract.getLightsDio2().channel);
+        dio3 = digitalOutputFactory.create(contract.getLightsDio3().channel);
+        dio4 = digitalOutputFactory.create(contract.getLightsDio4().channel);
+        cubeDio = digitalOutputFactory.create(contract.getLightsCubeDio().channel);
 
         dioOutputs = new XDigitalOutput[] { dio0, dio1, dio2, dio3, dio4 };
         loopCounter = 0;
@@ -83,7 +80,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio2Property = pf.createEphemeralProperty("DIO2", false);
         dio3Property = pf.createEphemeralProperty("DIO3", false);
         dio4Property = pf.createEphemeralProperty("DIO4", false);
-        allianceDioProperty = pf.createEphemeralProperty("AllianceDIO", false);
+        cubeDioProperty = pf.createEphemeralProperty("IsConeDIO", false);
 
         this.collector = collector;
         this.arm = arm;
@@ -101,32 +98,21 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         }
 
         boolean dsEnabled = DriverStation.isEnabled();
-        boolean isRedAlliance = DriverStation.getAlliance() == Alliance.Red;
 
         // Red alliance is 1, Blue alliance is 0.
-        allianceDio.set(!isRedAlliance);
-
-        ArduinoStateMessage currentState = ArduinoStateMessage.RobotNotBooted;
-
         boolean isCube = arm.isCubeMode();
+        cubeDio.set(isCube);
+
+        LightsStateMessage currentState = LightsStateMessage.RobotNotBooted;
+
 
         // Figure out what we want to send to the arduino
         if (!dsEnabled) {
-            currentState = ArduinoStateMessage.RobotDisabled;
+            currentState = LightsStateMessage.RobotDisabled;
         } else if (collector.getGamePieceCollected()) {
-            if(isCube) {
-                currentState = ArduinoStateMessage.CubeCollected;
-            }
-            else {
-                currentState = ArduinoStateMessage.ConeCollected;
-            }
+            currentState = LightsStateMessage.GamePieceCollected;
         } else if (dsEnabled) {
-            if(isCube) {
-                currentState = ArduinoStateMessage.CubeMode;
-            }
-            else {
-                currentState = ArduinoStateMessage.ConeMode;
-            }
+            currentState = LightsStateMessage.Enabled;
         }
 
         int stateValue = currentState.getValue();
@@ -140,6 +126,6 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio2Property.set(dio2.get());
         dio3Property.set(dio3.get());
         dio4Property.set(dio4.get());
-        allianceDioProperty.set(allianceDio.get());
+        cubeDioProperty.set(cubeDio.get());
     }
 }
