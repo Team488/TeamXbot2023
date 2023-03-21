@@ -468,7 +468,7 @@ public class AutonomousOracle {
 
     /**
      * For now, this is score cone high from middle then balance
-     * @return
+     * @return command to configure the autonomous mode
      */
     public WrapperCommand createFavoriteAutoOne() {
         return new NamedInstantCommand("OracleFavoriteOne", () -> {
@@ -493,7 +493,7 @@ public class AutonomousOracle {
 
     /**
      * Top lane, score, then collect (but don't attempt to score) a cube
-     * @return
+     * @return command to configure the autonomous mode
      */
     public WrapperCommand createFavoriteAutoTwo() {
         return new NamedInstantCommand("OracleFavoriteTwo", () -> {
@@ -518,7 +518,7 @@ public class AutonomousOracle {
 
     /**
      * Bottom lane, score cone high, then collect (but don't attempt to score) a cube
-     * @return
+     * @return command to configure the autonomous mode
      */
     public WrapperCommand createFavoriteAutoThree() {
         return new NamedInstantCommand("OracleFavoriteThree", () -> {
@@ -543,7 +543,7 @@ public class AutonomousOracle {
 
     /**
      * More ambitious top lane program. Score cone high, then collect and score a cube next to it.
-     * @return
+     * @return command to configure the autonomous mode
      */
     public WrapperCommand createFavoriteAutoFour() {
         return new NamedInstantCommand("OracleFavoriteFour", () -> {
@@ -568,7 +568,7 @@ public class AutonomousOracle {
 
     /**
      * More ambitious middle lane program. Score cone high, then get mobility and balance.
-     * @return
+     * @return command to configure the autonomous mode
      */
     public WrapperCommand createFavoriteAutoFive() {
         return new NamedInstantCommand("OracleFavoriteFive", () -> {
