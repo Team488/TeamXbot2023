@@ -42,7 +42,8 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final UnifiedArmSubsystem arm;
 
     public enum LightsStateMessage {
-        RobotNotBooted(0),
+        // when no code is running, all the dios are high by default so the max value is what's sent
+        RobotNotBooted(31),
         RobotDisabled(1),
         Enabled(2),
         GamePieceCollected(3);
