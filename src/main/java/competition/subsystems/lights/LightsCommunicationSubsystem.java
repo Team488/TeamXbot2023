@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 
 import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import xbot.common.command.BaseSubsystem;
@@ -46,7 +47,9 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         RobotNotBooted(31),
         RobotDisabled(1),
         Enabled(2),
-        GamePieceCollected(3);
+        GamePieceCollected(3),
+        ArmAtTargetPosition(4);
+
 
         private int value;
 
@@ -61,7 +64,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
     @Inject
     public LightsCommunicationSubsystem(XDigitalOutputFactory digitalOutputFactory, XPWMFactory pwmFactory,
-            ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm) {
+                                        ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm) {
 
         dio0 = digitalOutputFactory.create(contract.getLightsDio0().channel);
         dio1 = digitalOutputFactory.create(contract.getLightsDio1().channel);
@@ -109,7 +112,9 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         // Figure out what we want to send to the arduino
         if (!dsEnabled) {
             currentState = LightsStateMessage.RobotDisabled;
-        } else if (collector.getGamePieceCollected()) {
+        }else if(arm.isMaintainerAtGoal()){
+            currentState = LightsStateMessage.ArmAtTargetPosition;
+        }else if (collector.getGamePieceCollected()) {
             currentState = LightsStateMessage.GamePieceCollected;
         } else if (dsEnabled) {
             currentState = LightsStateMessage.Enabled;
