@@ -31,8 +31,8 @@ public class ScoreConeHighThenScoreCubeHighProgram extends SequentialCommandGrou
         moveToGamePiece.setMaxPower(0.5);
         moveToGamePiece.setMaxTurningPower(0.5);
         moveToGamePiece.setTargetSupplier(()->{
-            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
-                    return new XYPair(XY.getX(), XY.getY());
+            var gamePieceXY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
+                    return new XYPair(gamePieceXY.getX(), gamePieceXY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
 
         var collectGamePiece = new SequentialCommandGroup(new ParallelCommandGroup(moveToGamePiece,collect), moveGamePieceToClaw);
@@ -44,8 +44,8 @@ public class ScoreConeHighThenScoreCubeHighProgram extends SequentialCommandGrou
         moveToScore.setMaxTurningPower(0.5);
 
         moveToScore.setTargetSupplier(() -> {
-            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight).getTranslation();
-            return new XYPair(XY.getX(),XY.getY());
+            var targetXY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight).getTranslation();
+            return new XYPair(targetXY.getX(),targetXY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
 
         //score cube high

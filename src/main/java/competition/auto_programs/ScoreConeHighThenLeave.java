@@ -41,8 +41,8 @@ public class ScoreConeHighThenLeave extends SequentialCommandGroup {
         moveOutOfCommunity.setMaxPower(0.5);
 
         moveOutOfCommunity.setTargetSupplier(() -> {
-            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueNorthOfChargingStationOutsideCommunity).getTranslation();
-            return new XYPair(XY.getX(),XY.getY());
+            var wpiXY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueNorthOfChargingStationOutsideCommunity).getTranslation();
+            return new XYPair(wpiXY.getX(),wpiXY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
 
         retractArm.setKeyPointFromKeyArmPosition(
