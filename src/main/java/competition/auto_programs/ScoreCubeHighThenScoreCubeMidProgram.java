@@ -42,8 +42,8 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
         moveToGamePiece.setMaxTurningPower(0.5);
         //move to game piece
         moveToGamePiece.setTargetSupplier(() -> {
-            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
-            return new XYPair(XY.getX(), XY.getY());
+            var gamePieceXY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueGamePieceUpper).getTranslation();
+            return new XYPair(gamePieceXY.getX(), gamePieceXY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
 
         var driveToGamePieceAndCollect = new SequentialCommandGroup(new ParallelCommandGroup(moveToGamePiece, collect),moveGamePieceToClaw);
@@ -55,8 +55,8 @@ public class ScoreCubeHighThenScoreCubeMidProgram extends SequentialCommandGroup
         driveToScoreMid.setMaxTurningPower(0.5);
 
         driveToScoreMid.setTargetSupplier(() -> {
-            var XY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight).getTranslation();
-            return new XYPair(XY.getX(), XY.getY());
+            var scoreXY = AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight).getTranslation();
+            return new XYPair(scoreXY.getX(), scoreXY.getY());
         }, () -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
 
         //score cube mid then retract arm
