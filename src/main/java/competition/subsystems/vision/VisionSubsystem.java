@@ -33,6 +33,7 @@ public class VisionSubsystem extends BaseSubsystem {
     public static final String LATENCY_MILLIS = "forwardAprilCamera/latencyMillis";
 
     final PhotonCamera forwardAprilCamera;
+    final PhotonCamera rearAprilCamera;
 
     final RobotAssertionManager assertionManager;
     final BooleanProperty isInverted;
@@ -43,6 +44,7 @@ public class VisionSubsystem extends BaseSubsystem {
     AprilTagFieldLayout aprilTagFieldLayout;
     XbotPhotonPoseEstimator customPhotonPoseEstimator;
     PhotonPoseEstimator photonPoseEstimator;
+    PhotonPoseEstimator rearPhotonPoseEstimator;
     boolean visionWorking = false;
 
 
@@ -63,6 +65,7 @@ public class VisionSubsystem extends BaseSubsystem {
         // we need to handle cases like not having the AprilTag data loaded.
 
         forwardAprilCamera = new PhotonCamera("forwardAprilCamera");
+        rearAprilCamera = new PhotonCamera("rearAprilCamera");
 
         try {
             aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
@@ -74,10 +77,15 @@ public class VisionSubsystem extends BaseSubsystem {
 
         //Cam mounted 1" forward of center, 17" up, 12.5" right.
         Transform3d robotToCam = new Transform3d(new Translation3d(
-                1.0 / PoseSubsystem.INCHES_IN_A_METER,
-                -12.5 / PoseSubsystem.INCHES_IN_A_METER,
-                17 / PoseSubsystem.INCHES_IN_A_METER),
-                new Rotation3d(0,0,0));
+                1.395 / PoseSubsystem.INCHES_IN_A_METER,
+                -11.712 / PoseSubsystem.INCHES_IN_A_METER,
+                16.421 / PoseSubsystem.INCHES_IN_A_METER),
+                new Rotation3d(0, 0, Math.toRadians(7.595)));
+        Transform3d robotToRearCam = new Transform3d(new Translation3d(
+                -1.395 / PoseSubsystem.INCHES_IN_A_METER,
+                11.712 / PoseSubsystem.INCHES_IN_A_METER,
+                16.421 / PoseSubsystem.INCHES_IN_A_METER),
+                new Rotation3d(0, 0, Math.toRadians(180 + 7.595)));
         customPhotonPoseEstimator = new XbotPhotonPoseEstimator(
             aprilTagFieldLayout, 
             XbotPhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
@@ -89,6 +97,12 @@ public class VisionSubsystem extends BaseSubsystem {
                 PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
                 forwardAprilCamera,
                 robotToCam
+        );
+        rearPhotonPoseEstimator = new PhotonPoseEstimator(
+                aprilTagFieldLayout,
+                PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP,
+                rearAprilCamera,
+                robotToRearCam
         );
     }
 
@@ -126,6 +140,19 @@ public class VisionSubsystem extends BaseSubsystem {
         }
     }
 
+    public Optional<EstimatedRobotPose> getRearPhotonVisionEstimatedPose(Pose2d previousEstimatedRobotPose) {
+        if (visionWorking) {
+            rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
+            var estimatedPose = rearPhotonPoseEstimator.update();
+            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+                return estimatedPose;
+            }
+            return Optional.empty();
+        } else {
+            return Optional.empty();
+        }
+    }
+
     private boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
         if (estimatedPose.targetsUsed.size() == 0) {
             return false;
@@ -136,7 +163,8 @@ public class VisionSubsystem extends BaseSubsystem {
             return true;
         }
 
-        // For a single target we need to be above reliability threshold
-        return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < customPhotonPoseEstimator.getMaximumPoseAmbiguityThreshold();
+        // For a single target we need to be above reliability threshold and within 1m
+        return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < customPhotonPoseEstimator.getMaximumPoseAmbiguityThreshold()
+                && estimatedPose.targetsUsed.get(0).getBestCameraToTarget().getTranslation().getX() < 1.5;
     }
 }
