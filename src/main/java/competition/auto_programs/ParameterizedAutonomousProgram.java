@@ -3,6 +3,9 @@ package competition.auto_programs;
 import competition.auto_programs.support.AutonomousOracle;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
 import competition.commandgroups.ScoreCubeHighCommandGroup;
+import competition.commandgroups.ScoreGamepieceCommandGroupFactory;
+import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.commands.SimpleXZRouterCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.EjectCollectorCommand;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
@@ -13,8 +16,10 @@ import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 import javax.inject.Inject;
@@ -29,9 +34,11 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
     public ParameterizedAutonomousProgram(
             AutonomousOracle oracle,
             PoseSubsystem pose,
-            Provider<EjectCollectorCommand> ejectCollectorCommandProvider,
+            UnifiedArmSubsystem arms,
             CollectorSubsystem collector,
-            Provider<ScoreCubeHighCommandGroup> scoreCubeHighProvider,
+            Provider<EjectCollectorCommand> ejectCollectorCommandProvider,
+            ScoreGamepieceCommandGroupFactory scoreGamepieceCommandGroupFactory,
+            Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             Provider<SwerveSimpleTrajectoryCommand> swerveSimpleTrajectoryCommandProvider,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
@@ -42,6 +49,10 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Set initial position
         // ----------------------------
 
+        double defaultVelocity = 80;
+
+        // TODO: If we trust the april tags, we should have a branch here where we don't force the initial position (and
+        // potentially the initial heading, if the april tags pose estimation gets really good).
         var setInitialPosition = new InstantCommand(
                 () -> {
                     pose.setCurrentPoseInMeters(oracle.getInitialPoseInMeters());
@@ -50,6 +61,13 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
         this.addCommands(setInitialPosition);
 
+        var setInitialGamepiece = new InstantCommand(
+                () -> {
+                    arms.setGamePieceMode(oracle.getInitialGamePiece());
+                }
+        );
+        this.addCommands(setInitialGamepiece);
+
         // ----------------------------
         // Score the initial game piece, either by ejecting or by using the arm.
         // ----------------------------
@@ -57,11 +75,16 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // TODO: may want to use different collector powers or durations for the different game pieces
         var scoreViaEjecting = ejectCollectorCommandProvider.get().withTimeout(1).andThen(new InstantCommand(collector::stop));;
 
-        // TODO: Eventually have this be a generic command that also reads from the oracle about which game piece to score
-        // and at which location.
-        var scoreViaArm = scoreCubeHighProvider.get();
+        var scoreViaArmThenRetract = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, true);
+        var scoreviaArmWithoutRetract = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, false);
+        var scoreViaArm = new ConditionalCommand(
+                scoreViaArmThenRetract,
+                scoreviaArmWithoutRetract,
+                // If we're not doing any fany driving and are just going to balance, better retract the arm.
+                () -> !oracle.getEnableDrivePhaseOne() && oracle.getEnableBalance());
 
-        // OnTrue, OnFalse, and the condition.
+        // OnTrue, OnFalse, and the condition. This pattern will repeat throughout this class, as there are a lot of forks
+        // in this autonomous program.
         var scoreSomehow = new ConditionalCommand(
                 scoreViaEjecting,
                 scoreViaArm,
@@ -69,43 +92,72 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
         this.addCommands(scoreSomehow);
 
+        var setSecondGamepiece = new InstantCommand(
+                () -> {
+                    arms.setGamePieceMode(oracle.getSecondGamePiece());
+                }
+        );
+        this.addCommands(setSecondGamepiece);
+
+        // ----------------------------
+        // Optionally acquire a game piece
+        // ----------------------------
+
+        var collect = collector.getCollectThenRetractCommand();
+
+        var collectOrNot = new ConditionalCommand(
+                new WaitCommand(1.5).andThen(collect),
+                new InstantCommand(),
+                oracle::getEnableAcquireGamePiece
+        );
+
         // ----------------------------
         // Optionally drive somewhere interesting (outside for mobility, or towards a game piece)
         // ----------------------------
 
+        // If we scored med/high, also lower the arm.
+        var retractArm = simpleXZRouterCommandProvider.get();
+        retractArm.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
+                UnifiedArmSubsystem.RobotFacing.Forward);
+        var retractArmIfScored = new ConditionalCommand(
+                retractArm,
+                new InstantCommand(),
+                () -> oracle.getInitialScoringMode() != AutonomousOracle.ScoringMode.Eject
+        );
+
         var drivePhaseOne = swerveSimpleTrajectoryCommandProvider.get();
-        drivePhaseOne.setMaxPower(0.50);
+        drivePhaseOne.setMaxPower(0.75);
+        drivePhaseOne.setMaxTurningPower(0.33);
         drivePhaseOne.setKeyPointsProvider(oracle::getTrajectoryForDrivePhaseOne);
+        drivePhaseOne.setEnableConstantVelocity(true);
+        drivePhaseOne.setConstantVelocity(defaultVelocity);
+
+        var drivePhaseOneWithPotentialCollection = new ParallelDeadlineGroup(
+                drivePhaseOne,
+                retractArmIfScored,
+                collectOrNot);
 
         var drivePhaseOneOrNot = new ConditionalCommand(
-                drivePhaseOne,
+                drivePhaseOneWithPotentialCollection,
                 new InstantCommand(),
                 oracle::getEnableDrivePhaseOne
         );
 
         this.addCommands(drivePhaseOneOrNot);
 
-        // ----------------------------
-        // Optionally acquire a game piece
-        // ----------------------------
 
-        var collect = collector.getCollectThenRetractCommand().withTimeout(1.0);
-
-        var collectOrNot = new ConditionalCommand(
-                collect,
-                new InstantCommand(),
-                oracle::getEnableAcquireGamePiece
-        );
-
-        this.addCommands(collectOrNot);
 
         // ----------------------------
         // Optionally drive back to scoring or other useful position
         // ----------------------------
 
         var driveForScoring = swerveSimpleTrajectoryCommandProvider.get();
-        driveForScoring.setMaxPower(0.50);
+        driveForScoring.setMaxPower(0.75);
+        driveForScoring.setMaxTurningPower(0.33);
         driveForScoring.setKeyPointsProvider(oracle::getTrajectoryForScoring);
+        driveForScoring.setEnableConstantVelocity(true);
+        driveForScoring.setConstantVelocity(defaultVelocity);
 
         // If we're planning on scoring using the arm, we should move the game piece to the claw.
 
@@ -130,7 +182,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var scoreViaEjectingAgain = ejectCollectorCommandProvider.get().withTimeout(1).andThen(new InstantCommand(collector::stop));
-        var scoreHighAgain = scoreCubeHighProvider.get();
+        var scoreHighAgain = scoreGamepieceCommandGroupFactory.create(UnifiedArmSubsystem.KeyArmPosition.HighGoal, true);
 
         var scoreAgain = new ConditionalCommand(
                 scoreViaEjectingAgain,
@@ -150,20 +202,26 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // ----------------------------
 
         var driveToBalance = swerveSimpleTrajectoryCommandProvider.get();
-        driveToBalance.setMaxPower(0.65); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
+        driveToBalance.setMaxPower(0.75); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
+        driveToBalance.setMaxTurningPower(0.33);
         driveToBalance.setKeyPointsProvider(oracle::getTrajectoryForBalance);
+        driveToBalance.setEnableConstantVelocity(true);
+        driveToBalance.setConstantVelocity(defaultVelocity);
 
 
         var balance = new ParallelRaceGroup(
                 autoBalance,
-                velocityMaintainer,
-                new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
-        );
+                velocityMaintainer);
+                //new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
+        //);
 
         var balanceOrNot = new ConditionalCommand(
                 driveToBalance,
                 new InstantCommand(),
                 oracle::getEnableBalance
         );
+
+        this.addCommands(balanceOrNot);
+        this.addCommands(balance);
     }
 }

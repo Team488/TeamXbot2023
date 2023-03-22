@@ -16,6 +16,7 @@ import competition.subsystems.claw.OpenClawCommand;
 import competition.subsystems.arm.commands.ControlArmsWithJoyStickCommand;
 import competition.subsystems.drive.commands.SetSwerveMotorControllerPidParametersCommand;
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
+import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.SwerveToNearestScoringPositionCommand;
 import competition.subsystems.drive.commands.SwerveToNextScoringPositionCommand;
 import competition.subsystems.drive.commands.SwerveToPointCommand;
@@ -72,4 +73,6 @@ public abstract class CompetitionTestComponent extends BaseRobotComponent {
     public abstract SimpleXZRouterCommand simpleXZRouterCommand();
 
     public abstract VelocityMaintainerCommand velocityMaintainerCommand();
+
+    public abstract SwerveSimpleTrajectoryCommand swerveSimpleTrajectoryCommand();
 }

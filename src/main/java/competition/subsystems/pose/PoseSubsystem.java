@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +37,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private TimeStableValidator healthyPoseValidator = new TimeStableValidator(1);
     private final DoubleProperty suprisingVisionUpdateDistanceInMetersProp;
     private final BooleanProperty isPoseHealthyProp;
+    private final BooleanProperty useForwardCameraForPose;
+    private final BooleanProperty useRearCameraForPose;
     private TimeStableValidator extremelyConfidentVisionValidator = new TimeStableValidator(10);
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
@@ -57,6 +60,8 @@ public class PoseSubsystem extends BasePoseSubsystem {
         isVisionPoseExtremelyConfidentProp = propManager.createEphemeralProperty("IsVisionPoseExtremelyConfident", false);
         allianceAwareFieldProp = propManager.createPersistentProperty("Alliance Aware Field", true);
         useVisionForPoseProp = propManager.createPersistentProperty("Enable Vision-Assisted Pose", true);
+        useForwardCameraForPose = propManager.createPersistentProperty("Use forward april cam", true);
+        useRearCameraForPose = propManager.createPersistentProperty("Use rear april cam", true);
 
         // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
         // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
@@ -142,7 +147,7 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
         if (getAlliance() == DriverStation.Alliance.Red && isAllianceAwareField()) {
             log.info("Detected red alliance and AllianceAwareField. Rotating angle 180 degrees.");
-            return rotation.rotateBy(Rotation2d.fromDegrees(180));
+            return Rotation2d.fromDegrees(rotation.getDegrees() - (rotation.getDegrees() - 90.0) * 2);
         }
         return rotation;
     }
@@ -218,7 +223,10 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
     private void improveOdometryUsingPhotonLib(Pose2d recentPosition) {
         var photonEstimatedPose = vision.getPhotonVisionEstimatedPose(recentPosition);
+        var rearPhotonEstimatedPose = vision.getRearPhotonVisionEstimatedPose(recentPosition);
 
+        var updatedPoseWithVision = false;
+        var poseConfident = true;
         if (photonEstimatedPose.isPresent()) {
             // Get the result data, which has both coordinates and timestamps
             var camPose = photonEstimatedPose.get();
@@ -231,11 +239,34 @@ public class PoseSubsystem extends BasePoseSubsystem {
 
             // If the distance is really, really small, we're extremely confident in the vision data, and
             // could consider using it to update the gyro.
-            boolean isExtremelyConfident = (distance < extremelyConfidentVisionDistanceUpdateInMetersProp.get());
-            isVisionPoseExtremelyConfidentProp.set(extremelyConfidentVisionValidator.checkStable(isExtremelyConfident));
+            poseConfident &= distance < extremelyConfidentVisionDistanceUpdateInMetersProp.get();
 
             // In any case, update the odometry with the new pose from the camera.
             swerveOdometry.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+            updatedPoseWithVision = true;
+        }
+
+        if (rearPhotonEstimatedPose.isPresent()) {
+            // Get the result data, which has both coordinates and timestamps
+            var camPose = rearPhotonEstimatedPose.get();
+
+            // Check for the distance delta between the old and new poses. If it's too large, reset
+            // the healthy pose validator.
+            double distance = recentPosition.getTranslation().getDistance(recentPosition.getTranslation());
+            boolean isSurprisingDistance = (distance > suprisingVisionUpdateDistanceInMetersProp.get());
+            isPoseHealthyProp.set(healthyPoseValidator.checkStable(isSurprisingDistance));
+
+            // If the distance is really, really small, we're extremely confident in the vision data, and
+            // could consider using it to update the gyro.
+            poseConfident &= distance < extremelyConfidentVisionDistanceUpdateInMetersProp.get();
+
+            // In any case, update the odometry with the new pose from the camera.
+            swerveOdometry.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+            updatedPoseWithVision = true;
+        }
+
+        if (updatedPoseWithVision) {
+            isVisionPoseExtremelyConfidentProp.set(extremelyConfidentVisionValidator.checkStable(poseConfident));
         } else {
             // Since we didn't get any vision updates, we assume the current pose is healthy.
             isPoseHealthyProp.set(healthyPoseValidator.checkStable(true));
@@ -319,13 +350,14 @@ public class PoseSubsystem extends BasePoseSubsystem {
         return robotOrientedVelocityVector.x;
     }
 
+    public DoubleProperty getMatchTime(){
+        return matchTime;
+    }
+
     @Override
     public void periodic() {
         super.periodic();
         matchTime.set(DriverStation.getMatchTime());
-    }
-    public DoubleProperty getMatchTime(){
-        return matchTime;
     }
 
 }

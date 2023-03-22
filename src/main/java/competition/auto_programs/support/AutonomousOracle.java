@@ -7,8 +7,13 @@ import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import xbot.common.command.NamedInstantCommand;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -63,7 +68,7 @@ public class AutonomousOracle {
     private ScoringMode secondScoringMode = ScoringMode.Eject;
     private final StringProperty secondScoringModeProp;
 
-    private MantlePrepPosition mantlePrepPosition;
+    private MantlePrepPosition mantlePrepPosition = MantlePrepPosition.InsideCommunity;
     private final StringProperty mantlePrepPositionProp;
 
 
@@ -77,6 +82,7 @@ public class AutonomousOracle {
     PoseSubsystem pose;
 
     Logger log = LogManager.getLogger(AutonomousOracle.class);
+    private Field2d oracleField;
 
     /**
      * Holds onto a large set of autonomous settings to power a very generic autonomous program. Primarily a bunch of
@@ -101,6 +107,18 @@ public class AutonomousOracle {
         enableMoveToScore = pf.createEphemeralProperty("EnableMoveToScore", false);
         enableSecondScore = pf.createEphemeralProperty("EnableSecondScore", false);
         enableBalance = pf.createEphemeralProperty("EnableBalance", true);
+
+        oracleField = new Field2d();
+        SmartDashboard.putData("OracleField", oracleField);
+
+        setEnableAcquireGamePiece(true);
+        setInitialScoringLocationIndex(6);
+        setLane(Lane.Top);
+
+        oracleField.setRobotPose(getInitialPoseInMeters());
+        setTrajectoryForDisplay("Phase1", getTrajectoryForDrivePhaseOne());
+        setTrajectoryForDisplay("Scoring", getTrajectoryForScoring());
+        setTrajectoryForDisplay("Balance", getTrajectoryForBalance());
     }
 
     // -------------------------------------------
@@ -108,7 +126,9 @@ public class AutonomousOracle {
     // -------------------------------------------
     public void setInitialScoringLocationIndex(int index) {
         initialScoringLocationIndex.set(index);
-        initialLocation = getLocationForScoringPositionIndex(index).getTranslation();
+        var initialPose = AutoLandmarks.convertBlueToRedIfNeeded(getLocationForScoringPositionIndex(index));
+        initialLocation = initialPose.getTranslation();
+        initialHeading = initialPose.getRotation();
     }
 
     public void setLane(Lane lane) {
@@ -119,6 +139,10 @@ public class AutonomousOracle {
     public void setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode gamePiece) {
         this.initialGamePiece = gamePiece;
         initialGamePieceProp.set(gamePiece.toString());
+    }
+
+    public UnifiedArmSubsystem.GamePieceMode getInitialGamePiece() {
+        return initialGamePiece;
     }
 
     public void setInitialScoringMode(ScoringMode scoringMode) {
@@ -134,6 +158,10 @@ public class AutonomousOracle {
     public void setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode gamePiece) {
         this.secondGamePiece = gamePiece;
         secondGamePieceProp.set(gamePiece.toString());
+    }
+
+    public UnifiedArmSubsystem.GamePieceMode getSecondGamePiece() {
+        return secondGamePiece;
     }
 
     public void setSecondScoringMode(ScoringMode scoringMode) {
@@ -221,11 +249,11 @@ public class AutonomousOracle {
 
         switch (lane) {
             case Top:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueGamePieceUpper, Rotation2d.fromDegrees(0), 1.0));
                 break;
             case Bottom:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueGamePieceLower, Rotation2d.fromDegrees(0), 1.0));
                 break;
             default: // default to middle
@@ -244,21 +272,21 @@ public class AutonomousOracle {
 
         switch (lane) {
             case Top:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 // Turn around, prepare to mantle
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 break;
             case Bottom:
-                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 // Turn around, prepare to mantle
                 points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 break;
             default: // default to middle
             case Middle:
-            points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(0), 0.5));
-            points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(0), 2.0));
-            // Turn around, prepare to mantle
-            points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(0), 0.5));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(0), 2.0));
+                // Turn around, prepare to mantle
+                points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
             break;
         }
         return points;
@@ -267,30 +295,34 @@ public class AutonomousOracle {
     public List<XbotSwervePoint> getTrajectoryForScoring() {
         ArrayList<XbotSwervePoint> points = new ArrayList<>();
 
+        // Take the right route back.
         switch (lane) {
             case Top:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(
-                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
                 break;
             case Bottom:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
                 points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueLowerCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(
-                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
                 break;
             default: // default to middle
             case Middle:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(
-                        getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
                 break;
         }
+
+        // Go to the actual scoring location.
+        points.add(createXbotSwervePoint(
+                createLandmarkJustBeforeScoringPosition(
+                        (int)secondScoringLocationIndex.get(),
+                        Rotation2d.fromDegrees(-180),
+                        2*12), Rotation2d.fromDegrees(-180), 1.0));
+        points.add(createXbotSwervePoint(
+                getLocationForScoringPositionIndex((int)secondScoringLocationIndex.get()), Rotation2d.fromDegrees(-180), 1.0));
 
         return points;
     }
@@ -336,7 +368,7 @@ public class AutonomousOracle {
     private XbotSwervePoint createXbotSwervePoint(Pose2d targetLocation, Rotation2d targetHeading, double durationInSeconds) {
         var translation = AutoLandmarks.convertBlueToRedIfNeeded(targetLocation);
         var heading = pose.rotateAngleBasedOnAlliance(targetHeading);
-        return new XbotSwervePoint(translation.getX(), translation.getY(), targetHeading.getDegrees(), durationInSeconds);
+        return new XbotSwervePoint(translation.getX(), translation.getY(), heading.getDegrees(), durationInSeconds);
     }
 
     private Pose2d getLocationForScoringPositionIndex(int index) {
@@ -364,5 +396,215 @@ public class AutonomousOracle {
                 log.info("Somebody attempted to set an invalid scoring location index: " + index + ". Using 5 instead");
                 return AutoLandmarks.blueScoringPositionFive;
         }
+    }
+
+    // -------------------------------------------
+    // Factory methods for setting all the interesting properties of the autonomous mode
+    // -------------------------------------------
+
+    public WrapperCommand createInitialScoringPositionCommand(int scoringPositionIndex) {
+        return new NamedInstantCommand("Set Initial Scoring Position" + scoringPositionIndex,
+                () -> setInitialScoringLocationIndex(scoringPositionIndex)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createSetLaneCommand(Lane lane) {
+        return new NamedInstantCommand("Set Lane" + lane.toString(), () -> setLane(lane)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createSetInitialGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode gamePieceMode) {
+        return new NamedInstantCommand("Set Initial Game Piece Mode" + gamePieceMode.toString(),
+                () -> setInitialGamePiece(gamePieceMode)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createInitialScoringModeCommand(ScoringMode scoringMode) {
+        return new NamedInstantCommand("Set Initial Scoring Mode" + scoringMode.toString(),
+                () -> setInitialScoringMode(scoringMode)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createSecondScoringPositionCommand(int scoringPositionIndex) {
+        return new NamedInstantCommand("Set Second Scoring Position" + scoringPositionIndex,
+                () -> setSecondScoringLocationIndex(scoringPositionIndex)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createSecondScoringModeCommand(ScoringMode scoringMode) {
+        return new NamedInstantCommand("Set Second Scoring Mode" + scoringMode.toString(),
+                () -> setSecondScoringMode(scoringMode)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createSecondGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode gamePieceMode) {
+        return new NamedInstantCommand("Set Second Game Piece Mode" + gamePieceMode.toString(),
+                () -> setSecondGamePiece(gamePieceMode)).ignoringDisable(true);
+    }
+
+    public WrapperCommand createMantlePrepPositionCommand(MantlePrepPosition mantlePrepPosition) {
+        return new NamedInstantCommand("Set Mantle Prep Position" + mantlePrepPosition.toString(),
+                () -> setMantlePrepPosition(mantlePrepPosition)).ignoringDisable(true);
+    }
+
+    // -------------------------------------------
+    // Autonomous "plans", some for testing, others as "favorites" for competition
+    // -------------------------------------------
+
+    public WrapperCommand createTopLaneOmniAuto() {
+        return new NamedInstantCommand("Top Lane Omni Auto", () -> {
+            setLane(Lane.Top);
+            setInitialScoringLocationIndex(7);
+            setInitialScoringMode(ScoringMode.High);
+            setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+
+            setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
+            setSecondScoringMode(ScoringMode.High);
+            setSecondScoringLocationIndex(8);
+
+            setMantlePrepPosition(MantlePrepPosition.InsideCommunity);
+
+            setEnableDrivePhaseOne(true);
+            setEnableAcquireGamePiece(true);
+            setEnableMoveToScore(true);
+            setEnableSecondScore(true);
+            setEnableBalance(true);
+        }).ignoringDisable(true);
+    }
+
+    /**
+     * For now, this is score cone high from middle then balance
+     * @return command to configure the autonomous mode
+     */
+    public WrapperCommand createFavoriteAutoOne() {
+        return new NamedInstantCommand("OracleFavoriteOne", () -> {
+            setLane(Lane.Middle);
+            setInitialScoringLocationIndex(4);
+            setInitialScoringMode(ScoringMode.High);
+            setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+
+            //setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
+            //setSecondScoringMode(ScoringMode.High);
+            //setSecondScoringLocationIndex(8);
+
+            setMantlePrepPosition(MantlePrepPosition.InsideCommunity);
+
+            setEnableDrivePhaseOne(false);
+            setEnableAcquireGamePiece(false);
+            setEnableMoveToScore(false);
+            setEnableSecondScore(false);
+            setEnableBalance(true);
+        }).ignoringDisable(true);
+    }
+
+    /**
+     * Top lane, score, then collect (but don't attempt to score) a cube
+     * @return command to configure the autonomous mode
+     */
+    public WrapperCommand createFavoriteAutoTwo() {
+        return new NamedInstantCommand("OracleFavoriteTwo", () -> {
+            setLane(Lane.Top);
+            setInitialScoringLocationIndex(9);
+            setInitialScoringMode(ScoringMode.High);
+            setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+
+            setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
+            //setSecondScoringMode(ScoringMode.High);
+            //setSecondScoringLocationIndex(8);
+
+            setMantlePrepPosition(MantlePrepPosition.OutsideCommunity);
+
+            setEnableDrivePhaseOne(true);
+            setEnableAcquireGamePiece(true);
+            setEnableMoveToScore(false);
+            setEnableSecondScore(false);
+            setEnableBalance(false);
+        }).ignoringDisable(true);
+    }
+
+    /**
+     * Bottom lane, score cone high, then collect (but don't attempt to score) a cube
+     * @return command to configure the autonomous mode
+     */
+    public WrapperCommand createFavoriteAutoThree() {
+        return new NamedInstantCommand("OracleFavoriteThree", () -> {
+            setLane(Lane.Bottom);
+            setInitialScoringLocationIndex(1);
+            setInitialScoringMode(ScoringMode.High);
+            setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+
+            setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
+            //setSecondScoringMode(ScoringMode.High);
+            //setSecondScoringLocationIndex(8);
+
+            setMantlePrepPosition(MantlePrepPosition.OutsideCommunity);
+
+            setEnableDrivePhaseOne(true);
+            setEnableAcquireGamePiece(true);
+            setEnableMoveToScore(false);
+            setEnableSecondScore(false);
+            setEnableBalance(false);
+        }).ignoringDisable(true);
+    }
+
+    /**
+     * More ambitious top lane program. Score cone high, then collect and score a cube next to it.
+     * @return command to configure the autonomous mode
+     */
+    public WrapperCommand createFavoriteAutoFour() {
+        return new NamedInstantCommand("OracleFavoriteFour", () -> {
+            setLane(Lane.Top);
+            setInitialScoringLocationIndex(9);
+            setInitialScoringMode(ScoringMode.High);
+            setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+
+            setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
+            setSecondScoringMode(ScoringMode.High);
+            setSecondScoringLocationIndex(8);
+
+            setMantlePrepPosition(MantlePrepPosition.InsideCommunity);
+
+            setEnableDrivePhaseOne(true);
+            setEnableAcquireGamePiece(true);
+            setEnableMoveToScore(true);
+            setEnableSecondScore(true);
+            setEnableBalance(false);
+        }).ignoringDisable(true);
+    }
+
+    /**
+     * More ambitious middle lane program. Score cone high, then get mobility and balance.
+     * @return command to configure the autonomous mode
+     */
+    public WrapperCommand createFavoriteAutoFive() {
+        return new NamedInstantCommand("OracleFavoriteFive", () -> {
+            setLane(Lane.Middle);
+            setInitialScoringLocationIndex(4);
+            setInitialScoringMode(ScoringMode.High);
+            setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
+
+            //setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
+            //setSecondScoringMode(ScoringMode.High);
+            //setSecondScoringLocationIndex(8);
+
+            setMantlePrepPosition(MantlePrepPosition.OutsideCommunity);
+
+            setEnableDrivePhaseOne(true);
+            setEnableAcquireGamePiece(false);
+            setEnableMoveToScore(false);
+            setEnableSecondScore(false);
+            setEnableBalance(false);
+        }).ignoringDisable(true);
+    }
+
+    // -------------------------------------------
+    // Trajectory display methods
+    // -------------------------------------------
+
+    public void setTrajectoryForDisplay(String trajectoryName, Trajectory trajectory) {
+        oracleField.getObject(trajectoryName).setTrajectory(trajectory);
+    }
+
+    public void setTrajectoryForDisplay(String trajectoryName, List<XbotSwervePoint> swervePoints) {
+        setTrajectoryForDisplay(trajectoryName, XbotSwervePoint.generateTrajectory(swervePoints));
+    }
+
+    private Pose2d createLandmarkJustBeforeScoringPosition(int scoringIndex, Rotation2d heading, double inchesPulledBack) {
+        var scoringPosition = getLocationForScoringPositionIndex(scoringIndex);
+        return new Pose2d(new Translation2d(scoringPosition.getX()+inchesPulledBack, scoringPosition.getY()), heading);
     }
 }

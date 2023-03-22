@@ -4,11 +4,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import competition.electrical_contract.ElectricalContract;
+import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.controls.actuators.XDigitalOutput;
-import xbot.common.controls.actuators.XPWM;
 import xbot.common.controls.actuators.XDigitalOutput.XDigitalOutputFactory;
 import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
@@ -18,14 +18,14 @@ import xbot.common.properties.StringProperty;
 @Singleton
 public class LightsCommunicationSubsystem extends BaseSubsystem {
 
-    XDigitalOutput dio0;
-    XDigitalOutput dio1;
-    XDigitalOutput dio2;
-    XDigitalOutput dio3;
-    XDigitalOutput allianceDio;
-    XPWM analogOutput;
+    final XDigitalOutput dio0;
+    final XDigitalOutput dio1;
+    final XDigitalOutput dio2;
+    final XDigitalOutput dio3;
+    final XDigitalOutput dio4;
+    final XDigitalOutput cubeDio;
 
-    XDigitalOutput[] dioOutputs;
+    final XDigitalOutput[] dioOutputs;
 
     private int loopCounter;
     private final int loopMod = 5;
@@ -35,16 +35,22 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final BooleanProperty dio1Property;
     private final BooleanProperty dio2Property;
     private final BooleanProperty dio3Property;
-    private final BooleanProperty allianceDioProperty;
+    private final BooleanProperty dio4Property;
+    private final BooleanProperty cubeDioProperty;
 
-    public enum ArduinoStateMessage {
-        RobotNotBooted(0),
+    private final CollectorSubsystem collector;
+    private final UnifiedArmSubsystem arm;
+
+    public enum LightsStateMessage {
+        // when no code is running, all the dios are high by default so the max value is what's sent
+        RobotNotBooted(31),
         RobotDisabled(1),
-        RobotEnabled(2);
+        Enabled(2),
+        GamePieceCollected(3);
 
         private int value;
 
-        private ArduinoStateMessage(final int value) {
+        private LightsStateMessage(final int value) {
             this.value = value;
         }
 
@@ -55,15 +61,16 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
     @Inject
     public LightsCommunicationSubsystem(XDigitalOutputFactory digitalOutputFactory, XPWMFactory pwmFactory,
-            ElectricalContract contract, PropertyFactory pf) {
+            ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm) {
 
-        dio0 = digitalOutputFactory.create(contract.getArduinoDio0().channel);
-        dio1 = digitalOutputFactory.create(contract.getArduinoDio1().channel);
-        dio2 = digitalOutputFactory.create(contract.getArduinoDio2().channel);
-        dio3 = digitalOutputFactory.create(contract.getArduinoDio3().channel);
-        allianceDio = digitalOutputFactory.create(contract.getArduinoAllianceDio().channel);
+        dio0 = digitalOutputFactory.create(contract.getLightsDio0().channel);
+        dio1 = digitalOutputFactory.create(contract.getLightsDio1().channel);
+        dio2 = digitalOutputFactory.create(contract.getLightsDio2().channel);
+        dio3 = digitalOutputFactory.create(contract.getLightsDio3().channel);
+        dio4 = digitalOutputFactory.create(contract.getLightsDio4().channel);
+        cubeDio = digitalOutputFactory.create(contract.getLightsCubeDio().channel);
 
-        dioOutputs = new XDigitalOutput[] { dio3, dio2, dio1, dio0 };
+        dioOutputs = new XDigitalOutput[] { dio0, dio1, dio2, dio3, dio4 };
         loopCounter = 0;
 
         pf.setPrefix(this);
@@ -72,7 +79,11 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio1Property = pf.createEphemeralProperty("DIO1", false);
         dio2Property = pf.createEphemeralProperty("DIO2", false);
         dio3Property = pf.createEphemeralProperty("DIO3", false);
-        allianceDioProperty = pf.createEphemeralProperty("AllianceDIO", false);
+        dio4Property = pf.createEphemeralProperty("DIO4", false);
+        cubeDioProperty = pf.createEphemeralProperty("IsConeDIO", false);
+
+        this.collector = collector;
+        this.arm = arm;
 
         this.register();
     }
@@ -87,28 +98,26 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         }
 
         boolean dsEnabled = DriverStation.isEnabled();
-        boolean isRedAlliance = DriverStation.getAlliance() == Alliance.Red;
 
         // Red alliance is 1, Blue alliance is 0.
-        allianceDio.set(!isRedAlliance);
+        boolean isCube = arm.isCubeMode();
+        cubeDio.set(isCube);
 
-        ArduinoStateMessage currentState = ArduinoStateMessage.RobotNotBooted;
+        LightsStateMessage currentState = LightsStateMessage.RobotNotBooted;
+
 
         // Figure out what we want to send to the arduino
         if (!dsEnabled) {
-            currentState = ArduinoStateMessage.RobotDisabled;
+            currentState = LightsStateMessage.RobotDisabled;
+        } else if (collector.getGamePieceCollected()) {
+            currentState = LightsStateMessage.GamePieceCollected;
         } else if (dsEnabled) {
-            currentState = ArduinoStateMessage.RobotEnabled;
+            currentState = LightsStateMessage.Enabled;
         }
 
-        // Go through the bits of the state and set the appropriate dio
-        // We start at the right and work our way left, so we start at
-        // index 3 (picking up that leftmost 1). The dioOutputs array is ordered
-        // such that the element at index 3 is dio0 to match how the arduino currently
-        // parses the binary data.
         int stateValue = currentState.getValue();
-        for (int i = 3; i >= 0; i--) {
-            dioOutputs[3 - i].set(!((stateValue & (1 << i)) != 0));
+        for (int i = 0; i < dioOutputs.length; i++) {
+            dioOutputs[i].set(((stateValue & (1 << i)) != 0));
         }
 
         chosenState.set(currentState.toString());
@@ -116,6 +125,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         dio1Property.set(dio1.get());
         dio2Property.set(dio2.get());
         dio3Property.set(dio3.get());
-        allianceDioProperty.set(allianceDio.get());
+        dio4Property.set(dio4.get());
+        cubeDioProperty.set(cubeDio.get());
     }
 }

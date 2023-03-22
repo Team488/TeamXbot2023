@@ -3,10 +3,9 @@ package competition.operator_interface;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import competition.subsystems.drive.commands.AutoBalanceCommand;
+import xbot.common.controls.sensors.XJoystick;
 import xbot.common.controls.sensors.XXboxController;
 import xbot.common.controls.sensors.XXboxController.XXboxControllerFactory;
-import xbot.common.controls.sensors.XXboxController.XboxButton;
 import xbot.common.logging.RobotAssertionManager;
 import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
@@ -19,13 +18,16 @@ import xbot.common.properties.PropertyFactory;
 public class OperatorInterface {
     public XXboxController driverGamepad;
     public XXboxController operatorGamepad;
-    public XXboxController experimentalGamepad;
+    public XJoystick experimentalInput;
     
     final DoubleProperty driverDeadband;
     final DoubleProperty operatorDeadband;
 
     @Inject
-    public OperatorInterface(XXboxControllerFactory controllerFactory, RobotAssertionManager assertionManager, PropertyFactory pf) {
+    public OperatorInterface(XXboxControllerFactory controllerFactory,
+                             XJoystick.XJoystickFactory joystickFactory,
+                             RobotAssertionManager assertionManager,
+                             PropertyFactory pf) {
         driverGamepad = controllerFactory.create(0);
         driverGamepad.setLeftInversion(false, true);
         driverGamepad.setRightInversion(true, true);
@@ -34,9 +36,7 @@ public class OperatorInterface {
         operatorGamepad.setLeftInversion(false, true);
         operatorGamepad.setRightInversion(false, true);
 
-        experimentalGamepad = controllerFactory.create(2);
-        experimentalGamepad.setLeftInversion(false, true);
-        experimentalGamepad.setRightInversion(false, true);
+        experimentalInput = joystickFactory.create(2, 32);
 
         pf.setPrefix("OperatorInterface");
         driverDeadband = pf.createPersistentProperty("Driver Deadband", 0.12);
