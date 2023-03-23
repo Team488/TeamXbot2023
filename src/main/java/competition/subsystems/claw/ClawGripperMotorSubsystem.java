@@ -26,7 +26,7 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
     public ClawGripperMotorSubsystem(PropertyFactory pf, XCANSparkMax.XCANSparkMaxFactory sparkMaxFactory, ElectricalContract eContract) {
         pf.setPrefix(this);
 
-        intakePower = pf.createPersistentProperty("Intake power", 0.2);
+        intakePower = pf.createPersistentProperty("Intake power", 0.4);
         intakeDuration = pf.createPersistentProperty("Intake duration", 1);
 
         electricalContract = eContract;
