@@ -41,6 +41,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
     @Override
     public void initialize() {
+        super.resetDecider(false);
         log.info("Initializing");
     }
 
