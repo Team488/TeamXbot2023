@@ -11,6 +11,7 @@ import xbot.common.controls.sensors.XAnalogInput;
 import xbot.common.controls.sensors.XTimer;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
@@ -56,6 +57,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -0.25);
 
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         currentIntakeTime = pf.createEphemeralProperty("currentIntakeTime", 0);
         intakeTime = pf.createEphemeralProperty("intakeTime", 0);
         currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
