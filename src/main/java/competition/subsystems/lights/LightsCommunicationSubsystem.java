@@ -14,6 +14,7 @@ import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
+import xbot.common.subsystems.autonomous.AutonomousCommandSelector;
 
 @Singleton
 public class LightsCommunicationSubsystem extends BaseSubsystem {
@@ -40,13 +41,15 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
     private final CollectorSubsystem collector;
     private final UnifiedArmSubsystem arm;
+    private final AutonomousCommandSelector autonomousCommandSelector;
 
     public enum LightsStateMessage {
         // when no code is running, all the dios are high by default so the max value is what's sent
         RobotNotBooted(31),
-        RobotDisabled(1),
+        RobotDisabledNoAuto(1),
         Enabled(2),
-        GamePieceCollected(3);
+        GamePieceCollected(3),
+        RobotDisabledWithAuto(4);
 
         private int value;
 
@@ -61,7 +64,8 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
     @Inject
     public LightsCommunicationSubsystem(XDigitalOutputFactory digitalOutputFactory, XPWMFactory pwmFactory,
-            ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm) {
+            ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm,
+            AutonomousCommandSelector autonomousCommandSelector) {
 
         dio0 = digitalOutputFactory.create(contract.getLightsDio0().channel);
         dio1 = digitalOutputFactory.create(contract.getLightsDio1().channel);
@@ -84,6 +88,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
         this.collector = collector;
         this.arm = arm;
+        this.autonomousCommandSelector = autonomousCommandSelector;
 
         this.register();
     }
@@ -108,7 +113,11 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
         // Figure out what we want to send to the arduino
         if (!dsEnabled) {
-            currentState = LightsStateMessage.RobotDisabled;
+            if (autonomousCommandSelector.getCurrentAutonomousCommand() != null) {
+                currentState = LightsStateMessage.RobotDisabledWithAuto;
+            } else {
+                currentState = LightsStateMessage.RobotDisabledNoAuto;
+            }
         } else if (collector.getGamePieceCollected()) {
             currentState = LightsStateMessage.GamePieceCollected;
         } else if (dsEnabled) {
