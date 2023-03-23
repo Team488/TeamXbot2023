@@ -35,7 +35,7 @@ public class UpperArmSegment extends ArmSegment {
         String prefix = "UnifiedArmSubsystem/UpperArm";
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
-        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -153.6);
+        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -142.6);
         lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -130);
         upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 130);
 

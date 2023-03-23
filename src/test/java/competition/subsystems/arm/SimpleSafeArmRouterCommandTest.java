@@ -34,6 +34,10 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         // Same facing, just going from neutral state to high state.
         setArmAngles(85, 15);
 
+        maintainer.initialize();
+        maintainer.execute();
+        maintainer.execute();
+
         // -------------------------------------------
         // Going to first transition point
         // -------------------------------------------
@@ -48,7 +52,6 @@ public class SimpleSafeArmRouterCommandTest extends BaseCompetitionTest {
         checkCurrentTarget(UnifiedArmSubsystem.KeyArmPosition.SafeExternalTransition, UnifiedArmSubsystem.RobotFacing.Forward);
         assertFalse(routerCommand.isFinished());
 
-        maintainer.initialize();
         maintainer.execute();
 
         // Run the router again - since no change in the arm, we shouldn't have any change in the target.

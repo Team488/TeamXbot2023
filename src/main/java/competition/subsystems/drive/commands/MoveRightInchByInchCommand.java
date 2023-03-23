@@ -8,10 +8,10 @@ import xbot.common.math.XYPair;
 
 public class MoveRightInchByInchCommand extends SequentialCommandGroup {
     @Inject
-    MoveRightInchByInchCommand(Provider<SwerveToPointCommand> swerveToPointCommandProvider){
-        var moveLeft = swerveToPointCommandProvider.get();
-        moveLeft.setRobotRelativeMotion();
-        moveLeft.setTargetPosition(new XYPair(0,3), 0);
-        this.addCommands(moveLeft.withTimeout(1.0));
+    MoveRightInchByInchCommand(SwerveToPointCommand swerveToPointCommand, BrakeCommand brake) {
+        swerveToPointCommand.setRobotRelativeMotion();
+        swerveToPointCommand.setTargetPosition(new XYPair(0,3), 0);
+        this.addCommands(swerveToPointCommand.withTimeout(1.0));
+        this.addCommands(brake);
     }
 }
