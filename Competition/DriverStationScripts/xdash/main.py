@@ -18,10 +18,27 @@ class Window(QMainWindow):
         self.createNetworkTables()
     
     def createNetworkTables(self):
-        self.blackmesa = self.inst.getTable("SmartDashboard").getSubTable("BlackMesa")
+        self.sdb = self.inst.getTable("SmartDashboard")
+        self.blackmesa = self.sdb.getSubTable("BlackMesa")
         self.subs = []
         self.ipWriter = IPWriter(self.inst, self.blackmesa, self.ntConnected)
         self.ipWriter.start()
+        def setupAutonomousCommandNameListener(topic, listener):
+            sub = self.sdb.getStringTopic(topic).subscribe("")
+            self.subs.append(sub)
+            self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
+        def setupAutonomousOracleListenerBoolean(topic, listener):
+            sub = self.sdb.getSubTable("AutonomousOracle").getBooleanTopic(topic).subscribe(False)
+            self.subs.append(sub)
+            self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
+        def setupAutonomousOracleListenerString(topic, listener):
+            sub = self.sdb.getSubTable("AutonomousOracle").getStringTopic(topic).subscribe("")
+            self.subs.append(sub)
+            self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
+        def setupAutonomousOracleListenerDouble(topic, listener):
+            sub = self.sdb.getSubTable("AutonomousOracle").getDoubleTopic(topic).subscribe(-488.0)
+            self.subs.append(sub)
+            self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
         def setupStringListener(topic, listener):
             sub = self.blackmesa.getStringTopic(topic).subscribe("")
             self.subs.append(sub)
@@ -31,7 +48,7 @@ class Window(QMainWindow):
             self.subs.append(sub)
             self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
         def setupDoubleListener(topic, listener):
-            sub = self.inst.getTable("SmartDashboard").getSubTable("PoseSubsystem").getDoubleTopic(topic).subscribe(0.0)
+            sub = self.sdb.getSubTable("PoseSubsystem").getDoubleTopic(topic).subscribe(0.0)
             self.subs.append(sub)
             self.inst.addListener(sub, nt.EventFlags.kValueAll, listener)
         setupStringListener("state", lambda event: self.streamingStatus.setText(event.data.value.getString()))
@@ -43,7 +60,25 @@ class Window(QMainWindow):
         setupIntegerListener("streamingForceRestartCount", lambda event: self.streamingForceRestartCount.setText(str(event.data.value.getInteger())))
         setupIntegerListener("roundCount", lambda event: self.round.setText(str(event.data.value.getInteger())))
 
+        # Autonomous Oracle Listeners
+        setupAutonomousCommandNameListener("Current autonomous command name", lambda event: self.currentAutonomousCommandName.setText(event.data.value.getString()))
+        setupAutonomousOracleListenerBoolean("EnableAcquireGamePiece", lambda event: self.enableAcquireGamePiece.setText(str(event.data.value.getBoolean())))
+        setupAutonomousOracleListenerBoolean("EnableBalance", lambda event: self.enableBalance.setText(str(event.data.value.getBoolean())))
+        setupAutonomousOracleListenerBoolean("EnableDrivePhaseOne", lambda event: self.enableDrivePhaseOne.setText(str(event.data.value.getBoolean())))
+        setupAutonomousOracleListenerBoolean("EnableMoveToScore", lambda event: self.enableMoveToScore.setText(str(event.data.value.getBoolean())))
+        setupAutonomousOracleListenerBoolean("EnableSecondScore", lambda event: self.enableSecondScore.setText(str(event.data.value.getBoolean())))
+        setupAutonomousOracleListenerString("InitialGamePiece", lambda event: self.initialGamePiece.setText(event.data.value.getString()))
+        setupAutonomousOracleListenerDouble("InitialScoringLocationIndex", lambda event: self.initialScoringLocationIndex.setText(str(event.data.value.getDouble())))
+        setupAutonomousOracleListenerString("InitialScoringMode", lambda event: self.initialScoringMode.setText(event.data.value.getString()))
+        setupAutonomousOracleListenerString("Lane", lambda event: self.lane.setText(event.data.value.getString()))
+        setupAutonomousOracleListenerString("MantlePrepPosition", lambda event: self.mantlePrepPosition.setText(event.data.value.getString()))
+        setupAutonomousOracleListenerString("SecondGamePiece", lambda event: self.secondGamePiece.setText(event.data.value.getString()))
+        setupAutonomousOracleListenerDouble("SecondScoringLocationIndex", lambda event: self.secondScoringLocationIndex.setText(str(event.data.value.getDouble())))
+        setupAutonomousOracleListenerString("SecondScoringMode", lambda event: self.secondScoringMode.setText(event.data.value.getString()))
+
     def createUI(self):
+        streamingTitleLabel = QLabel("Camera Streaming Controls")
+        streamingTitleLabel.setFont(QFont("Times",pointSize=18, weight=1000))
         ntConnectedLabel = QLabel("Is Connected")
         self.ntConnected = QLabel()
         roundLabel = QLabel("Round Count")
@@ -72,9 +107,72 @@ class Window(QMainWindow):
         self.forceRestartStreamingButton = QPushButton()
         self.forceRestartStreamingButton.setText("Force Restart Streaming")
         self.forceRestartStreamingButton.clicked.connect(self.forceRestartStreaming)
+        # Autonomous Layout
+        autonomousTitleLabel = QLabel ("Autonomous Status")
+        autonomousTitleLabel.setFont(QFont("Times",pointSize=18, weight=1000))
+        
+        currentAutonomousCommandNameLabel = QLabel("Current Auto Command")
+        currentAutonomousCommandNameLabel.setFont(QFont("Times",pointSize=14, weight=2000))
+        self.currentAutonomousCommandName = QLabel()
+        self.currentAutonomousCommandName.setFont(QFont("Times",pointSize=14, weight=2000))
+
+        enableAcquireGamePieceLabel = QLabel()
+        enableAcquireGamePieceLabel.setText("Game Piece Acquisition Enabled")
+        self.enableAcquireGamePiece = QLabel()
+
+        enableBalanceLabel = QLabel()
+        enableBalanceLabel.setText("Balancing Enabled")
+        self.enableBalance = QLabel()
+
+        enableDrivePhaseOneLabel = QLabel()
+        enableDrivePhaseOneLabel.setText("Drive Phase One Enabled")
+        self.enableDrivePhaseOne = QLabel()
+
+        enableMoveToScoreLabel = QLabel()
+        enableMoveToScoreLabel.setText("Moving to Score Enabled")
+        self.enableMoveToScore = QLabel()
+
+        enableSecondScoreLabel = QLabel()
+        enableSecondScoreLabel.setText("Scoring Second Game Piece Enabled")
+        self.enableSecondScore = QLabel()
+
+        initialGamePieceLabel = QLabel()
+        initialGamePieceLabel.setText("Initial Game Piece Type")
+        self.initialGamePiece = QLabel()
+
+        initialScoringLocationIndexLabel = QLabel()
+        initialScoringLocationIndexLabel.setText("Initial Scoring Location")
+        self.initialScoringLocationIndex = QLabel()
+
+        initialScoringModeLabel = QLabel()
+        initialScoringModeLabel.setText("Initial Scoring Mode")
+        self.initialScoringMode = QLabel()
+
+        laneLabel = QLabel()
+        laneLabel.setText("Maneuver Lane")
+        self.lane = QLabel()
+
+        mantlePrepPositionLabel = QLabel()
+        mantlePrepPositionLabel.setText("Charge Plate Mantling Side")
+        self.mantlePrepPosition = QLabel()
+
+        secondGamePieceLabel = QLabel()
+        secondGamePieceLabel.setText("Second Game Piece Type")
+        self.secondGamePiece = QLabel()
+
+        secondScoringLocationIndexLabel = QLabel()
+        secondScoringLocationIndexLabel.setText("Second Scoring Location")
+        self.secondScoringLocationIndex = QLabel()
+        
+        secondScoringModeLabel = QLabel()
+        secondScoringModeLabel.setText("Second Scoring Mode")
+        self.secondScoringMode = QLabel()
+
         self.layout = QGridLayout()
         self.layout.setSizeConstraint(QLayout.SetMaximumSize)
         row = 1
+        self.layout.addWidget(streamingTitleLabel, row, 1, 1, 2)
+        row += 1
         def addPair(a, b):
             nonlocal row
             self.layout.addWidget(a, row, 1)
@@ -90,6 +188,24 @@ class Window(QMainWindow):
         addPair(streamingRestartCountLabel, self.streamingRestartCount)
         addPair(streamingForceRestartCountLabel, self.streamingForceRestartCount)
         self.layout.addWidget(self.forceRestartStreamingButton, row, 1, 1, 2)
+        row += 2
+        self.layout.addWidget(autonomousTitleLabel, row, 1, 1, 2)
+        row += 1
+        addPair(currentAutonomousCommandNameLabel, self.currentAutonomousCommandName)
+        addPair(enableAcquireGamePieceLabel, self.enableAcquireGamePiece)
+        addPair(enableBalanceLabel, self.enableBalance)
+        addPair(enableDrivePhaseOneLabel, self.enableDrivePhaseOne)
+        addPair(enableMoveToScoreLabel, self.enableMoveToScore)
+        addPair(enableSecondScoreLabel, self.enableSecondScore)
+        addPair(initialGamePieceLabel, self.initialGamePiece)
+        addPair(initialScoringLocationIndexLabel, self.initialScoringLocationIndex)
+        addPair(initialScoringModeLabel, self.initialScoringMode)
+        addPair(laneLabel, self.lane)
+        addPair(mantlePrepPositionLabel, self.mantlePrepPosition)
+        addPair(secondGamePieceLabel, self.secondGamePiece)
+        addPair(secondScoringLocationIndexLabel, self.secondScoringLocationIndex)
+        addPair(secondScoringModeLabel, self.secondScoringMode)
+
         self.centralWidget = QWidget()
         self.centralWidget.setLayout(self.layout)
         self.setCentralWidget(self.centralWidget)
