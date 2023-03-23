@@ -116,17 +116,21 @@ class Window(QMainWindow):
         self.currentAutonomousCommandName = QLabel()
         self.currentAutonomousCommandName.setFont(QFont("Times",pointSize=14, weight=2000))
 
-        enableAcquireGamePieceLabel = QLabel()
-        enableAcquireGamePieceLabel.setText("Game Piece Acquisition Enabled")
-        self.enableAcquireGamePiece = QLabel()
+        laneLabel = QLabel()
+        laneLabel.setText("Maneuver Lane")
+        self.lane = QLabel()
 
-        enableBalanceLabel = QLabel()
-        enableBalanceLabel.setText("Balancing Enabled")
-        self.enableBalance = QLabel()
+        mantlePrepPositionLabel = QLabel()
+        mantlePrepPositionLabel.setText("Charge Plate Mantling Side")
+        self.mantlePrepPosition = QLabel()
 
         enableDrivePhaseOneLabel = QLabel()
         enableDrivePhaseOneLabel.setText("Drive Phase One Enabled")
         self.enableDrivePhaseOne = QLabel()
+
+        enableAcquireGamePieceLabel = QLabel()
+        enableAcquireGamePieceLabel.setText("Game Piece Acquisition Enabled")
+        self.enableAcquireGamePiece = QLabel()
 
         enableMoveToScoreLabel = QLabel()
         enableMoveToScoreLabel.setText("Moving to Score Enabled")
@@ -135,6 +139,10 @@ class Window(QMainWindow):
         enableSecondScoreLabel = QLabel()
         enableSecondScoreLabel.setText("Scoring Second Game Piece Enabled")
         self.enableSecondScore = QLabel()
+
+        enableBalanceLabel = QLabel()
+        enableBalanceLabel.setText("Balancing Enabled")
+        self.enableBalance = QLabel()
 
         initialGamePieceLabel = QLabel()
         initialGamePieceLabel.setText("Initial Game Piece Type")
@@ -147,14 +155,6 @@ class Window(QMainWindow):
         initialScoringModeLabel = QLabel()
         initialScoringModeLabel.setText("Initial Scoring Mode")
         self.initialScoringMode = QLabel()
-
-        laneLabel = QLabel()
-        laneLabel.setText("Maneuver Lane")
-        self.lane = QLabel()
-
-        mantlePrepPositionLabel = QLabel()
-        mantlePrepPositionLabel.setText("Charge Plate Mantling Side")
-        self.mantlePrepPosition = QLabel()
 
         secondGamePieceLabel = QLabel()
         secondGamePieceLabel.setText("Second Game Piece Type")
@@ -192,16 +192,16 @@ class Window(QMainWindow):
         self.layout.addWidget(autonomousTitleLabel, row, 1, 1, 2)
         row += 1
         addPair(currentAutonomousCommandNameLabel, self.currentAutonomousCommandName)
-        addPair(enableAcquireGamePieceLabel, self.enableAcquireGamePiece)
-        addPair(enableBalanceLabel, self.enableBalance)
+        addPair(laneLabel, self.lane)
         addPair(enableDrivePhaseOneLabel, self.enableDrivePhaseOne)
+        addPair(enableAcquireGamePieceLabel, self.enableAcquireGamePiece)
         addPair(enableMoveToScoreLabel, self.enableMoveToScore)
         addPair(enableSecondScoreLabel, self.enableSecondScore)
+        addPair(enableBalanceLabel, self.enableBalance)
+        addPair(mantlePrepPositionLabel, self.mantlePrepPosition)
         addPair(initialGamePieceLabel, self.initialGamePiece)
         addPair(initialScoringLocationIndexLabel, self.initialScoringLocationIndex)
         addPair(initialScoringModeLabel, self.initialScoringMode)
-        addPair(laneLabel, self.lane)
-        addPair(mantlePrepPositionLabel, self.mantlePrepPosition)
         addPair(secondGamePieceLabel, self.secondGamePiece)
         addPair(secondScoringLocationIndexLabel, self.secondScoringLocationIndex)
         addPair(secondScoringModeLabel, self.secondScoringMode)
