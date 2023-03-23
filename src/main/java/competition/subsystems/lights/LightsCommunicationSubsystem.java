@@ -84,8 +84,6 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
         this.collector = collector;
         this.arm = arm;
-
-        this.register();
     }
 
     int counter = 0;
