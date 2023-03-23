@@ -591,8 +591,9 @@ public class OperatorCommandMap {
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
-        SimpleSafeArmRouterCommand armToStartingPosition = armPositionCommandProvider.get();
-        armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
+        SimpleXZRouterCommand armToStartingPosition = simpleXZRouterCommandProvider.get();
+        armToStartingPosition.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
