@@ -33,7 +33,7 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         this.arms = arms;
         this.interpolator = new SimpleTimeInterpolator();
         pf.setPrefix(this);
-        this.defaultSegmentVelocity = pf.createPersistentProperty("DefaultSegmentVelocity", 10);
+        this.defaultSegmentVelocity = pf.createPersistentProperty("DefaultSegmentVelocity", 100);
     }
 
     public void setKeyPointProvider(Supplier<XbotArmPoint> keyPointsProvider) {

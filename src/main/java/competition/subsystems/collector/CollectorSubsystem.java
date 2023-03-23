@@ -54,7 +54,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         }
         pf.setPrefix(this);
         intakePower = pf.createPersistentProperty("intakePower", 1);
-        ejectPower = pf.createPersistentProperty("retractPower", -1);
+        ejectPower = pf.createPersistentProperty("retractPower", -0.25);
 
         currentIntakeTime = pf.createEphemeralProperty("currentIntakeTime", 0);
         intakeTime = pf.createEphemeralProperty("intakeTime", 0);
