@@ -105,8 +105,7 @@ public class OperatorCommandMap {
         resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
-        forwardHeading.includeOnSmartDashboard("setHeadingForward");
-        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
+
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
@@ -142,10 +141,6 @@ public class OperatorCommandMap {
                 ),
                 brakesButton
         ).whileTrue(setWheelsToXMode);
-
-        positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
-        velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
-        positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
@@ -183,12 +178,11 @@ public class OperatorCommandMap {
             AutoBalanceCommand balanceCommand) {
         //oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
         //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject
     public void setupGeneralSwerveCommands(SetSwerveMotorControllerPidParametersCommand setSteeringPidValues) {
-        setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
+        //setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
     }
 
     @Inject
@@ -211,9 +205,6 @@ public class OperatorCommandMap {
                 () -> {
                     return angleTarget.get();
                 });
-
-        swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
-        swerveToPoint.setMaxPower(0.35);
 
         // Precision Commands
         StartEndCommand activatePrecisionDriving = new StartEndCommand(
@@ -299,19 +290,19 @@ public class OperatorCommandMap {
 
         var setEjectLowThenBalance = setAutonomousCommandProvider.get();
         setEjectLowThenBalance.setAutoCommand(ejectLowThenBalance);
-        setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
+        //setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
 
         var setEjectLowThenBalanceWithMobility = setAutonomousCommandProvider.get();
         setEjectLowThenBalanceWithMobility.setAutoCommand(ejectLowThenBalanceWithMobility);
-        setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
+        //setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
 
         var setEjectLowThenExitLow = setAutonomousCommandProvider.get();
         setEjectLowThenExitLow.setAutoCommand(ejectLowThenExitLow);
-        setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
+        //setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
 
         var setEjectLowThenExitHigh = setAutonomousCommandProvider.get();
         setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
-        setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
+        //setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
 
         //oi.experimentalInput.getifAvailable(XboxButton.A).onTrue(setEjectLowThenBalance);
         //oi.experimentalInput.getifAvailable(XboxButton.B).onTrue(setEjectLowThenBalanceWithMobility);
