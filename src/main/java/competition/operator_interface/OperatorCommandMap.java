@@ -194,17 +194,6 @@ public class OperatorCommandMap {
                                       PropertyFactory pf) {
 
         pf.setPrefix("OperatorCommandMap/");
-        DoubleProperty xTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetX", 0);
-        DoubleProperty yTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetY", 0);
-        DoubleProperty angleTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetAngle", 0);
-
-        swerveToPoint.setTargetSupplier(
-                () -> {
-                    return new XYPair(xTarget.get(), yTarget.get());
-                },
-                () -> {
-                    return angleTarget.get();
-                });
 
         // Precision Commands
         StartEndCommand activatePrecisionDriving = new StartEndCommand(
@@ -314,7 +303,6 @@ public class OperatorCommandMap {
         var setParameterizedAutonomousProgram = setAutonomousCommandProvider.get();
         setParameterizedAutonomousProgram.setAutoCommand(parameterizedAutonomousProgram);
         setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParameterizedAutonomousProgram");
-        SmartDashboard.putData("AutoPrograms/ConfigureOmniAuto", oracle.createTopLaneOmniAuto());
 
         oi.experimentalInput.getifAvailable(28).onTrue(oracle.createFavoriteAutoOne()); // Z
         oi.experimentalInput.getifAvailable(29).onTrue(oracle.createFavoriteAutoTwo()); // X
@@ -603,8 +591,6 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
-        SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
-
         ControlEndEffectorPositionCommand moveUp = endEffectorPositionCommandProvider.get();
         moveUp.setDirection(new XYPair(0, 1));
         ControlEndEffectorPositionCommand moveForward = endEffectorPositionCommandProvider.get();
@@ -618,6 +604,7 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
+
     }
 
 }

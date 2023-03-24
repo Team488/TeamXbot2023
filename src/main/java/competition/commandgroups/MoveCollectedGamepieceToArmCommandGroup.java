@@ -29,9 +29,9 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
             PropertyFactory pf) {
 
         pf.setPrefix(this.getClass().getName());
-        DoubleProperty coneClawIntakeTime = pf.createPersistentProperty("Cone claw intake time", 0.35);
-        DoubleProperty coneCollectorEjectTime = pf.createPersistentProperty("Cone collector eject time", 0.35);
-        DoubleProperty cubeCollectorEjectTime = pf.createPersistentProperty("Cube collector eject time", 0.25);
+        double coneClawIntakeTime = 0.35;
+        double coneCollectorEjectTime = 0.35;
+        double cubeCollectorEjectTime = 0.25;
 
         // Open claw and wait
         this.addCommands(openClawCommand.withTimeout(0.5));
@@ -60,7 +60,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
 
         var waitThenPullArm = new WaitCommand(0.1).andThen(cubePullOutGamePieceCommand);
         var cubePullSequence = collector.getEjectThenStopCommand()
-                .withTimeout(cubeCollectorEjectTime.get())
+                .withTimeout(cubeCollectorEjectTime)
                 .alongWith(waitThenPullArm);
 
         // Now, the cone scenario
@@ -70,11 +70,11 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
                 () -> UnifiedArmSubsystem.RobotFacing.Forward);
 
         var clawConeIntake = clawMotors.createIntakeCommand()
-                .withTimeout(coneClawIntakeTime.get())
+                .withTimeout(coneClawIntakeTime)
                 .andThen(clawMotors.createStopCommand().withTimeout(0.01));
 
         var collectorConeEject = collector.getEjectThenStopCommand()
-                .withTimeout(coneCollectorEjectTime.get());
+                .withTimeout(coneCollectorEjectTime);
 
         var conePullSequence = (collectorConeEject.alongWith(clawConeIntake)).andThen(conePullOutGamePieceCommand);
 
