@@ -4,6 +4,7 @@ import competition.subsystems.arm.UnifiedArmSubsystem;
 import xbot.common.command.BaseCommand;
 import xbot.common.logic.TimeStableValidator;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
@@ -22,6 +23,7 @@ public class OpenClawCommand extends BaseCommand{
         this.arm = arm;
 
         pf.setPrefix(this);
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         armSafetyThreshold = pf.createPersistentProperty("Arm Safety Limit Degrees", 10.0);
         clawSafeTimeThreshold = pf.createPersistentProperty("Arm Safety Time Threshold", 0.2);
 

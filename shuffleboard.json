@@ -1532,7 +1532,7 @@
               "_showGlyph": false
             }
           },
-          "5,1": {
+          "4,1": {
             "size": [
               1,
               1
@@ -1545,7 +1545,7 @@
               "_showGlyph": false
             }
           },
-          "5,2": {
+          "4,2": {
             "size": [
               1,
               1
@@ -1558,7 +1558,7 @@
               "_showGlyph": false
             }
           },
-          "6,2": {
+          "5,2": {
             "size": [
               1,
               1
@@ -1571,7 +1571,7 @@
               "_showGlyph": false
             }
           },
-          "7,2": {
+          "6,2": {
             "size": [
               1,
               1
@@ -1584,7 +1584,7 @@
               "_showGlyph": false
             }
           },
-          "5,3": {
+          "4,3": {
             "size": [
               1,
               1
@@ -1597,7 +1597,7 @@
               "_showGlyph": false
             }
           },
-          "6,3": {
+          "5,3": {
             "size": [
               1,
               1
@@ -1610,7 +1610,7 @@
               "_showGlyph": false
             }
           },
-          "7,3": {
+          "6,3": {
             "size": [
               1,
               1
@@ -1623,7 +1623,7 @@
               "_showGlyph": false
             }
           },
-          "8,3": {
+          "7,3": {
             "size": [
               1,
               1
@@ -1636,7 +1636,7 @@
               "_showGlyph": false
             }
           },
-          "8,2": {
+          "7,2": {
             "size": [
               1,
               1
@@ -1649,7 +1649,7 @@
               "_showGlyph": false
             }
           },
-          "3,2": {
+          "2,2": {
             "size": [
               1,
               1
@@ -1662,59 +1662,7 @@
               "_showGlyph": false
             }
           },
-          "7,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
-              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/usePitchCompensation",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,0": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/usePitchCompensation",
-              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/usePitchCompensation",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/invertPitchCompensation",
-              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/invertPitchCompensation",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Toggle Switch",
-              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/invertPitchCompensation",
-              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/invertPitchCompensation",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "9,2": {
+          "8,3": {
             "size": [
               1,
               1
@@ -1766,7 +1714,7 @@
               "_showGlyph": false
             }
           },
-          "4,2": {
+          "3,2": {
             "size": [
               1,
               1
@@ -1779,7 +1727,7 @@
               "_showGlyph": false
             }
           },
-          "4,3": {
+          "3,3": {
             "size": [
               1,
               1
@@ -1792,7 +1740,7 @@
               "_showGlyph": false
             }
           },
-          "3,3": {
+          "2,3": {
             "size": [
               1,
               1
@@ -1801,19 +1749,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kD",
               "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kD",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "6,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/VoltageOffset",
-              "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/VoltageOffset",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1827,6 +1762,88 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
               "_title": "SmartDashboard/UnifiedArmSubsystem/LowerArm/RightMotor/kIzone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Is Time Stable",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Is Time Stable",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Time Stable Window",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Time Stable Window",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Tolerance",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Tolerance",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Within Tolerance",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UnifiedArmMaintainer/Error Within Tolerance",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "9,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/LowerLimitInDegrees",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/LowerLimitInDegrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/UnifiedArmSubsystem/UpperArm/UpperLimitInDegrees",
+              "_title": "SmartDashboard/UnifiedArmSubsystem/UpperArm/UpperLimitInDegrees",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -1948,6 +1965,19 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "5,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/Arm to starting position",
+              "_title": "/SmartDashboard/Arm to starting position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -2002,14 +2032,409 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "titleType": 0,
-        "tiles": {}
+        "tiles": {
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/P",
+              "_title": "SmartDashboard/AutoBalanceCommand/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/I",
+              "_title": "SmartDashboard/AutoBalanceCommand/I",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/D",
+              "_title": "SmartDashboard/AutoBalanceCommand/D",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/BalanceState",
+              "_title": "SmartDashboard/AutoBalanceCommand/BalanceState",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/firstAttemptSpeed",
+              "_title": "SmartDashboard/AutoBalanceCommand/firstAttemptSpeed",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutoBalanceCommand/speedMultiplier",
+              "_title": "SmartDashboard/AutoBalanceCommand/speedMultiplier",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveVelocity/P",
+              "_title": "SmartDashboard/DriveVelocity/P",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveVelocity/I",
+              "_title": "SmartDashboard/DriveVelocity/I",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DriveVelocity/D",
+              "_title": "SmartDashboard/DriveVelocity/D",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "ParamAuto",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "3,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/EnableDrivePhaseOne",
+              "_title": "SmartDashboard/AutonomousOracle/EnableDrivePhaseOne",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/EnableAcquireGamePiece",
+              "_title": "SmartDashboard/AutonomousOracle/EnableAcquireGamePiece",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/EnableMoveToScore",
+              "_title": "SmartDashboard/AutonomousOracle/EnableMoveToScore",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/EnableSecondScore",
+              "_title": "SmartDashboard/AutonomousOracle/EnableSecondScore",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/EnableBalance",
+              "_title": "SmartDashboard/AutonomousOracle/EnableBalance",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/InitialGamePiece",
+              "_title": "SmartDashboard/AutonomousOracle/InitialGamePiece",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/InitialScoringLocationIndex",
+              "_title": "SmartDashboard/AutonomousOracle/InitialScoringLocationIndex",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/InitialScoringMode",
+              "_title": "SmartDashboard/AutonomousOracle/InitialScoringMode",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/SecondGamePiece",
+              "_title": "SmartDashboard/AutonomousOracle/SecondGamePiece",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/SecondScoringLocationIndex",
+              "_title": "SmartDashboard/AutonomousOracle/SecondScoringLocationIndex",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/SecondScoringMode",
+              "_title": "SmartDashboard/AutonomousOracle/SecondScoringMode",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/MantlePrepPosition",
+              "_title": "SmartDashboard/AutonomousOracle/MantlePrepPosition",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/ConfigureOmniAuto",
+              "_title": "SmartDashboard/AutoPrograms/ConfigureOmniAuto",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_source0": "network_table:///SmartDashboard/AutoPrograms/SetParameterizedAutonomousProgram",
+              "_title": "SmartDashboard/AutoPrograms/SetParameterizedAutonomousProgram",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Current autonomous command name",
+              "_title": "SmartDashboard/Current autonomous command name",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/AutonomousOracle/Lane",
+              "_title": "SmartDashboard/AutonomousOracle/Lane",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tab 14",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "6,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision-usb_Port_1182_MJPEG_Server",
+              "_title": "photonvision-usb_Port_1182_MJPEG_Server",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "3,1": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_title": "Camera Stream",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          }
+        }
       }
     }
   ],
   "windowGeometry": {
-    "x": -7.199999809265137,
-    "y": -7.199999809265137,
-    "width": 1550.4000244140625,
-    "height": 830.4000244140625
+    "x": 0.800000011920929,
+    "y": 0.800000011920929,
+    "width": 1534.4000244140625,
+    "height": 814.4000244140625
   }
 }

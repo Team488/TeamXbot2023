@@ -12,6 +12,7 @@ import xbot.common.controls.actuators.XDigitalOutput;
 import xbot.common.controls.actuators.XDigitalOutput.XDigitalOutputFactory;
 import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
 import xbot.common.subsystems.autonomous.AutonomousCommandSelector;
@@ -78,6 +79,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         loopCounter = 0;
 
         pf.setPrefix(this);
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         chosenState = pf.createEphemeralProperty("ArduinoState", "Nothing Yet Set");
         dio0Property = pf.createEphemeralProperty("DIO0", false);
         dio1Property = pf.createEphemeralProperty("DIO1", false);
@@ -88,9 +90,8 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
         this.collector = collector;
         this.arm = arm;
-        this.autonomousCommandSelector = autonomousCommandSelector;
 
-        this.register();
+        this.autonomousCommandSelector = autonomousCommandSelector;
     }
 
     int counter = 0;
