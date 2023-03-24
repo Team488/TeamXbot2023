@@ -2,6 +2,7 @@ package competition.subsystems;
 
 import xbot.common.command.BaseSubsystem;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 /**
@@ -28,6 +29,8 @@ public abstract class BaseMotorPidSubsystem extends BaseSubsystem {
         kP = pf.createPersistentProperty("kP", defaultP);
         kI = pf.createPersistentProperty("kI", defaultI);
         kD = pf.createPersistentProperty("kD", defaultD);
+
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         kFF = pf.createPersistentProperty("kFF", defaultFF);
         kMinOutput = pf.createPersistentProperty("kMinOutput", defaultMinOutput);
         kMaxOutput = pf.createPersistentProperty("kMaxOutput", defaultMaxOutput);

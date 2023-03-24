@@ -88,7 +88,7 @@ public class Robot extends BaseRobot {
         // to start in a disabled state (as it would on the field). However, this does save you the 
         // hassle of navigating to the DS window and re-enabling the simulated robot.
         DriverStationSim.setEnabled(true);
-        webots.setFieldPoseOffset(getFieldOrigin());
+        //webots.setFieldPoseOffset(getFieldOrigin());
     }
 
     private FieldPose getFieldOrigin() {
