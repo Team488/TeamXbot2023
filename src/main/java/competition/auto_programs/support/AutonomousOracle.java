@@ -644,11 +644,10 @@ public class AutonomousOracle {
     }
 
     public boolean isAutoCustomized() {
-        return enableDrivePhaseOne.get()
-        || enableAcquireGamePiece.get()
-        || enableMoveToScore.get()
-        || enableSecondScore.get()
-        || enableBalance.get();
+        boolean drivingOrBalancing = enableDrivePhaseOne.get() || enableBalance.get();
+        boolean secondGamePiece = enableAcquireGamePiece.get() || enableMoveToScore.get() || enableSecondScore.get();
+
+        return drivingOrBalancing || secondGamePiece;
     }
 
     public void printAllAutoSettings() {
