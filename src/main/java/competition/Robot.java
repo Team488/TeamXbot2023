@@ -22,6 +22,9 @@ public class Robot extends BaseRobot {
         getInjectorComponent().subsystemDefaultCommandMap();
         getInjectorComponent().operatorCommandMap();
         getInjectorComponent().lightsCommunicationSubsystem();
+
+        this.autonomousCommandSelector.setCurrentAutonomousCommand(
+                getInjectorComponent().parameterizedAutonomousProgram());
     }
 
     protected BaseRobotComponent createDaggerComponent() {

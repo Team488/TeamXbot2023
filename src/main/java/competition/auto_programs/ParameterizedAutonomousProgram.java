@@ -45,6 +45,9 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
             Provider<MoveCollectedGamepieceToArmCommandGroup> moveCollectedGamepieceToArmCommandGroupProvider,
             BrakeCommand brake) {
 
+        var printSettings = new InstantCommand(oracle::printAllAutoSettings);
+        this.addCommands(printSettings);
+
         // ----------------------------
         // Set initial position
         // ----------------------------
@@ -211,17 +214,18 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
         var balance = new ParallelRaceGroup(
                 autoBalance,
-                velocityMaintainer);
-                //new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
-        //);
+                velocityMaintainer,
+                new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
+        );
 
-        var balanceOrNot = new ConditionalCommand(
-                driveToBalance,
+        var driveToBalanceOrNot = new ConditionalCommand(
+                driveToBalance.withTimeout(3.5),
                 new InstantCommand(),
                 oracle::getEnableBalance
         );
 
-        this.addCommands(balanceOrNot);
+        this.addCommands(driveToBalanceOrNot);
         this.addCommands(balance);
+        this.addCommands(brake);
     }
 }

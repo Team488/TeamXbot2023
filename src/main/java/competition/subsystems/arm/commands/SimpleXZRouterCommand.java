@@ -106,11 +106,13 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
         }
 
         waypoints.add(new XbotArmPoint(targetTranslation, secondSegmentTime));
-        
+
+        interpolator.setMaximumDistanceFromChasePointInInches(18);
         pointsToInterpolate = waypoints;
         interpolator.setKeyPoints(waypoints);
         interpolator.initialize(new XbotArmPoint(currentArmCoordinates, defaultSegmentTime));
         arms.setDisableBrake(true);
+        log.info("Finished initialization");
     }
 
     public List<XbotArmPoint> getPointsToInterpolate() {
@@ -156,6 +158,8 @@ public class SimpleXZRouterCommand extends BaseSetpointCommand {
 
     @Override
     public void end(boolean interrupted) {
+        log.info("Ending, interrupted:"+interrupted);
+
         arms.setDisableBrake(false);
     }
 }

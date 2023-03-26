@@ -167,7 +167,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
     private double getAngle() {
         // this is based on the rio orientation
-        double currentAngle = -(pose.getRobotPitch());
+        double currentAngle = -(pose.getRobotPitch()+1);
 
         if (Math.abs(currentAngle) < angleThresholdForBalance) {
             currentAngle = 0;
