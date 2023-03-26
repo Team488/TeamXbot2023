@@ -3,6 +3,7 @@ package competition.subsystems.drive.swerve;
 import javax.inject.Inject;
 
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
@@ -79,6 +80,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         if (electricalContract.isDriveReady()) {
             this.motorController = sparkMaxFactory.create(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
             setMotorControllerPositionPidParameters();
+            this.motorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
         }
         if (electricalContract.areCanCodersReady()) {
             this.encoder = canCoderFactory.create(electricalContract.getSteeringEncoder(swerveInstance), this.getPrefix());
