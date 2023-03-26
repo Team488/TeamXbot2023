@@ -165,10 +165,12 @@ public class OperatorCommandMap {
                 povRight
         ).whileTrue(swerveRightScoringPosition);
 
+        /*
         StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
                 () -> drive.setPrecisionRotationActive(true),
                 () -> drive.setPrecisionRotationActive(false));
-        scoringPositionModeButton.whileTrue(activateJustPrecisionRotation);
+         */
+        scoringPositionModeButton.whileTrue(drive.createEnableDisableQuickAlignActive());
     }
 
     @Inject

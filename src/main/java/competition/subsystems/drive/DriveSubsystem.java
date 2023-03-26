@@ -80,6 +80,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         }
     }
 
+    private boolean quickAlignActive = false;
+
     private SwerveModuleLocation activeModule = SwerveModuleLocation.FRONT_LEFT;
 
     @Inject
@@ -270,6 +272,14 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     private boolean rotateToHubActive = false;
+
+    public void setQuickAlignActive(boolean isActive) {
+        quickAlignActive = isActive;
+    }
+
+    public boolean isQuickAlignActive() {
+        return quickAlignActive;
+    }
 
 
     public boolean isRotateToHubActive() {
@@ -505,5 +515,12 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
     public void setPositionMaintainerXTarget(double positionMaintainerXTarget) {
         this.positionMaintainerXTarget.set(positionMaintainerXTarget);
+    }
+
+    public Command createEnableDisableQuickAlignActive() {
+        return Commands.startEnd(
+            () -> this.setQuickAlignActive(true),
+            () -> this.setQuickAlignActive(false)
+        );
     }
 }
