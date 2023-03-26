@@ -219,9 +219,6 @@ public class AutonomousOracle {
     }
 
     public Pose2d getInitialPoseInMeters() {
-        // This needs to change. We should recalculate this immediately, so we don't inadvertently "cache"
-        // the alliance color.
-
         var initialPose = AutoLandmarks.convertBlueToRedIfNeeded(getLocationForScoringPositionIndex(initialScoringLocationIndex));
         initialLocation = initialPose.getTranslation();
         initialHeading = initialPose.getRotation();
