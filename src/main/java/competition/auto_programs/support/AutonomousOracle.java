@@ -46,9 +46,10 @@ public class AutonomousOracle {
     }
 
     // Values used to compute actions in the autonomous program
-    private Translation2d initialLocation = AutoLandmarks.blueScoringPositionFive.getTranslation();
+    private Translation2d initialLocation = AutoLandmarks.blueScoringPositionFour.getTranslation();
     private Rotation2d initialHeading = Rotation2d.fromDegrees(-180);
-    private final DoubleProperty initialScoringLocationIndex;
+    private final DoubleProperty initialScoringLocationIndexProp;
+    private int initialScoringLocationIndex;
 
     private Lane lane = Lane.Middle;
     private final StringProperty laneProp;
@@ -56,11 +57,12 @@ public class AutonomousOracle {
     private UnifiedArmSubsystem.GamePieceMode initialGamePiece = UnifiedArmSubsystem.GamePieceMode.Cone;
     private final StringProperty initialGamePieceProp;
 
-    private ScoringMode initialScoringMode = ScoringMode.Eject;
+    private ScoringMode initialScoringMode = ScoringMode.High;
     private final StringProperty initialScoringModeProp;
 
     private Pose2d secondScoringPosition = AutoLandmarks.blueScoringPositionSix;
-    private final DoubleProperty secondScoringLocationIndex;
+    private final DoubleProperty secondScoringLocationIndexProp;
+    private int secondScoringLocationIndex;
 
     private UnifiedArmSubsystem.GamePieceMode secondGamePiece = UnifiedArmSubsystem.GamePieceMode.Cone;
     private final StringProperty secondGamePieceProp;
@@ -92,28 +94,28 @@ public class AutonomousOracle {
     public AutonomousOracle(PropertyFactory pf, PoseSubsystem pose) {
         this.pose = pose;
         pf.setPrefix("AutonomousOracle");
-        initialScoringLocationIndex = pf.createEphemeralProperty("InitialScoringLocationIndex", 5);
+        initialScoringLocationIndexProp = pf.createEphemeralProperty("InitialScoringLocationIndex", 4);
         laneProp = pf.createEphemeralProperty("Lane", "Middle");
         initialGamePieceProp = pf.createEphemeralProperty("InitialGamePiece", "Cone");
-        initialScoringModeProp = pf.createEphemeralProperty("InitialScoringMode", "Eject");
+        initialScoringModeProp = pf.createEphemeralProperty("InitialScoringMode", "High");
 
-        secondScoringLocationIndex = pf.createEphemeralProperty("SecondScoringLocationIndex", 6);
+        secondScoringLocationIndexProp = pf.createEphemeralProperty("SecondScoringLocationIndex", 6);
         secondGamePieceProp = pf.createEphemeralProperty("SecondGamePiece", "Cone");
         secondScoringModeProp = pf.createEphemeralProperty("SecondScoringMode", "Eject");
-        mantlePrepPositionProp = pf.createEphemeralProperty("MantlePrepPosition", "OutsideCommunity");
+        mantlePrepPositionProp = pf.createEphemeralProperty("MantlePrepPosition", "InsideCommunity");
 
         enableDrivePhaseOne = pf.createEphemeralProperty("EnableDrivePhaseOne", false);
         enableAcquireGamePiece = pf.createEphemeralProperty("EnableAcquireGamePiece", false);
         enableMoveToScore = pf.createEphemeralProperty("EnableMoveToScore", false);
         enableSecondScore = pf.createEphemeralProperty("EnableSecondScore", false);
-        enableBalance = pf.createEphemeralProperty("EnableBalance", true);
+        enableBalance = pf.createEphemeralProperty("EnableBalance", false);
 
         oracleField = new Field2d();
         SmartDashboard.putData("OracleField", oracleField);
 
-        setEnableAcquireGamePiece(true);
-        setInitialScoringLocationIndex(6);
-        setLane(Lane.Top);
+        setEnableAcquireGamePiece(false);
+        setInitialScoringLocationIndex(4);
+        setLane(Lane.Middle);
 
         oracleField.setRobotPose(getInitialPoseInMeters());
         setTrajectoryForDisplay("Phase1", getTrajectoryForDrivePhaseOne());
@@ -125,10 +127,8 @@ public class AutonomousOracle {
     // Basic setters/getters as needed
     // -------------------------------------------
     public void setInitialScoringLocationIndex(int index) {
-        initialScoringLocationIndex.set(index);
-        var initialPose = AutoLandmarks.convertBlueToRedIfNeeded(getLocationForScoringPositionIndex(index));
-        initialLocation = initialPose.getTranslation();
-        initialHeading = initialPose.getRotation();
+        initialScoringLocationIndex = index;
+        initialScoringLocationIndexProp.set(index);
     }
 
     public void setLane(Lane lane) {
@@ -151,8 +151,8 @@ public class AutonomousOracle {
     }
 
     public void setSecondScoringLocationIndex(int index) {
-        secondScoringLocationIndex.set(index);
-        secondScoringPosition = getLocationForScoringPositionIndex(index);
+        secondScoringLocationIndex = index;
+        secondScoringLocationIndexProp.set(index);
     }
 
     public void setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode gamePiece) {
@@ -219,6 +219,13 @@ public class AutonomousOracle {
     }
 
     public Pose2d getInitialPoseInMeters() {
+        // This needs to change. We should recalculate this immediately, so we don't inadvertently "cache"
+        // the alliance color.
+
+        var initialPose = AutoLandmarks.convertBlueToRedIfNeeded(getLocationForScoringPositionIndex(initialScoringLocationIndex));
+        initialLocation = initialPose.getTranslation();
+        initialHeading = initialPose.getRotation();
+
         return new Pose2d(initialLocation.times(1.0 / PoseSubsystem.INCHES_IN_A_METER), initialHeading);
     }
 
@@ -325,7 +332,7 @@ public class AutonomousOracle {
         // First, set a point 2 feet back from the goal to visit first, to help us line up.
         points.add(createXbotSwervePoint(
                 createLandmarkJustBeforeScoringPosition(
-                        (int) secondScoringLocationIndex.get(),
+                        secondScoringLocationIndex,
                         2 * 12), Rotation2d.fromDegrees(-180), 1.0));
 
         // Next, go to the scoring location. For cubes we can afford to be a few inches back,
@@ -335,7 +342,7 @@ public class AutonomousOracle {
             xAdjustmentInInches = 3;
         }
         var scoringLandmark = createAdjustedLandmark(getLocationForScoringPositionIndex(
-                (int) secondScoringLocationIndex.get()), xAdjustmentInInches, 0);
+                secondScoringLocationIndex), xAdjustmentInInches, 0);
         points.add(createXbotSwervePoint(scoringLandmark, Rotation2d.fromDegrees(-180), 1.0));
 
         return points;
@@ -348,11 +355,11 @@ public class AutonomousOracle {
             default: // Default to InsideCommunity
             case InsideCommunity: // we're facing outwards here, so 0 degrees
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(0), 1.0));
-                points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(0), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(0), 0.75));
                 break;
             case OutsideCommunity: // we're facing inwards here, so -180 degrees
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
-                points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(-180), 1.0));
+                points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(-180), 0.75));
                 break;
         }
 
@@ -634,5 +641,22 @@ public class AutonomousOracle {
                         landmark.getTranslation().getY() + yAdjustment),
                 landmark.getRotation()
         );
+    }
+
+    public boolean isAutoCustomized() {
+        return enableDrivePhaseOne.get()
+        || enableAcquireGamePiece.get()
+        || enableMoveToScore.get()
+        || enableSecondScore.get()
+        || enableBalance.get();
+    }
+
+    public void printAllAutoSettings() {
+        log.info("Lane: " + lane.toString());
+        log.info("Enables: " + enableDrivePhaseOne + "," + enableAcquireGamePiece + ","
+                + enableMoveToScore + "," + enableSecondScore + "," + enableBalance);
+        log.info("InitialGamepiece: " + initialScoringLocationIndex + "," + initialGamePiece + "," + initialScoringMode);
+        log.info("SecondGamepiece: " + secondScoringLocationIndex + "," + secondGamePiece + "," + secondScoringMode);
+        log.info("Mantling:" + mantlePrepPosition);
     }
 }

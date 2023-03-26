@@ -182,17 +182,9 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             
             if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get()) {
                 // If the magnitude is greater than the minimum magnitude, we can use the joystick to set the heading.
-                desiredHeading = headingVector.getAngle();
+                double currentHeading = pose.getCurrentHeading().getDegrees(); //headingVector.getAngle();
 
-                // Force the desired heading into one of four quadrants:
-                // -45 to 45
-                // 45 to 135
-                // 135 to 225
-                // 225 to 315
-
-                // First, we need to normalize the angle to be between -45 and 315
-                desiredHeading = ContiguousDouble.reboundValue(desiredHeading, -45, 315);
-
+                double reboundCurrentHeading = ContiguousDouble.reboundValue(currentHeading, -45, 315)+45;
                 // Now, we can use the modulus operator to get the quadrant.
                 int quadrant = (int) (desiredHeading / 90);
                 desiredHeading = quadrant * 90;

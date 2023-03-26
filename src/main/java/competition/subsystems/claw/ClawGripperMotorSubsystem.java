@@ -74,7 +74,7 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
         if(electricalContract.areClawMotorsReady()){
             return new NamedRunCommand("Claw Eject", () -> {
                 leaderMotor.set(eject);
-            });
+            }, this);
 
         }
         return null;

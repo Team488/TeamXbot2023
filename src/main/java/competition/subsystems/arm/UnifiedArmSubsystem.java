@@ -81,7 +81,7 @@ public class UnifiedArmSubsystem extends BaseSetpointSubsystem<XYPair> {
             90);
     // :todo add correct values for all the angles
     public static XYPair groundAngle = new XYPair(45, 28);
-    public static XYPair loadingTrayAngle = new XYPair(103, 51);
+    public static XYPair loadingTrayAngle = new XYPair(101.5, 71);
     public static XYPair startingPositionAngles = new XYPair(110, 20);
     public static XYPair prepareToAcquireFromCollectorAngles = new XYPair(103, 35.5);
     public static XYPair pickupCubeFromCollectorAngles = new XYPair(82.7, 21.0);

@@ -580,15 +580,18 @@ public class OperatorCommandMap {
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
-        //Left Bumper opens claw if cube, closes if cone and turns on motor
-       ConditionalCommand grabGamePiece = new ConditionalCommand(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
-                closeClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
-                () -> arm.isCubeMode());
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(grabGamePiece);
+
+        var moveArmForDoubleSubstation = simpleXZRouterCommandProvider.get();
+        moveArmForDoubleSubstation.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+        var intakeCommand = gripperMotorSubsystem.createIntakeCommand();
+
+        var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
+
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(collectFromDoubleSubstation);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenAutomaticallyRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
 
         ControlEndEffectorPositionCommand moveUp = endEffectorPositionCommandProvider.get();

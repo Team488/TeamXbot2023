@@ -1,5 +1,6 @@
 package competition.injection.components;
 
+import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.injection.swerve.SwerveComponentHolder;
 import competition.operator_interface.OperatorCommandMap;
 import competition.operator_interface.OperatorInterface;
@@ -18,4 +19,6 @@ public abstract class BaseRobotComponent extends BaseComponent {
     public abstract SwerveComponentHolder swerveComponents();
 
     public abstract LightsCommunicationSubsystem lightsCommunicationSubsystem();
+
+    public abstract ParameterizedAutonomousProgram parameterizedAutonomousProgram();
 }
