@@ -120,7 +120,7 @@ public class AutonomousOracle {
         oracleField.setRobotPose(getInitialPoseInMeters());
         setTrajectoryForDisplay("Phase1", getTrajectoryForDrivePhaseOne());
         setTrajectoryForDisplay("Scoring", getTrajectoryForScoring());
-        setTrajectoryForDisplay("Balance", getTrajectoryForBalance());
+        //setTrajectoryForDisplay("Balance", getTrajectoryForBalance());
     }
 
     // -------------------------------------------
@@ -309,6 +309,9 @@ public class AutonomousOracle {
         switch (lane) {
             case Top:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
+                points.add(createXbotSwervePoint(
+                        createAdjustedLandmark(AutoLandmarks.blueUpperCheckpointOutsideCommunity, 0, 12),
+                        Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 break;
