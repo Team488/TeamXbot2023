@@ -226,7 +226,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
                 new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
         );
         var driveToBalanceOrNot = new ConditionalCommand(
-                driveToBalance.withTimeout(3.5),
+                driveToBalance.withTimeout(4.5),
                 new InstantCommand(),
                 oracle::getEnableBalance
         );
