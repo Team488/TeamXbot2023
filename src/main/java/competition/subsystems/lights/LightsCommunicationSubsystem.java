@@ -3,6 +3,7 @@ package competition.subsystems.lights;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import competition.auto_programs.support.AutonomousOracle;
 import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
@@ -13,6 +14,7 @@ import xbot.common.controls.actuators.XDigitalOutput;
 import xbot.common.controls.actuators.XDigitalOutput.XDigitalOutputFactory;
 import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
 import xbot.common.subsystems.autonomous.AutonomousCommandSelector;
@@ -42,6 +44,8 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
     private final CollectorSubsystem collector;
     private final UnifiedArmSubsystem arm;
+
+    private final AutonomousOracle oracle;
     private final AutonomousCommandSelector autonomousCommandSelector;
 
     public enum LightsStateMessage {
@@ -50,8 +54,9 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         RobotDisabledNoAuto(1),
         Enabled(2),
         GamePieceCollected(3),
-        RobotDisabledWithAuto(4),
-        ArmAtTargetPosition(5);
+        RobotDisabledWithBasicAuto(4),
+        ArmAtTargetPosition(5),
+        RobotDisabledWithCustomizedAuto(6);
 
         private int value;
 
@@ -67,7 +72,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     @Inject
     public LightsCommunicationSubsystem(XDigitalOutputFactory digitalOutputFactory, XPWMFactory pwmFactory,
             ElectricalContract contract, PropertyFactory pf, CollectorSubsystem collector, UnifiedArmSubsystem arm,
-            AutonomousCommandSelector autonomousCommandSelector) {
+            AutonomousCommandSelector autonomousCommandSelector, AutonomousOracle oracle) {
 
         dio0 = digitalOutputFactory.create(contract.getLightsDio0().channel);
         dio1 = digitalOutputFactory.create(contract.getLightsDio1().channel);
@@ -80,6 +85,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         loopCounter = 0;
 
         pf.setPrefix(this);
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         chosenState = pf.createEphemeralProperty("ArduinoState", "Nothing Yet Set");
         dio0Property = pf.createEphemeralProperty("DIO0", false);
         dio1Property = pf.createEphemeralProperty("DIO1", false);
@@ -90,9 +96,9 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
 
         this.collector = collector;
         this.arm = arm;
-        this.autonomousCommandSelector = autonomousCommandSelector;
+        this.oracle = oracle;
 
-        this.register();
+        this.autonomousCommandSelector = autonomousCommandSelector;
     }
 
     int counter = 0;
@@ -116,7 +122,11 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         // Figure out what we want to send to the arduino
         if (!dsEnabled) {
             if (autonomousCommandSelector.getCurrentAutonomousCommand() != null) {
-                currentState = LightsStateMessage.RobotDisabledWithAuto;
+                if (oracle.isAutoCustomized()) {
+                    currentState = LightsStateMessage.RobotDisabledWithCustomizedAuto;
+                } else {
+                    currentState = LightsStateMessage.RobotDisabledWithBasicAuto;
+                }
             } else {
                 currentState = LightsStateMessage.RobotDisabledNoAuto;
             }

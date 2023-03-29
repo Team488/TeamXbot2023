@@ -2,6 +2,11 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Ghost": "Field2d",
+      "/SmartDashboard/Mechanisms/GhostArm": "Mechanism2d",
+      "/SmartDashboard/Mechanisms/RealArm": "Mechanism2d",
+      "/SmartDashboard/OracleField": "Field2d",
       "/SmartDashboard/Scheduler": "Scheduler"
     }
   }

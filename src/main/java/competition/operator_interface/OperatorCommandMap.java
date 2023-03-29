@@ -105,8 +105,7 @@ public class OperatorCommandMap {
         resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
-        forwardHeading.includeOnSmartDashboard("setHeadingForward");
-        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
+
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
@@ -142,10 +141,6 @@ public class OperatorCommandMap {
                 ),
                 brakesButton
         ).whileTrue(setWheelsToXMode);
-
-        positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
-        velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
-        positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
 
         //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
         oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
@@ -183,12 +178,11 @@ public class OperatorCommandMap {
             AutoBalanceCommand balanceCommand) {
         //oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
         //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject
     public void setupGeneralSwerveCommands(SetSwerveMotorControllerPidParametersCommand setSteeringPidValues) {
-        setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
+        //setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
     }
 
     @Inject
@@ -200,20 +194,6 @@ public class OperatorCommandMap {
                                       PropertyFactory pf) {
 
         pf.setPrefix("OperatorCommandMap/");
-        DoubleProperty xTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetX", 0);
-        DoubleProperty yTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetY", 0);
-        DoubleProperty angleTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetAngle", 0);
-
-        swerveToPoint.setTargetSupplier(
-                () -> {
-                    return new XYPair(xTarget.get(), yTarget.get());
-                },
-                () -> {
-                    return angleTarget.get();
-                });
-
-        swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
-        swerveToPoint.setMaxPower(0.35);
 
         // Precision Commands
         StartEndCommand activatePrecisionDriving = new StartEndCommand(
@@ -299,19 +279,19 @@ public class OperatorCommandMap {
 
         var setEjectLowThenBalance = setAutonomousCommandProvider.get();
         setEjectLowThenBalance.setAutoCommand(ejectLowThenBalance);
-        setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
+        //setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
 
         var setEjectLowThenBalanceWithMobility = setAutonomousCommandProvider.get();
         setEjectLowThenBalanceWithMobility.setAutoCommand(ejectLowThenBalanceWithMobility);
-        setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
+        //setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
 
         var setEjectLowThenExitLow = setAutonomousCommandProvider.get();
         setEjectLowThenExitLow.setAutoCommand(ejectLowThenExitLow);
-        setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
+        //setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
 
         var setEjectLowThenExitHigh = setAutonomousCommandProvider.get();
         setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
-        setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
+        //setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
 
         //oi.experimentalInput.getifAvailable(XboxButton.A).onTrue(setEjectLowThenBalance);
         //oi.experimentalInput.getifAvailable(XboxButton.B).onTrue(setEjectLowThenBalanceWithMobility);
@@ -323,7 +303,6 @@ public class OperatorCommandMap {
         var setParameterizedAutonomousProgram = setAutonomousCommandProvider.get();
         setParameterizedAutonomousProgram.setAutoCommand(parameterizedAutonomousProgram);
         setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParameterizedAutonomousProgram");
-        SmartDashboard.putData("AutoPrograms/ConfigureOmniAuto", oracle.createTopLaneOmniAuto());
 
         oi.experimentalInput.getifAvailable(28).onTrue(oracle.createFavoriteAutoOne()); // Z
         oi.experimentalInput.getifAvailable(29).onTrue(oracle.createFavoriteAutoTwo()); // X
@@ -591,8 +570,9 @@ public class OperatorCommandMap {
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
-        SimpleSafeArmRouterCommand armToStartingPosition = armPositionCommandProvider.get();
-        armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
+        SimpleXZRouterCommand armToStartingPosition = simpleXZRouterCommandProvider.get();
+        armToStartingPosition.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
@@ -600,18 +580,19 @@ public class OperatorCommandMap {
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
-        //Left Bumper opens claw if cube, closes if cone and turns on motor
-       ConditionalCommand grabGamePiece = new ConditionalCommand(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
-                closeClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
-                () -> arm.isCubeMode());
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(grabGamePiece);
+
+        var moveArmForDoubleSubstation = simpleXZRouterCommandProvider.get();
+        moveArmForDoubleSubstation.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+        var intakeCommand = gripperMotorSubsystem.createIntakeCommand();
+
+        var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
+
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(collectFromDoubleSubstation);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenAutomaticallyRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
-
-        SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
 
         ControlEndEffectorPositionCommand moveUp = endEffectorPositionCommandProvider.get();
         moveUp.setDirection(new XYPair(0, 1));
@@ -626,6 +607,7 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
+
     }
 
 }

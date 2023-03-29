@@ -51,7 +51,7 @@ public class UpperArmSegment extends ArmSegment {
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
-            this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
+            this.leftMotor = sparkMaxFactory.createWithoutProperties(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
             this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor", motorPidDefaults);
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);

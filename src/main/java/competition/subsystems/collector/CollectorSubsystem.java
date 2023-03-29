@@ -4,13 +4,16 @@ import competition.electrical_contract.ElectricalContract;
 import competition.operator_interface.OperatorInterface;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import xbot.common.command.BaseSubsystem;
 import xbot.common.controls.actuators.XCANSparkMax;
 import xbot.common.controls.actuators.XSolenoid;
 import xbot.common.controls.sensors.XAnalogInput;
 import xbot.common.controls.sensors.XTimer;
+import xbot.common.logic.TimeStableValidator;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
@@ -31,6 +34,9 @@ public class CollectorSubsystem extends BaseSubsystem {
     boolean intake = false;
     private int loopCount;
 
+    private TimeStableValidator gamePieceCollectedValidator;
+    private boolean gamePieceCollectedAndStable = false;
+
     final OperatorInterface oi;
     private XAnalogInput pressureSensor;
 
@@ -47,19 +53,24 @@ public class CollectorSubsystem extends BaseSubsystem {
         this.oi = oi;
         this.currentState = CollectorState.Retracted;
         if (contract.isCollectorReady()) {
-            this.collectorMotor = sparkMaxFactory.create(eContract.getCollectorMotor(), getPrefix(), "CollectorMotor");
+            this.collectorMotor = sparkMaxFactory.createWithoutProperties(eContract.getCollectorMotor(), getPrefix(), "CollectorMotor");
             this.collectorSolenoid = xSolenoidFactory.create(eContract.getCollectorSolenoid().channel);
-            collectorMotor.setSmartCurrentLimit(5);
+            collectorMotor.setSmartCurrentLimit(7);
             pressureSensor = analogInputFactory.create(eContract.getPressureSensor().channel);
         }
         pf.setPrefix(this);
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         intakePower = pf.createPersistentProperty("intakePower", 1);
         ejectPower = pf.createPersistentProperty("retractPower", -0.25);
 
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         currentIntakeTime = pf.createEphemeralProperty("currentIntakeTime", 0);
         intakeTime = pf.createEphemeralProperty("intakeTime", 0);
         currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
         gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
+
+        gamePieceCollectedValidator = new TimeStableValidator(0.75);
+        gamePieceCollectedValidator.checkStable(false);
     }
 
     private void changeCollector(CollectorState state) {
@@ -120,6 +131,22 @@ public class CollectorSubsystem extends BaseSubsystem {
                 this);
     }
 
+    public Command getCollectThenAutomaticallyRetractCommand() {
+        return new FunctionalCommand(
+                () -> {log.info("Initializing");},
+                () -> {
+                    this.intake();
+                    if (this.gamePieceCollectedAndStable) {
+                        this.retract();
+                    } else {
+                        this.extend();
+                    }
+                },
+                (end) -> {this.retract();},
+                () -> {return false;},
+                this);
+    }
+
     public Command getEjectThenStopCommand() {
         return Commands.startEnd(
                 () -> {
@@ -144,9 +171,12 @@ public class CollectorSubsystem extends BaseSubsystem {
             if ((currentIntakeTime.get() - intakeTime.get() > 0.5) && intake) {
                 //check current RPM is less than 500
                 currentMotorVelocity.set(collectorMotor.getVelocity());
-                gamePieceCollected.set(currentMotorVelocity.get() < 500 );
+                boolean collectorStalled = currentMotorVelocity.get() < 500;
+                gamePieceCollected.set(collectorStalled);
+                gamePieceCollectedAndStable = gamePieceCollectedValidator.checkStable(collectorStalled);
             }else{
                 gamePieceCollected.set(false);
+                gamePieceCollectedAndStable = gamePieceCollectedValidator.checkStable(false);
             }
             //if game piece is collected, rumble controller
 

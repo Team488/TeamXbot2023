@@ -56,7 +56,7 @@ public class SwerveDriveSubsystem extends BaseSetpointSubsystem<Double> {
         this.pidConfigSubsystem = pidConfigSubsystem;
 
         if (electricalContract.isDriveReady()) {
-            this.motorController = sparkMaxFactory.create(electricalContract.getDriveNeo(swerveInstance), this.getPrefix(), "DriveNeo");
+            this.motorController = sparkMaxFactory.createWithoutProperties(electricalContract.getDriveNeo(swerveInstance), this.getPrefix(), "DriveNeo");
             setMotorControllerPositionPidParameters();
             setupStatusFrames();
             this.motorController.setSmartCurrentLimit(45);

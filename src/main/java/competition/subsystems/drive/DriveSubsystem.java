@@ -26,6 +26,7 @@ import xbot.common.math.PIDManager;
 import xbot.common.math.XYPair;
 import xbot.common.math.PIDManager.PIDManagerFactory;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
 import xbot.common.properties.XPropertyManager;
@@ -111,6 +112,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         this.positionMaintainerXTarget = pf.createEphemeralProperty("PositionMaintainerXTarget", 0);
 
         // These can be tuned to reduce twitchy wheels
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         this.minTranslateSpeed = pf.createPersistentProperty("Minimum translate speed", 0.02);
         this.minRotationalSpeed = pf.createPersistentProperty("Minimum rotational speed", 0.02);
 
