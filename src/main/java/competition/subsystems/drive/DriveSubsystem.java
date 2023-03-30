@@ -199,6 +199,16 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         return manualBalanceMode;
     }
 
+    boolean gamePieceOrientatedRotationActive;
+
+    public boolean isGamePieceRotationActive() {
+        return gamePieceOrientatedRotationActive;
+    }
+
+    public void setGamePieceOrientatedRotationActive(boolean isActive) {
+        gamePieceOrientatedRotationActive = isActive;
+    }
+
     boolean collectorOrientedRotationActive;
 
     public boolean isCollectorRotationActive() {
