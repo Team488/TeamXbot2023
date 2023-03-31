@@ -272,7 +272,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         }
 
         if (drive.isGamePieceRotationActive()) {
-            centerOfRotationInches = new XYPair(20, 0);
+            centerOfRotationInches = new XYPair(35, 0);
         }
 
         if (drive.isRobotOrientedDriveActive()) {
