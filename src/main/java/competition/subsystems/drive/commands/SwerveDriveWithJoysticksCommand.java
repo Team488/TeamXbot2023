@@ -180,13 +180,19 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
             double desiredHeading = 0;
             
-            if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get()) {
+            if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get() || drive.isQuickAlignActive()) {
                 // If the magnitude is greater than the minimum magnitude, we can use the joystick to set the heading.
-                double currentHeading = pose.getCurrentHeading().getDegrees(); //headingVector.getAngle();
 
-                double reboundCurrentHeading = ContiguousDouble.reboundValue(currentHeading, -45, 315)+45;
+                double headingToEvaluateForQuadrant = 0;
+                if (drive.isQuickAlignActive()) {
+                    headingToEvaluateForQuadrant = pose.getCurrentHeading().getDegrees();
+                } else {
+                    headingToEvaluateForQuadrant = headingVector.getAngle();
+                }
+
+                double reboundCurrentHeading = ContiguousDouble.reboundValue(headingToEvaluateForQuadrant, -45, 315)+45;
                 // Now, we can use the modulus operator to get the quadrant.
-                int quadrant = (int) (desiredHeading / 90);
+                int quadrant = (int) (reboundCurrentHeading / 90);
                 desiredHeading = quadrant * 90;
                 
                 if (pose.getHeadingResetRecently()) {

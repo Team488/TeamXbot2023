@@ -120,7 +120,7 @@ public class AutonomousOracle {
         oracleField.setRobotPose(getInitialPoseInMeters());
         setTrajectoryForDisplay("Phase1", getTrajectoryForDrivePhaseOne());
         setTrajectoryForDisplay("Scoring", getTrajectoryForScoring());
-        setTrajectoryForDisplay("Balance", getTrajectoryForBalance());
+        //setTrajectoryForDisplay("Balance", getTrajectoryForBalance());
     }
 
     // -------------------------------------------
@@ -309,6 +309,9 @@ public class AutonomousOracle {
         switch (lane) {
             case Top:
                 // Mostly the reverse of how we got here, except now we're trying to go to a specific scoring position
+                points.add(createXbotSwervePoint(
+                        createAdjustedLandmark(AutoLandmarks.blueUpperCheckpointOutsideCommunity, 0, 12),
+                        Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCheckpointOutsideCommunity, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 break;
@@ -345,31 +348,35 @@ public class AutonomousOracle {
         return points;
     }
 
-    public List<XbotSwervePoint> getTrajectoryForBalance() {
+    public List<XbotSwervePoint> getTrajectoryForPrepareToBalance() {
         ArrayList<XbotSwervePoint> points = new ArrayList<>();
 
         switch (mantlePrepPosition) {
             default: // Default to InsideCommunity
             case InsideCommunity: // we're facing outwards here, so 0 degrees
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint, Rotation2d.fromDegrees(0), 1.0));
-                points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(0), 0.75));
                 break;
             case OutsideCommunity: // we're facing inwards here, so -180 degrees
                 points.add(createXbotSwervePoint(AutoLandmarks.blueToUpperAndLowerFieldCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
+                break;
+        }
+        return points;
+    }
+
+    public List<XbotSwervePoint> getTrajectoryForActualBalance() {
+        ArrayList<XbotSwervePoint> points = new ArrayList<>();
+
+        switch (mantlePrepPosition) {
+            default: // Default to InsideCommunity
+            case InsideCommunity: // we're facing outwards here, so 0 degrees
+                points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(0), 0.75));
+                break;
+            case OutsideCommunity: // we're facing inwards here, so -180 degrees
                 points.add(createXbotSwervePoint(AutoLandmarks.blueChargeStationCenter, Rotation2d.fromDegrees(-180), 0.75));
                 break;
         }
-
-
         return points;
     }
-
-    public List<XbotSwervePoint> getTrajectoryToBalanceChargePlate() {
-        ArrayList<XbotSwervePoint> points = new ArrayList<>();
-
-        return points;
-    }
-
 
     // -------------------------------------------
     // Helper methods
@@ -649,8 +656,8 @@ public class AutonomousOracle {
 
     public void printAllAutoSettings() {
         log.info("Lane: " + lane.toString());
-        log.info("Enables: " + enableDrivePhaseOne + "," + enableAcquireGamePiece + ","
-                + enableMoveToScore + "," + enableSecondScore + "," + enableBalance);
+        log.info("Enables: " + enableDrivePhaseOne.get() + "," + enableAcquireGamePiece.get() + ","
+                + enableMoveToScore.get() + "," + enableSecondScore.get() + "," + enableBalance.get());
         log.info("InitialGamepiece: " + initialScoringLocationIndex + "," + initialGamePiece + "," + initialScoringMode);
         log.info("SecondGamepiece: " + secondScoringLocationIndex + "," + secondGamePiece + "," + secondScoringMode);
         log.info("Mantling:" + mantlePrepPosition);

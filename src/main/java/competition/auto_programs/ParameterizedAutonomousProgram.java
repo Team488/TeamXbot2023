@@ -204,22 +204,29 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Optionally balance
         // ----------------------------
 
-        var driveToBalance = swerveSimpleTrajectoryCommandProvider.get();
-        driveToBalance.setMaxPower(0.75); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
-        driveToBalance.setMaxTurningPower(0.33);
-        driveToBalance.setKeyPointsProvider(oracle::getTrajectoryForBalance);
-        driveToBalance.setEnableConstantVelocity(true);
-        driveToBalance.setConstantVelocity(defaultVelocity);
+        var driveToPrepareBalance = swerveSimpleTrajectoryCommandProvider.get();
+        driveToPrepareBalance.setMaxPower(0.5); // TODO: hopefully tune this up to go faster, but too fast makes me nervous.
+        driveToPrepareBalance.setMaxTurningPower(0.6);
+        driveToPrepareBalance.setKeyPointsProvider(oracle::getTrajectoryForPrepareToBalance);
+        driveToPrepareBalance.setEnableConstantVelocity(true);
+        driveToPrepareBalance.setConstantVelocity(defaultVelocity);
 
+        var driveToActualBalance = swerveSimpleTrajectoryCommandProvider.get();
+        driveToActualBalance.setMaxPower(0.75);
+        driveToActualBalance.setMaxTurningPower(0.33);
+        driveToActualBalance.setKeyPointsProvider(oracle::getTrajectoryForActualBalance);
+        driveToActualBalance.setEnableConstantVelocity(true);
+        driveToActualBalance.setConstantVelocity(defaultVelocity);
+
+        var driveToBalance = driveToPrepareBalance.andThen(driveToActualBalance);
 
         var balance = new ParallelRaceGroup(
                 autoBalance,
                 velocityMaintainer,
                 new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
         );
-
         var driveToBalanceOrNot = new ConditionalCommand(
-                driveToBalance.withTimeout(3.5),
+                driveToBalance.withTimeout(4.5),
                 new InstantCommand(),
                 oracle::getEnableBalance
         );
