@@ -52,6 +52,9 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Set initial position
         // ----------------------------
 
+        // This controls how fast the robot moves through most of auto. We can't go
+        // much slower than this and still finish in 15s. But when testing auto it can
+        // be useful to set this to a small number like 10 to view the logic slowly.
         double defaultVelocity = 80;
 
         // TODO: If we trust the april tags, we should have a branch here where we don't force the initial position (and

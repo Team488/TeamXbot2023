@@ -75,10 +75,15 @@ public class AutonomousOracle {
 
 
     // Enable/disable switches for various parts of the autonomous program.
+    // Move for mobility points
     private final BooleanProperty enableDrivePhaseOne;
+    // Should it acquire a game piece after getting mobility
     private final BooleanProperty enableAcquireGamePiece;
+    // After acquiring a game piece, move back to score it
     private final BooleanProperty enableMoveToScore;
+    // After moving back with a new game piece, try to score it
     private final BooleanProperty enableSecondScore;
+    // Try to balance, can work from any position, no dependencies
     private final BooleanProperty enableBalance;
 
     PoseSubsystem pose;
