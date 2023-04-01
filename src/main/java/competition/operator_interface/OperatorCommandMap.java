@@ -1,6 +1,7 @@
 package competition.operator_interface;
 
 import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
+import competition.auto_programs.ScoreCubeHighThenExitCommunityAndBalance;
 import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
 import competition.auto_programs.EjectLowThenBalanceProgram;
 import competition.auto_programs.EjectLowThenBalanceWithMobilityProgram;
@@ -237,6 +238,7 @@ public class OperatorCommandMap {
                                         BlueExitCommunityAndBalanceProgram blueExitCommunityAndBalanceProgram,
                                         ScoreCubeHighThenLeaveProgram scoreCubeHighThenLeave,
                                         ScoreCubeHighThenBalanceProgram scoreCubeHighThenBalance,
+                                        ScoreCubeHighThenExitCommunityAndBalance scoreCubeHighThenExitCommunityAndBalance,
                                         EjectLowThenBalanceProgram ejectLowThenBalance,
                                         EjectLowThenBalanceWithMobilityProgram ejectLowThenBalanceWithMobility,
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
@@ -297,6 +299,11 @@ public class OperatorCommandMap {
         var setEjectLowThenExitHigh = setAutonomousCommandProvider.get();
         setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
         //setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
+
+        // New program, not sure if it works at all
+        var setScoreCubeHighThenExitCommunityAndBalance = setAutonomousCommandProvider.get();
+        setScoreCubeHighThenExitCommunityAndBalance.setAutoCommand(scoreCubeHighThenExitCommunityAndBalance);
+        setScoreCubeHighThenExitCommunityAndBalance.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenExitCommunityAndBalance");
 
         //oi.experimentalInput.getifAvailable(XboxButton.A).onTrue(setEjectLowThenBalance);
         //oi.experimentalInput.getifAvailable(XboxButton.B).onTrue(setEjectLowThenBalanceWithMobility);

@@ -84,7 +84,7 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                             mantleChargeStationAndExitCommunity.getY(),
                             pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
                             2.0);
-                    return new ArrayList<>(List.of(backOffAndTurnAround,getOnChargeStationAndExit));
+                    return new ArrayList<>(List.of(backOffAndTurnAround, getOnChargeStationAndExit));
                 });
         this.addCommands(exitCommunity);
 
@@ -108,7 +108,7 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                             chargeStationMantlePoint.getY(),
                             pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                             1.0);
-                    return new ArrayList<>(List.of(turnAround,getOnChargeStation));
+                    return new ArrayList<>(List.of(turnAround, getOnChargeStation));
                 });
         // This is only supposed to take 2.5 seconds. Set a timeout just in case.
         this.addCommands(mantleChargePlate.withTimeout(3.0));
