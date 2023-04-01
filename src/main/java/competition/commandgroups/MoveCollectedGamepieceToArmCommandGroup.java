@@ -36,6 +36,10 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
         // Open claw and wait
         this.addCommands(openClawCommand.withTimeout(0.5));
 
+        // Testing
+        var clawIntake = clawMotors.createIntakeCommand();
+        this.addCommands(clawIntake);
+
         // Move arm to the "collect" position
         var setArmsToCollectPositionCommand = setArmsToKeyArmPositionCommandProvider.get();
         setArmsToCollectPositionCommand.setTargetSupplier(
@@ -45,6 +49,10 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
 
         // Close claw and wait
         this.addCommands(closeClawCommand.withTimeout(0.5));
+
+        // Testing
+        var clawStopIntake = clawMotors.createStopCommand();
+        this.addCommands(clawStopIntake);
 
         // If we are in cube mode, we can use the simple "eject and pull away" combo.
         // If we are in cone mode, we instead need to:
