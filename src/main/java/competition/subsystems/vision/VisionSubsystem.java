@@ -5,6 +5,7 @@ import competition.subsystems.pose.XbotPhotonPoseEstimator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -157,7 +158,16 @@ public class VisionSubsystem extends BaseSubsystem {
         if (estimatedPose.targetsUsed.size() == 0) {
             return false;
         }
-
+        double errorThreshold = 200;
+        Pose3d prePose = estimatedPose.estimatedPose;
+        //If current estimated position and previous are too far from each other, unreliable
+        if((prePose.getX() - estimatedPose.estimatedPose.getX()) > errorThreshold){
+            return false;
+        }else if((prePose.getY() - estimatedPose.estimatedPose.getY()) > errorThreshold){
+            return false;
+        }else if((prePose.getZ() - estimatedPose.estimatedPose.getZ()) > errorThreshold){
+            return false;
+        }
         // Two or more targets tends to be very reliable
         if (estimatedPose.targetsUsed.size() > 1) {
             return true;
