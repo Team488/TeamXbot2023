@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import competition.auto_programs.support.AutonomousOracle;
 import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import xbot.common.command.BaseSubsystem;
@@ -54,6 +55,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         Enabled(2),
         GamePieceCollected(3),
         RobotDisabledWithBasicAuto(4),
+        ArmAtTargetPosition(5),
         RobotDisabledWithCustomizedAuto(6);
 
         private int value;
@@ -130,7 +132,10 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
             }
         } else if (collector.getGamePieceCollected()) {
             currentState = LightsStateMessage.GamePieceCollected;
-        } else if (dsEnabled) {
+        } else if(arm.isMaintainerAtGoal() && arm.upperArm.getArmPositionInDegrees() > 20){
+            currentState = LightsStateMessage.ArmAtTargetPosition;
+        }
+        else if (dsEnabled) {
             currentState = LightsStateMessage.Enabled;
         }
 
