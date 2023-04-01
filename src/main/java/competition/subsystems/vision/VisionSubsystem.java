@@ -23,6 +23,7 @@ import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Vector;
@@ -38,11 +39,11 @@ public class VisionSubsystem extends BaseSubsystem {
     final PhotonCamera rearAprilCamera;
 
     final RobotAssertionManager assertionManager;
-    final Pose3d pose3d;
     final BooleanProperty isInverted;
     final DoubleProperty yawOffset;
     final DoubleProperty waitForStableFixTime;
     final TimeStableValidator fixIsStable;
+    final PoseSubsystem poseSubsystem;
     NetworkTable visionTable;
     AprilTagFieldLayout aprilTagFieldLayout;
     XbotPhotonPoseEstimator customPhotonPoseEstimator;
@@ -52,9 +53,9 @@ public class VisionSubsystem extends BaseSubsystem {
 
 
     @Inject
-    public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager, Pose3d pose3d) {
+    public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager, PoseSubsystem poseSubsystem) {
         this.assertionManager = assertionManager;
-        this.pose3d = pose3d;
+        this.poseSubsystem = poseSubsystem;
         visionTable = NetworkTableInstance.getDefault().getTable(VISION_TABLE);
 
         pf.setPrefix(this);
@@ -135,7 +136,7 @@ public class VisionSubsystem extends BaseSubsystem {
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
-            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose)) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -148,7 +149,7 @@ public class VisionSubsystem extends BaseSubsystem {
         if (visionWorking) {
             rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = rearPhotonPoseEstimator.update();
-            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get(),previousEstimatedRobotPose)) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -157,12 +158,12 @@ public class VisionSubsystem extends BaseSubsystem {
         }
     }
 
-    private boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
+    private boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose, Pose2d previousEstimatedRobotPose) {
         if (estimatedPose.targetsUsed.size() == 0) {
             return false;
         }
 
-        double currentVector = pose3d.getTranslation().getDistance(estimatedPose.estimatedPose.getTranslation());
+        double currentVector = previousEstimatedRobotPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
         if(currentVector > 200){
             return false;
         }
