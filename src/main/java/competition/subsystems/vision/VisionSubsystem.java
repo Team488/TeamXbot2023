@@ -134,9 +134,9 @@ public class VisionSubsystem extends BaseSubsystem {
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
-            var isReliable = isEstimatedPoseReliable(estimatedPose.get());
+            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get());
             var isStable = frontReliablePoseIsStable.checkStable(isReliable);
-            if (!estimatedPose.isEmpty() && isReliable && isStable) {
+            if (isReliable && isStable) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -149,9 +149,9 @@ public class VisionSubsystem extends BaseSubsystem {
         if (visionWorking) {
             rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = rearPhotonPoseEstimator.update();
-            var isReliable = isEstimatedPoseReliable(estimatedPose.get());
+            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get());
             var isStable = rearReliablePoseIsStable.checkStable(isReliable);
-            if (!estimatedPose.isEmpty() && isReliable && isStable) {
+            if (isReliable && isStable) {
                 return estimatedPose;
             }
             return Optional.empty();
