@@ -35,6 +35,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     private boolean enableConstantVelocity = false;
     private double constantVelocity = 10;
+    private boolean stopWhenFinished = true;
 
     private final Field2d ghostDisplay;
 
@@ -83,6 +84,10 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     public List<XbotSwervePoint> getResolvedKeyPoints() {
         return keyPoints;
+    }
+
+    public void setStopWhenFinished(boolean newValue) {
+        this.stopWhenFinished = newValue;
     }
 
     // --------------------------------------------------------------
@@ -137,9 +142,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         return velocityAdjustedPoints;
     }
 
-    @Override
-    public void execute() {
-
+    protected XYPair getGoalVector() {
         var currentPosition = pose.getCurrentPose2d();
         lastResult = interpolator.calculateTarget(currentPosition.getTranslation());
         var chasePoint = lastResult.chasePoint;
@@ -147,9 +150,6 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         // Update the ghost display.
         ghostDisplay.setRobotPose(new Pose2d(chasePoint.div(PoseSubsystem.INCHES_IN_A_METER), lastResult.chaseHeading));
 
-        // Now that we have a chase point, we can drive to it. The rest of the logic is
-        // from our proven SwerveToPointCommand. Eventually, the common components should be
-        // refactored and should also move towards WPI objects (e.g. Pose2d rather than FieldPose).
 
         XYPair targetPosition = new XYPair(chasePoint.getX(), chasePoint.getY());
 
@@ -157,6 +157,13 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         XYPair goalVector = targetPosition.clone().add(
                 pose.getCurrentFieldPose().getPoint().scale(-1)
         );
+
+        return goalVector;
+    }
+
+    @Override
+    public void execute() {
+        var goalVector = getGoalVector();
 
         // PID on the magnitude of the goal. Kind of similar to rotation,
         // our goal is "zero error".
@@ -183,7 +190,11 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     @Override
     public boolean isFinished() {
-        boolean finished = drive.getPositionalPid().isOnTarget() && headingModule.isOnTarget()
+        var goalVector = getGoalVector();
+        // TODO: Move this threshold into a variable
+        boolean isAtNoStoppingGoal = goalVector.getMagnitude() < 6; // 6 inches
+
+        boolean finished = (stopWhenFinished ? drive.getPositionalPid().isOnTarget() : isAtNoStoppingGoal) && headingModule.isOnTarget()
                 && lastResult.isOnFinalPoint;
         if (finished) {
             log.info("Finished");
