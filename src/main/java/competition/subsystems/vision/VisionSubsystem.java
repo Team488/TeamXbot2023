@@ -24,6 +24,8 @@ import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class VisionSubsystem extends BaseSubsystem {
@@ -166,11 +168,11 @@ public class VisionSubsystem extends BaseSubsystem {
         }
 
         // Pose isn't reliable if we see a tag id that shouldn't be on the field
-        var allTagIds = estimatedPose.targetsUsed.stream()
-                .map(target -> target.getFiducialId()).toList();
+        var allTagIds = Arrays.asList(estimatedPose.targetsUsed.stream()
+                .map(target -> target.getFiducialId()).toArray(Integer[]::new));
         if (allTagIds.stream().anyMatch(id -> id < 1 || id > 8)) {
             this.log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
-                    + String.join(", ", allTagIds.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toList()));
+                    + String.join(", ", allTagIds.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toArray(String[]::new)));
             return false;
         }
 
