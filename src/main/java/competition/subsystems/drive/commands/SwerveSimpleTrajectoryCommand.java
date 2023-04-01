@@ -165,6 +165,10 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     public void execute() {
         var goalVector = getGoalVector();
 
+        // Now that we have a chase point, we can drive to it. The rest of the logic is
+        // from our proven SwerveToPointCommand. Eventually, the common components should be
+        // refactored and should also move towards WPI objects (e.g. Pose2d rather than FieldPose).
+
         // PID on the magnitude of the goal. Kind of similar to rotation,
         // our goal is "zero error".
         double magnitudeGoal = goalVector.getMagnitude();
