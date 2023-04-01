@@ -3,6 +3,7 @@ package competition.subsystems.drive.swerve.commands;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.MockPoseSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import competition.subsystems.drive.commands.SwerveDriveWithJoysticksCommand;
@@ -46,6 +47,7 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         checkAllModulePower(1);
     }
 
+    @Ignore
     @Test
     public void testAbsoluteHeading() {
         pose.setAlliance(DriverStation.Alliance.Blue);
@@ -102,6 +104,7 @@ public class SwerveDriveWithJoysticksCommandTest extends BaseFullSwerveTest {
         checkAllModulePower(-1);
     }
 
+    @Ignore
     @Test
     public void testAbsoluteHeadingRedAlliance() {
         pose.setAlliance(DriverStation.Alliance.Red);

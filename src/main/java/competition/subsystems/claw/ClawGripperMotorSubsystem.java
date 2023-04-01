@@ -26,14 +26,14 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
     public ClawGripperMotorSubsystem(PropertyFactory pf, XCANSparkMax.XCANSparkMaxFactory sparkMaxFactory, ElectricalContract eContract) {
         pf.setPrefix(this);
 
-        intakePower = pf.createPersistentProperty("Intake power", 0.2);
+        intakePower = pf.createPersistentProperty("Intake power", 0.4);
         intakeDuration = pf.createPersistentProperty("Intake duration", 1);
 
         electricalContract = eContract;
 
         if (eContract.areClawMotorsReady()) {
-            leaderMotor = sparkMaxFactory.create(eContract.getRightClawMotor(), getPrefix(), "Leader claw motor");
-            followerMotor = sparkMaxFactory.create(eContract.getLeftClawMotor(), getPrefix(), "Follower claw motor");
+            leaderMotor = sparkMaxFactory.createWithoutProperties(eContract.getRightClawMotor(), getPrefix(), "Leader claw motor");
+            followerMotor = sparkMaxFactory.createWithoutProperties(eContract.getLeftClawMotor(), getPrefix(), "Follower claw motor");
 
             leaderMotor.setSmartCurrentLimit(40);
             followerMotor.setSmartCurrentLimit(40);
@@ -74,7 +74,7 @@ public class ClawGripperMotorSubsystem extends BaseSubsystem {
         if(electricalContract.areClawMotorsReady()){
             return new NamedRunCommand("Claw Eject", () -> {
                 leaderMotor.set(eject);
-            });
+            }, this);
 
         }
         return null;

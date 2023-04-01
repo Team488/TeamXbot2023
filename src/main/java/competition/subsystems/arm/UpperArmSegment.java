@@ -35,23 +35,23 @@ public class UpperArmSegment extends ArmSegment {
         String prefix = "UnifiedArmSubsystem/UpperArm";
         propFactory.setPrefix(prefix);
         degreesPerMotorRotationProp = propFactory.createPersistentProperty("degreesPerMotorRotation",1.26);
-        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -153.6);
+        absoluteEncoderOffsetInDegreesProp = propFactory.createPersistentProperty("AbsoluteEncoderOffsetInDegrees", -142.6);
         lowerLimitInDegrees = propFactory.createPersistentProperty("LowerLimitInDegrees", -130);
         upperLimitInDegrees = propFactory.createPersistentProperty("UpperLimitInDegrees", 130);
 
         XCANSparkMaxPIDProperties motorPidDefaults = new XCANSparkMaxPIDProperties(
-                0.06, // P
+                0.05, // P
                 0.0, // I
                 0, // D
                 0, // IZone
                 0, // FF
-                0.75, // MaxOutput
-                -0.75 // MinOutput
+                1.0, // MaxOutput
+                -0.4 // MinOutput
         );
 
         this.contract = eContract;
         if(contract.isLowerArmReady()){
-            this.leftMotor = sparkMaxFactory.create(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
+            this.leftMotor = sparkMaxFactory.createWithoutProperties(eContract.getUpperArmLeftMotor(), prefix,"LeftMotor");
             this.rightMotor = sparkMaxFactory.create(eContract.getUpperArmRightMotor(), prefix,"RightMotor", motorPidDefaults);
 
             leftMotor.follow(rightMotor, contract.getUpperArmLeftMotor().inverted);

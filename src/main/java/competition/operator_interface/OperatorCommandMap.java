@@ -1,8 +1,5 @@
 package competition.operator_interface;
 
-import competition.auto_programs.BasicMobilityPoints;
-import competition.auto_programs.BlueBottomScoringPath;
-import competition.auto_programs.ScoreCubeHighThenExitCommunityAndBalance;
 import competition.auto_programs.BlueExitCommunityAndBalanceProgram;
 import competition.auto_programs.BlueScoringPositionFiveToBalanceProgram;
 import competition.auto_programs.EjectLowThenBalanceProgram;
@@ -12,7 +9,9 @@ import competition.auto_programs.EjectLowThenExitLowProgram;
 import competition.auto_programs.ParameterizedAutonomousProgram;
 import competition.auto_programs.ScoreCubeHighThenBalanceProgram;
 import competition.auto_programs.ScoreCubeHighThenLeaveProgram;
+import competition.auto_programs.support.AutonomousOracle;
 import competition.commandgroups.MoveCollectedGamepieceToArmCommandGroup;
+import competition.commandgroups.ScoreConeHighCommandGroup;
 import competition.commandgroups.ScoreCubeMidCommandGroup;
 import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.arm.UnifiedArmSubsystem.KeyArmPosition;
@@ -66,7 +65,6 @@ import xbot.common.subsystems.pose.commands.SetRobotHeadingCommand;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.security.KeyStore;
 
 /**
  * Maps operator interface buttons to commands
@@ -107,8 +105,7 @@ public class OperatorCommandMap {
         resetHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
-        forwardHeading.includeOnSmartDashboard("setHeadingForward");
-        backwardHeading.includeOnSmartDashboard("setHeadingBackward");
+
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
         ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
@@ -119,11 +116,18 @@ public class OperatorCommandMap {
 
         oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
+        oi.driverGamepad.getifAvailable(XboxButton.Start).onTrue(backwardHeading);
 
         NamedInstantCommand enableCollectorRotation =
                 new NamedInstantCommand("Enable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(true));
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
+
+        StartEndCommand enableGamePieceRotation = new StartEndCommand(
+                        () -> drive.setGamePieceOrientatedRotationActive(true),
+                        () -> drive.setGamePieceOrientatedRotationActive(false));
+
+        oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(enableGamePieceRotation);
 
         var povDown = oi.driverGamepad.getPovIfAvailable(180);
         var povLeft = oi.driverGamepad.getPovIfAvailable(270);
@@ -143,17 +147,6 @@ public class OperatorCommandMap {
                 ),
                 brakesButton
         ).whileTrue(setWheelsToXMode);
-
-        //oi.driverGamepad.getPovIfAvailable(0).onTrue(enableCollectorRotation);
-        //oi.driverGamepad.getPovIfAvailable(180).onTrue(disableCollectorRotation);
-
-
-        positionMaintainer.includeOnSmartDashboard("Drive Position Maintainer");
-        velocityDrive.includeOnSmartDashboard("Drive Velocity with Joysticks");
-        positionDrive.includeOnSmartDashboard("Drive Position with Joysticks");
-
-        //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
 
         brakesButton.whileTrue(setWheelsToXMode);
 
@@ -175,10 +168,12 @@ public class OperatorCommandMap {
                 povRight
         ).whileTrue(swerveRightScoringPosition);
 
+        /*
         StartEndCommand activateJustPrecisionRotation = new StartEndCommand(
                 () -> drive.setPrecisionRotationActive(true),
                 () -> drive.setPrecisionRotationActive(false));
-        scoringPositionModeButton.whileTrue(activateJustPrecisionRotation);
+         */
+        scoringPositionModeButton.whileTrue(drive.createEnableDisableQuickAlignActive());
     }
 
     @Inject
@@ -188,12 +183,11 @@ public class OperatorCommandMap {
             AutoBalanceCommand balanceCommand) {
         //oi.driverGamepad.getXboxButton(XboxButton.Start).whileTrue(balanceCommand);
         //oi.driverGamepad.getXboxButton(XboxButton.B).onTrue(velocityMaintainer);
-        velocityMaintainer.includeOnSmartDashboard("Drive Velocity Maintainer");
     }
 
     @Inject
     public void setupGeneralSwerveCommands(SetSwerveMotorControllerPidParametersCommand setSteeringPidValues) {
-        setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
+        //setSteeringPidValues.includeOnSmartDashboard("Commit steering pid values");
     }
 
     @Inject
@@ -205,20 +199,6 @@ public class OperatorCommandMap {
                                       PropertyFactory pf) {
 
         pf.setPrefix("OperatorCommandMap/");
-        DoubleProperty xTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetX", 0);
-        DoubleProperty yTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetY", 0);
-        DoubleProperty angleTarget = pf.createEphemeralProperty("OI/SwerveToPointTargetAngle", 0);
-
-        swerveToPoint.setTargetSupplier(
-                () -> {
-                    return new XYPair(xTarget.get(), yTarget.get());
-                },
-                () -> {
-                    return angleTarget.get();
-                });
-
-        swerveToPoint.includeOnSmartDashboard("Swerve To Point Debug");
-        swerveToPoint.setMaxPower(0.35);
 
         // Precision Commands
         StartEndCommand activatePrecisionDriving = new StartEndCommand(
@@ -262,14 +242,20 @@ public class OperatorCommandMap {
                                         EjectLowThenExitLowProgram ejectLowThenExitLow,
                                         EjectLowThenExitHighProgram ejectLowThenExitHigh,
                                         ParameterizedAutonomousProgram parameterizedAutonomousProgram,
+                                        AutonomousOracle oracle,
                                         ScoreCubeMidCommandGroup scoreCubeMid,
-                                        ScoreCubeHighThenExitCommunityAndBalance scoreCubeHighThenExitCommunityAndBalance) {
+                                        ScoreConeHighCommandGroup scoreConeHigh,
+                                        ChordTrigger.ChordTriggerFactory chordTriggerFactory) {
 
         var scoreCubeMidThenStop = setAutonomousCommandProvider.get();
         scoreCubeMidThenStop.setAutoCommand(scoreCubeMid);
         scoreCubeMidThenStop.includeOnSmartDashboard("AutoPrograms/ScoreCubeMidThenStop");
-        oi.experimentalGamepad.getifAvailable(XboxButton.LeftBumper).onTrue(scoreCubeMidThenStop);
+        //oi.experimentalInput.getifAvailable(XboxButton.LeftBumper).onTrue(scoreCubeMidThenStop);
 
+        var scoreConeHighThenStop = setAutonomousCommandProvider.get();
+        scoreConeHighThenStop.setAutoCommand(scoreConeHigh);
+        scoreConeHighThenStop.includeOnSmartDashboard("AutoPrograms/ScoreConeHighThenStop");
+        //oi.experimentalInput.getifAvailable(XboxButton.RightBumper).onTrue(scoreConeHighThenStop);
         // These three programs have all been tested to "work" on blocks at least once.
         var setPositionFiveToBalance = setAutonomousCommandProvider.get();
         setPositionFiveToBalance.setAutoCommand(blueScoringPositionFiveToBalanceProgram);
@@ -287,10 +273,10 @@ public class OperatorCommandMap {
         setScoreCubeHighThenBalance.setAutoCommand(scoreCubeHighThenBalance);
         setScoreCubeHighThenBalance.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenBalance");
 
-        oi.experimentalGamepad.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
-        oi.experimentalGamepad.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
-        oi.experimentalGamepad.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeave);
-        oi.experimentalGamepad.getPovIfAvailable(270).onTrue(setScoreCubeHighThenBalance);
+        oi.experimentalInput.getPovIfAvailable(0).onTrue(setPositionFiveToBalance);
+        oi.experimentalInput.getPovIfAvailable(90).onTrue(setPositionFiveMobilityThenBalance);
+        oi.experimentalInput.getPovIfAvailable(180).onTrue(setScoreCubeHighThenLeave);
+        oi.experimentalInput.getPovIfAvailable(270).onTrue(setScoreCubeHighThenBalance);
 
         // These four programs seem reliable, and are based on the above programs but without further testing I'm concerned.
         // Should be prioritized for testing, especially the basic eject & balance combo.
@@ -298,37 +284,141 @@ public class OperatorCommandMap {
 
         var setEjectLowThenBalance = setAutonomousCommandProvider.get();
         setEjectLowThenBalance.setAutoCommand(ejectLowThenBalance);
-        setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
+        //setEjectLowThenBalance.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalance");
 
         var setEjectLowThenBalanceWithMobility = setAutonomousCommandProvider.get();
         setEjectLowThenBalanceWithMobility.setAutoCommand(ejectLowThenBalanceWithMobility);
-        setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
+        //setEjectLowThenBalanceWithMobility.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenBalanceWithMobility");
 
         var setEjectLowThenExitLow = setAutonomousCommandProvider.get();
         setEjectLowThenExitLow.setAutoCommand(ejectLowThenExitLow);
-        setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
+        //setEjectLowThenExitLow.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitLow");
 
         var setEjectLowThenExitHigh = setAutonomousCommandProvider.get();
         setEjectLowThenExitHigh.setAutoCommand(ejectLowThenExitHigh);
-        setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
+        //setEjectLowThenExitHigh.includeOnSmartDashboard("AutoPrograms/SetEjectLowThenExitHigh");
 
-        oi.experimentalGamepad.getifAvailable(XboxButton.A).onTrue(setEjectLowThenBalance);
-        oi.experimentalGamepad.getifAvailable(XboxButton.B).onTrue(setEjectLowThenBalanceWithMobility);
-        oi.experimentalGamepad.getifAvailable(XboxButton.X).onTrue(setEjectLowThenExitLow);
-        oi.experimentalGamepad.getifAvailable(XboxButton.Y).onTrue(setEjectLowThenExitHigh);
+        //oi.experimentalInput.getifAvailable(XboxButton.A).onTrue(setEjectLowThenBalance);
+        //oi.experimentalInput.getifAvailable(XboxButton.B).onTrue(setEjectLowThenBalanceWithMobility);
+        //oi.experimentalInput.getifAvailable(XboxButton.X).onTrue(setEjectLowThenExitLow);
+        //oi.experimentalInput.getifAvailable(XboxButton.Y).onTrue(setEjectLowThenExitHigh);
 
         // This is highly experimental, but gives the drive team a lot of flexibility with alliance partners.
 
         var setParameterizedAutonomousProgram = setAutonomousCommandProvider.get();
         setParameterizedAutonomousProgram.setAutoCommand(parameterizedAutonomousProgram);
-        setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParamaterizedAutonomousProgram");
+        setParameterizedAutonomousProgram.includeOnSmartDashboard("AutoPrograms/SetParameterizedAutonomousProgram");
 
-        // There are two autonomous
+        oi.experimentalInput.getifAvailable(28).onTrue(oracle.createFavoriteAutoOne()); // Z
+        oi.experimentalInput.getifAvailable(29).onTrue(oracle.createFavoriteAutoTwo()); // X
+        oi.experimentalInput.getifAvailable(30).onTrue(oracle.createFavoriteAutoThree()); // C
+        oi.experimentalInput.getifAvailable(31).onTrue(oracle.createFavoriteAutoFour()); // V
+        oi.experimentalInput.getifAvailable(32).onTrue(setParameterizedAutonomousProgram); // B
 
-        // Not sure where to put the program
-        var setScoreCubeHighThenExitCommunityAndBalance = setAutonomousCommandProvider.get();
-        setScoreCubeHighThenExitCommunityAndBalance.setAutoCommand(scoreCubeHighThenExitCommunityAndBalance);
-        setScoreCubeHighThenExitCommunityAndBalance.includeOnSmartDashboard("AutoPrograms/SetScoreCubeHighThenExitCommunityAndBalance");
+        // -----------------------------------------
+        // Time for a giant pile of chords to configure the auto program
+        // -----------------------------------------
+
+        var enableButton = oi.experimentalInput.getifAvailable(10); // Q
+        var disableButton = oi.experimentalInput.getifAvailable(11); // W
+        // each of the major toggles
+        var drivePhaseOneButton = oi.experimentalInput.getifAvailable(12); // E
+        var acquireGamePieceButton = oi.experimentalInput.getifAvailable(13); // R
+        var moveToScoreButton = oi.experimentalInput.getifAvailable(14); // T
+        var scoreSecondGamePieceButton = oi.experimentalInput.getifAvailable(15); // Y
+        var balanceButton = oi.experimentalInput.getifAvailable(16); // U
+        // chord them together
+        // On
+        chordTriggerFactory.create(enableButton, drivePhaseOneButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableDrivePhaseOne(true)).ignoringDisable(true));
+        chordTriggerFactory.create(enableButton, acquireGamePieceButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableAcquireGamePiece(true)).ignoringDisable(true));
+        chordTriggerFactory.create(enableButton, moveToScoreButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableMoveToScore(true)).ignoringDisable(true));
+        chordTriggerFactory.create(enableButton, scoreSecondGamePieceButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableSecondScore(true)).ignoringDisable(true));
+        chordTriggerFactory.create(enableButton, balanceButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableBalance(true)).ignoringDisable(true));
+        // Off
+        chordTriggerFactory.create(disableButton, drivePhaseOneButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableDrivePhaseOne(false)).ignoringDisable(true));
+        chordTriggerFactory.create(disableButton, acquireGamePieceButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableAcquireGamePiece(false)).ignoringDisable(true));
+        chordTriggerFactory.create(disableButton, moveToScoreButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableMoveToScore(false)).ignoringDisable(true));
+        chordTriggerFactory.create(disableButton, scoreSecondGamePieceButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableSecondScore(false)).ignoringDisable(true));
+        chordTriggerFactory.create(disableButton, balanceButton).onTrue(
+                new InstantCommand(() -> oracle.setEnableBalance(false)).ignoringDisable(true));
+
+        // lane is the next most important, should probably be new row
+        oi.experimentalInput.getifAvailable(19).onTrue(oracle.createSetLaneCommand(AutonomousOracle.Lane.Top));
+        oi.experimentalInput.getifAvailable(20).onTrue(oracle.createSetLaneCommand(AutonomousOracle.Lane.Middle));
+        oi.experimentalInput.getifAvailable(21).onTrue(oracle.createSetLaneCommand(AutonomousOracle.Lane.Bottom));
+
+        // Next is positions. Can use the last two keys on the qwerty row for Initial and Second scoring positions.
+        var initialShiftButton = oi.experimentalInput.getifAvailable(17); // I
+        var secondShiftButton = oi.experimentalInput.getifAvailable(18); // O
+        // Now buttons 1-9 (mapped to 1-9, thankfully)
+        var oneButton = oi.experimentalInput.getifAvailable(1); // 1
+        var twoButton = oi.experimentalInput.getifAvailable(2); // 2
+        var threeButton = oi.experimentalInput.getifAvailable(3); // 3
+        var fourButton = oi.experimentalInput.getifAvailable(4); // 4
+        var fiveButton = oi.experimentalInput.getifAvailable(5); // 5
+        var sixButton = oi.experimentalInput.getifAvailable(6); // 6
+        var sevenButton = oi.experimentalInput.getifAvailable(7); // 7
+        var eightButton = oi.experimentalInput.getifAvailable(8); // 8
+        var nineButton = oi.experimentalInput.getifAvailable(9); // 9
+        // Chord them together
+        // Initial
+        chordTriggerFactory.create(initialShiftButton, oneButton).onTrue(oracle.createInitialScoringPositionCommand(1));
+        chordTriggerFactory.create(initialShiftButton, twoButton).onTrue(oracle.createInitialScoringPositionCommand(2));
+        chordTriggerFactory.create(initialShiftButton, threeButton).onTrue(oracle.createInitialScoringPositionCommand(3));
+        chordTriggerFactory.create(initialShiftButton, fourButton).onTrue(oracle.createInitialScoringPositionCommand(4));
+        chordTriggerFactory.create(initialShiftButton, fiveButton).onTrue(oracle.createInitialScoringPositionCommand(5));
+        chordTriggerFactory.create(initialShiftButton, sixButton).onTrue(oracle.createInitialScoringPositionCommand(6));
+        chordTriggerFactory.create(initialShiftButton, sevenButton).onTrue(oracle.createInitialScoringPositionCommand(7));
+        chordTriggerFactory.create(initialShiftButton, eightButton).onTrue(oracle.createInitialScoringPositionCommand(8));
+        chordTriggerFactory.create(initialShiftButton, nineButton).onTrue(oracle.createInitialScoringPositionCommand(9));
+        // Second
+        chordTriggerFactory.create(secondShiftButton, oneButton).onTrue(oracle.createSecondScoringPositionCommand(1));
+        chordTriggerFactory.create(secondShiftButton, twoButton).onTrue(oracle.createSecondScoringPositionCommand(2));
+        chordTriggerFactory.create(secondShiftButton, threeButton).onTrue(oracle.createSecondScoringPositionCommand(3));
+        chordTriggerFactory.create(secondShiftButton, fourButton).onTrue(oracle.createSecondScoringPositionCommand(4));
+        chordTriggerFactory.create(secondShiftButton, fiveButton).onTrue(oracle.createSecondScoringPositionCommand(5));
+        chordTriggerFactory.create(secondShiftButton, sixButton).onTrue(oracle.createSecondScoringPositionCommand(6));
+        chordTriggerFactory.create(secondShiftButton, sevenButton).onTrue(oracle.createSecondScoringPositionCommand(7));
+        chordTriggerFactory.create(secondShiftButton, eightButton).onTrue(oracle.createSecondScoringPositionCommand(8));
+        chordTriggerFactory.create(secondShiftButton, nineButton).onTrue(oracle.createSecondScoringPositionCommand(9));
+
+        // Game pieces
+        var coneButton = oi.experimentalInput.getifAvailable(22); // F
+        var cubeButton = oi.experimentalInput.getifAvailable(23); // G
+        // Chords for initial and second
+        chordTriggerFactory.create(initialShiftButton, coneButton).onTrue(oracle.createSetInitialGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode.Cone));
+        chordTriggerFactory.create(initialShiftButton, cubeButton).onTrue(oracle.createSetInitialGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode.Cube));
+        chordTriggerFactory.create(secondShiftButton, coneButton).onTrue(oracle.createSecondGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode.Cone));
+        chordTriggerFactory.create(secondShiftButton, cubeButton).onTrue(oracle.createSecondGamePieceModeCommand(UnifiedArmSubsystem.GamePieceMode.Cube));
+
+        // Scoring modes
+        var scoreHighButton = oi.experimentalInput.getifAvailable(24); // H
+        var scoreEjectButton = oi.experimentalInput.getifAvailable(25); // J
+        // Chords for initial and second
+        chordTriggerFactory.create(initialShiftButton, scoreHighButton).onTrue(
+                oracle.createInitialScoringModeCommand(AutonomousOracle.ScoringMode.High));
+        chordTriggerFactory.create(initialShiftButton, scoreEjectButton).onTrue(
+                oracle.createInitialScoringModeCommand(AutonomousOracle.ScoringMode.Eject));
+        chordTriggerFactory.create(secondShiftButton, scoreHighButton).onTrue(
+                oracle.createSecondScoringModeCommand(AutonomousOracle.ScoringMode.High));
+        chordTriggerFactory.create(secondShiftButton, scoreEjectButton).onTrue(
+                oracle.createSecondScoringModeCommand(AutonomousOracle.ScoringMode.Eject));
+
+        // Mantle prep position
+        oi.experimentalInput.getifAvailable(26).onTrue(
+                oracle.createMantlePrepPositionCommand(AutonomousOracle.MantlePrepPosition.InsideCommunity)); // K
+        oi.experimentalInput.getifAvailable(27).onTrue(
+                oracle.createMantlePrepPositionCommand(AutonomousOracle.MantlePrepPosition.OutsideCommunity)); // L
+
     }
 
     @Inject
@@ -485,8 +575,9 @@ public class OperatorCommandMap {
                 });
 
         // Include on SmartDashboard only, since this is only expected to be used in pit
-        SimpleSafeArmRouterCommand armToStartingPosition = armPositionCommandProvider.get();
-        armToStartingPosition.setTarget(UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
+        SimpleXZRouterCommand armToStartingPosition = simpleXZRouterCommandProvider.get();
+        armToStartingPosition.setKeyPointFromKeyArmPosition(
+                UnifiedArmSubsystem.KeyArmPosition.StartingPosition, UnifiedArmSubsystem.RobotFacing.Forward);
         armToStartingPosition.includeOnSmartDashboard("Arm to starting position");
 
         oi.operatorGamepad.getifAvailable(XboxButton.Back).onTrue(setConeMode);
@@ -494,18 +585,19 @@ public class OperatorCommandMap {
 
         router.setTarget(UnifiedArmSubsystem.KeyArmPosition.MidGoal, UnifiedArmSubsystem.RobotFacing.Forward);
 
-        //Left Bumper opens claw if cube, closes if cone and turns on motor
-       ConditionalCommand grabGamePiece = new ConditionalCommand(openClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
-                closeClaw.alongWith(gripperMotorSubsystem.createIntakeCommand()),
-                () -> arm.isCubeMode());
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(grabGamePiece);
+
+        var moveArmForDoubleSubstation = simpleXZRouterCommandProvider.get();
+        moveArmForDoubleSubstation.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
+        var intakeCommand = gripperMotorSubsystem.createIntakeCommand();
+
+        var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
+
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(collectFromDoubleSubstation);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
-        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenRetractCommand());
+        oi.operatorGamepad.getifAvailable(XboxButton.RightTrigger).whileTrue(collector.getCollectThenAutomaticallyRetractCommand());
         oi.operatorGamepad.getifAvailable(XboxButton.LeftTrigger).whileTrue(collector.getEjectThenStopCommand());
-
-        SmartDashboard.putData("ScoreCubeHigh", scoreCubeHigh);
 
         ControlEndEffectorPositionCommand moveUp = endEffectorPositionCommandProvider.get();
         moveUp.setDirection(new XYPair(0, 1));
@@ -520,6 +612,7 @@ public class OperatorCommandMap {
         oi.operatorGamepad.getPovIfAvailable(90).whileTrue(moveForward);
         oi.operatorGamepad.getPovIfAvailable(180).whileTrue(moveDown);
         oi.operatorGamepad.getPovIfAvailable(270).whileTrue(moveBack);
+
     }
 
 }

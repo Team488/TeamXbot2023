@@ -26,6 +26,7 @@ import xbot.common.math.PIDManager;
 import xbot.common.math.XYPair;
 import xbot.common.math.PIDManager.PIDManagerFactory;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
 import xbot.common.properties.XPropertyManager;
@@ -79,6 +80,8 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         }
     }
 
+    private boolean quickAlignActive = false;
+
     private SwerveModuleLocation activeModule = SwerveModuleLocation.FRONT_LEFT;
 
     @Inject
@@ -111,6 +114,7 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         this.positionMaintainerXTarget = pf.createEphemeralProperty("PositionMaintainerXTarget", 0);
 
         // These can be tuned to reduce twitchy wheels
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         this.minTranslateSpeed = pf.createPersistentProperty("Minimum translate speed", 0.02);
         this.minRotationalSpeed = pf.createPersistentProperty("Minimum rotational speed", 0.02);
 
@@ -197,6 +201,16 @@ public class DriveSubsystem extends BaseDriveSubsystem {
         return manualBalanceMode;
     }
 
+    boolean gamePieceOrientatedRotationActive;
+
+    public boolean isGamePieceRotationActive() {
+        return gamePieceOrientatedRotationActive;
+    }
+
+    public void setGamePieceOrientatedRotationActive(boolean isActive) {
+        gamePieceOrientatedRotationActive = isActive;
+    }
+
     boolean collectorOrientedRotationActive;
 
     public boolean isCollectorRotationActive() {
@@ -268,6 +282,14 @@ public class DriveSubsystem extends BaseDriveSubsystem {
     }
 
     private boolean rotateToHubActive = false;
+
+    public void setQuickAlignActive(boolean isActive) {
+        quickAlignActive = isActive;
+    }
+
+    public boolean isQuickAlignActive() {
+        return quickAlignActive;
+    }
 
 
     public boolean isRotateToHubActive() {
@@ -503,5 +525,12 @@ public class DriveSubsystem extends BaseDriveSubsystem {
 
     public void setPositionMaintainerXTarget(double positionMaintainerXTarget) {
         this.positionMaintainerXTarget.set(positionMaintainerXTarget);
+    }
+
+    public Command createEnableDisableQuickAlignActive() {
+        return Commands.startEnd(
+            () -> this.setQuickAlignActive(true),
+            () -> this.setQuickAlignActive(false)
+        );
     }
 }

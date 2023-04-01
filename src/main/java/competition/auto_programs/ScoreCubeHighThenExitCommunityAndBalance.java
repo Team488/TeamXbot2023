@@ -64,9 +64,9 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
 
         this.addCommands(retractArmAndCloseClaw);
 
-        turnTowardsField.setMaxPower(1.0);
-        turnTowardsField.setMaxTurningPower(0.5);
-        turnTowardsField.setKeyPointsProvider(
+        exitCommunity.setMaxPower(1.0);
+        exitCommunity.setMaxTurningPower(0.5);
+        exitCommunity.setKeyPointsProvider(
                 () -> {
                     // Turn around while backing up to prepare for mantling
                     var backOffFromScoringPositionsAndTurnAround =
@@ -76,14 +76,6 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                             backOffFromScoringPositionsAndTurnAround.getY(),
                             pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
                             1.0);
-                    return new ArrayList<>(List.of(backOffAndTurnAround));
-                });
-        this.addCommands(turnTowardsField);
-
-        exitCommunity.setMaxPower(1.0);
-        exitCommunity.setMaxTurningPower(0.5);
-        exitCommunity.setKeyPointsProvider(
-                () -> {
                     // Get over that charge station in (maybe?) 2 seconds
                     var mantleChargeStationAndExitCommunity =
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationMantleFromRight);
@@ -92,14 +84,13 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                             mantleChargeStationAndExitCommunity.getY(),
                             pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees(),
                             2.0);
-                    return new ArrayList<>(List.of(getOnChargeStationAndExit));
+                    return new ArrayList<>(List.of(backOffAndTurnAround,getOnChargeStationAndExit));
                 });
         this.addCommands(exitCommunity);
 
-
-        turnTowardsCommunity.setMaxPower(1.0);
-        turnTowardsCommunity.setMaxTurningPower(0.5);
-        turnTowardsCommunity.setKeyPointsProvider(
+        mantleChargePlate.setMaxPower(1.0);
+        mantleChargePlate.setMaxTurningPower(0.5);
+        mantleChargePlate.setKeyPointsProvider(
                 () -> {
                     // Turn around in place from the right side of charge station to prepare for mantling
                     var turnAroundInPlace =
@@ -109,14 +100,6 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                             turnAroundInPlace.getY(),
                             pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                             1.0);
-                    return new ArrayList<>(List.of(turnAround));
-                });
-        this.addCommands(turnTowardsCommunity);
-
-        mantleChargePlate.setMaxPower(1.0);
-        mantleChargePlate.setMaxTurningPower(0.5);
-        mantleChargePlate.setKeyPointsProvider(
-                () -> {
                     // Get on that charge station over 1 seconds
                     var chargeStationMantlePoint =
                             AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueChargeStationCenter);
@@ -125,7 +108,7 @@ public class ScoreCubeHighThenExitCommunityAndBalance extends SequentialCommandG
                             chargeStationMantlePoint.getY(),
                             pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees(),
                             1.0);
-                    return new ArrayList<>(List.of(getOnChargeStation));
+                    return new ArrayList<>(List.of(turnAround,getOnChargeStation));
                 });
         // This is only supposed to take 2.5 seconds. Set a timeout just in case.
         this.addCommands(mantleChargePlate.withTimeout(3.0));

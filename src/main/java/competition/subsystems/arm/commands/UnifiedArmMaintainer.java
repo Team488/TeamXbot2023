@@ -29,7 +29,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
             PropertyFactory pf,
             OperatorInterface oi,
             HumanVsMachineDecider.HumanVsMachineDeciderFactory hvmFactory) {
-        super(subsystemToMaintain, pf, hvmFactory, 1.5, 0.33);
+        super(subsystemToMaintain, pf, hvmFactory, 3.0, 0.33);
         this.unifiedArm = subsystemToMaintain;
         this.oi = oi;
         pf.setPrefix(this);
@@ -41,6 +41,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
     @Override
     public void initialize() {
+        super.resetDecider(false);
         log.info("Initializing");
     }
 

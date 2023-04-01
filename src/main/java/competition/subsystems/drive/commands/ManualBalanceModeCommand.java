@@ -12,14 +12,23 @@ public class ManualBalanceModeCommand extends BaseCommand {
     @Inject
     public ManualBalanceModeCommand(DriveSubsystem drive) {
         this.drive = drive;
-        addRequirements(drive);
     }
 
     @Override
-    public void initialize() { log.info("Initializing"); }
+    public void initialize() {
+        boolean newMode = !drive.isManualBalanceModeActive();
+        log.info("Manual balance mode: " + (newMode ? "enabled" : "disabled"));
+        drive.setManualBalanceMode(newMode);
+    }
 
     @Override
     public void execute() {
-        drive.setManualBalanceMode(!drive.isManualBalanceModeActive());
+        // do nothing
+    }
+
+    @Override
+    public boolean isFinished() {
+        super.isFinished();
+        return true;
     }
 }

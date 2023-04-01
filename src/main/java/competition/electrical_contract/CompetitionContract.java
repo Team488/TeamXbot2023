@@ -177,27 +177,32 @@ public class CompetitionContract extends ElectricalContract {
     public DeviceInfo getCollectorSolenoid(){ return new DeviceInfo(2,false);}
 
     @Override
-    public DeviceInfo getArduinoDio0() {
-        return new DeviceInfo(8);
+    public DeviceInfo getLightsDio0() {
+        return new DeviceInfo(5);
     }
 
     @Override
-    public DeviceInfo getArduinoDio1() {
-        return new DeviceInfo(9);
+    public DeviceInfo getLightsDio1() {
+        return new DeviceInfo(6);
     }
 
     @Override
-    public DeviceInfo getArduinoDio2() {
-        return new DeviceInfo(10);
+    public DeviceInfo getLightsDio2() {
+        return new DeviceInfo(7);
     }
 
     @Override
-    public DeviceInfo getArduinoDio3() {
-        return new DeviceInfo(11); // something on the navX, just out of the way
+    public DeviceInfo getLightsDio3() {
+        return new DeviceInfo(8); // something on the navX, just out of the way
     }
 
     @Override
-    public DeviceInfo getArduinoAllianceDio() {
+    public DeviceInfo getLightsDio4() {
+        return new DeviceInfo(9); // something on the navX, just out of the way
+    }
+
+    @Override
+    public DeviceInfo getLightsCubeDio() {
         return new DeviceInfo(4);
     }
 

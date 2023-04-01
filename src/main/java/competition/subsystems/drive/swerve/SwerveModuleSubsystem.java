@@ -14,6 +14,7 @@ import xbot.common.command.BaseSubsystem;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
@@ -44,6 +45,7 @@ public class SwerveModuleSubsystem extends BaseSubsystem {
         this.steeringSubsystem = steeringSubsystem;
 
         XYPair defaultModuleOffsets = contract.getSwerveModuleOffsets(swerveInstance);
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         this.xOffsetInches = pf.createPersistentProperty("XOffsetInches", defaultModuleOffsets.x);
         this.yOffsetInches = pf.createPersistentProperty("YOffsetInches", defaultModuleOffsets.y);
 

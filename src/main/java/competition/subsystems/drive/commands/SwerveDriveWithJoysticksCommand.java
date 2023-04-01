@@ -57,8 +57,8 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         this.vision = vision;
         this.arms = arms;
         pf.setPrefix(this);
-        this.input_exponent = pf.createPersistentProperty("Input Exponent", 1);
-        this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 0.75);
+        this.input_exponent = pf.createPersistentProperty("Input Exponent", 2);
+        this.drivePowerFactor = pf.createPersistentProperty("Power Factor", 0.90);
         this.turnPowerFactor = pf.createPersistentProperty("Turn Power Factor", 0.75);
         this.absoluteOrientationMode = pf.createPersistentProperty("Absolute Orientation Mode", true);
         this.minimumMagnitudeForAbsoluteHeading = pf.createPersistentProperty("Min Magnitude For Absolute Heading", 0.75);
@@ -180,21 +180,19 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
 
             double desiredHeading = 0;
             
-            if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get()) {
+            if (headingVector.getMagnitude() > minimumMagnitudeForAbsoluteHeading.get() || drive.isQuickAlignActive()) {
                 // If the magnitude is greater than the minimum magnitude, we can use the joystick to set the heading.
-                desiredHeading = headingVector.getAngle();
 
-                // Force the desired heading into one of four quadrants:
-                // -45 to 45
-                // 45 to 135
-                // 135 to 225
-                // 225 to 315
+                double headingToEvaluateForQuadrant = 0;
+                if (drive.isQuickAlignActive()) {
+                    headingToEvaluateForQuadrant = pose.getCurrentHeading().getDegrees();
+                } else {
+                    headingToEvaluateForQuadrant = headingVector.getAngle();
+                }
 
-                // First, we need to normalize the angle to be between -45 and 315
-                desiredHeading = ContiguousDouble.reboundValue(desiredHeading, -45, 315);
-
+                double reboundCurrentHeading = ContiguousDouble.reboundValue(headingToEvaluateForQuadrant, -45, 315)+45;
                 // Now, we can use the modulus operator to get the quadrant.
-                int quadrant = (int) (desiredHeading / 90);
+                int quadrant = (int) (reboundCurrentHeading / 90);
                 desiredHeading = quadrant * 90;
                 
                 if (pose.getHeadingResetRecently()) {
@@ -259,7 +257,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // Use various ways of scaling down the drive power
 
             if (drive.isPrecisionTranslationActive()) {
-                translationIntent = translationIntent.scale(0.30);
+                translationIntent = translationIntent.scale(0.50);
             } else if (drive.isExtremePrecisionTranslationActive()) {
                 translationIntent = translationIntent.scale(0.15);
             }
@@ -278,7 +276,11 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         if (drive.isCollectorRotationActive()) {
             centerOfRotationInches = new XYPair(arms.getCurrentXZCoordinates().x, 0);
         }
-        
+
+        if (drive.isGamePieceRotationActive()) {
+            centerOfRotationInches = new XYPair(35, 0);
+        }
+
         if (drive.isRobotOrientedDriveActive()) {
             drive.move(translationIntent, suggestedRotatePower);
         } else {

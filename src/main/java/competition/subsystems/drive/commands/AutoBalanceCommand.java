@@ -46,14 +46,14 @@ public class AutoBalanceCommand extends BaseCommand {
         pf.setPrefix(this);
         this.pidManager = pidFactory.create(
             this.getPrefix(),
-            0.01,// P
+            0.03,// P
             0, // I
             0, // D
-            0.25, // Max Output
-            -0.25); // Min Output
+            0.50, // Max Output
+            -0.50); // Min Output
             
-        this.firstAttemptSpeedProperty = pf.createPersistentProperty("firstAttemptSpeed", 0.35);
-        speedMultiplierProperty = pf.createPersistentProperty("speedMultiplier", 0.5);
+        this.firstAttemptSpeedProperty = pf.createPersistentProperty("firstAttemptSpeed", 0.25);
+        speedMultiplierProperty = pf.createPersistentProperty("speedMultiplier", 0.8);
         balanceStateProp = pf.createEphemeralProperty("BalanceState", "Unknown");
     }
 
@@ -167,7 +167,7 @@ public class AutoBalanceCommand extends BaseCommand {
 
     private double getAngle() {
         // this is based on the rio orientation
-        double currentAngle = -(pose.getRobotPitch());
+        double currentAngle = -(pose.getRobotPitch()+1);
 
         if (Math.abs(currentAngle) < angleThresholdForBalance) {
             currentAngle = 0;
