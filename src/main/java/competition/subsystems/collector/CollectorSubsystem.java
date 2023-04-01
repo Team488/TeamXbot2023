@@ -69,7 +69,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
         gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
 
-        gamePieceCollectedValidator = new TimeStableValidator(0.75);
+        gamePieceCollectedValidator = new TimeStableValidator(0.6);
         gamePieceCollectedValidator.checkStable(false);
     }
 
