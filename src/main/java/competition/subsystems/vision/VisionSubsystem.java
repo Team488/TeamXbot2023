@@ -19,6 +19,7 @@ import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
@@ -38,8 +39,9 @@ public class VisionSubsystem extends BaseSubsystem {
     final RobotAssertionManager assertionManager;
     final BooleanProperty isInverted;
     final DoubleProperty yawOffset;
-    final DoubleProperty waitForStableFixTime;
-    final TimeStableValidator fixIsStable;
+    final DoubleProperty waitForStablePoseTime;
+    final TimeStableValidator frontReliablePoseIsStable;
+    final TimeStableValidator rearReliablePoseIsStable;
     NetworkTable visionTable;
     AprilTagFieldLayout aprilTagFieldLayout;
     XbotPhotonPoseEstimator customPhotonPoseEstimator;
@@ -57,8 +59,9 @@ public class VisionSubsystem extends BaseSubsystem {
         isInverted = pf.createPersistentProperty("Yaw inverted", true);
         yawOffset = pf.createPersistentProperty("Yaw offset", 0);
 
-        waitForStableFixTime = pf.createPersistentProperty("Fix stable time", 0.1);
-        fixIsStable = new TimeStableValidator(() -> waitForStableFixTime.get());
+        waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.25, Property.PropertyLevel.Debug);
+        frontReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
+        rearReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
 
         // TODO: Add resiliency to this subsystem, so that if the camera is not connected, it doesn't cause a pile
         // of errors. Some sort of VisionReady in the ElectricalContract may also make sense. Similarly,
@@ -131,7 +134,9 @@ public class VisionSubsystem extends BaseSubsystem {
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
-            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+            var isReliable = isEstimatedPoseReliable(estimatedPose.get());
+            var isStable = frontReliablePoseIsStable.checkStable(isReliable);
+            if (!estimatedPose.isEmpty() && isReliable && isStable) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -144,7 +149,9 @@ public class VisionSubsystem extends BaseSubsystem {
         if (visionWorking) {
             rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = rearPhotonPoseEstimator.update();
-            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+            var isReliable = isEstimatedPoseReliable(estimatedPose.get());
+            var isStable = rearReliablePoseIsStable.checkStable(isReliable);
+            if (!estimatedPose.isEmpty() && isReliable && isStable) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -153,8 +160,17 @@ public class VisionSubsystem extends BaseSubsystem {
         }
     }
 
-    private boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
+    public boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
         if (estimatedPose.targetsUsed.size() == 0) {
+            return false;
+        }
+
+        // Pose isn't reliable if we see a tag id that shouldn't be on the field
+        var allTagIds = estimatedPose.targetsUsed.stream()
+                .map(target -> target.getFiducialId()).toList();
+        if (allTagIds.stream().anyMatch(id -> id < 1 || id > 8)) {
+            this.log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
+                    + String.join(", ", allTagIds.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toList()));
             return false;
         }
 
