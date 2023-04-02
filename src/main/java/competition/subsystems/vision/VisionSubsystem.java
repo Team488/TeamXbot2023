@@ -178,8 +178,8 @@ public class VisionSubsystem extends BaseSubsystem {
             return false;
         }
 
-        double currentVector = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
-        if(currentVector > errorThreshold.get()){
+        double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
+        if(distance > errorThreshold.get()){
             return false;
         }
         // Two or more targets tends to be very reliable
