@@ -59,15 +59,14 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
                 () -> UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
                 () -> UnifiedArmSubsystem.RobotFacing.Forward);
 
-        //Instead of waitThenPullArm, will use the clawConeIntake with a small change
-        //var waitThenPullArm = new WaitCommand(0.1).andThen(cubePullOutGamePieceCommand);
         var clawCubeIntake = clawMotors.createIntakeCommand()
                 .withTimeout(cubeClawIntakeTime)
                 .andThen(clawMotors.createStopCommand().withTimeout(0.01));
+        
+        var collectorCubeEject = collector.getEjectThenStopCommand()
+                .withTimeout(cubeCollectorEjectTime);        
 
-        var cubePullSequence = collector.getEjectThenStopCommand()
-                .withTimeout(cubeCollectorEjectTime)
-        //      .alongWith(waitThenPullArm); Would this be neccesary if the cube is secured in claw?
+        var cubePullSequence = (collectorCubeEject.alongWith(clawCubeIntake)).andThen(cubePullOutGamePieceCommand);
 
         // Now, the cone scenario
         var conePullOutGamePieceCommand = setArmsToKeyArmPositionCommandProvider.get();
