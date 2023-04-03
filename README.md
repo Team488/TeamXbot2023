@@ -53,3 +53,18 @@ If we have to install a new CANcoder, we need to:
 - you need to plug into PDP (power distribution panel) or into the individual device (with USB C)
 - Give it the right name + number (from electrical contract)
 - make sure the motor type is Rev NEO Brushless
+
+## Vision troubleshooting
+
+### Symptom
+
+Position on field is wrong as reported by Shuffleboard. Robot is not snapping to correct position when an april tag is clearly in view of the camera.
+
+### Troubleshooting steps
+
+1. Power cycle the robot. Photon Vision can crash if the robot has been turned on for a long time.
+2. Check the Photon vision UI (https://photonvision-usb.local:5800 for front, https://photonvision-rear.local:5800 for back).
+   1. If the blue web page loads, but you see a yellow video frame, this is another indication that photon vision has crashed. Power-cycle the robot or select "Restart PhotonVision" in the settings panel of the website.
+   2. If the blue web page loads, but the camera frame is black, and it doesn't show that it is configured for April Tags (near the top right of the web page), that means PV has lost its configuration. You'll need to restore calibration and config from backups. Zip files are in the `/Competition/CameraSettings` folder of this repository.
+   3. If the blue web page loads, but the camera frame is over/under exposed, you will need to update the camera exposure and gain settings. Don't use auto exposure, this is known to crash Photon Vision.
+   4. If the website doesn't load at all, make sure that you are connected to the robot network, the robot has power, and the Raspberry Pi running Photon Vision is powered and plugged in to the robot network. The Raspberry Pi can be identified by its black finned heat-sink. It is located near the lower arm motors on either side of the robot - follow the ribbon cables from the camera if necessary.
