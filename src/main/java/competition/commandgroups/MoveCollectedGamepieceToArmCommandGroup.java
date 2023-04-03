@@ -32,6 +32,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
         double coneClawIntakeTime = 0.35;
         double coneCollectorEjectTime = 0.35;
         double cubeCollectorEjectTime = 0.25;
+        double cubeClawIntakeTime = 0.2; //we can change this number if needed
 
         // Open claw and wait
         this.addCommands(openClawCommand.withTimeout(0.5));
@@ -46,7 +47,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
         // Close claw and wait
         this.addCommands(closeClawCommand.withTimeout(0.5));
 
-        // If we are in cube mode, we can use the simple "eject and pull away" combo.
+        // If we are in cube mode, use the same system as cone mode, but shorter intake
         // If we are in cone mode, we instead need to:
         // - Collector eject while claw intakes for 0.25 seconds.
         // - then move the arm to the "prepare" position.
@@ -58,10 +59,14 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
                 () -> UnifiedArmSubsystem.KeyArmPosition.PrepareToAcquireFromCollector,
                 () -> UnifiedArmSubsystem.RobotFacing.Forward);
 
-        var waitThenPullArm = new WaitCommand(0.1).andThen(cubePullOutGamePieceCommand);
-        var cubePullSequence = collector.getEjectThenStopCommand()
-                .withTimeout(cubeCollectorEjectTime)
-                .alongWith(waitThenPullArm);
+        var clawCubeIntake = clawMotors.createIntakeCommand()
+                .withTimeout(cubeClawIntakeTime)
+                .andThen(clawMotors.createStopCommand().withTimeout(0.01));
+        
+        var collectorCubeEject = collector.getEjectThenStopCommand()
+                .withTimeout(cubeCollectorEjectTime);        
+
+        var cubePullSequence = (collectorCubeEject.alongWith(clawCubeIntake)).andThen(cubePullOutGamePieceCommand);
 
         // Now, the cone scenario
         var conePullOutGamePieceCommand = setArmsToKeyArmPositionCommandProvider.get();
