@@ -92,13 +92,13 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
                 canCoderUnavailable = true;
             }
         }
-        setupStatusFrames();
+        setupDevices();
     }
 
     /**
-     * Set up status frame intervals to reduce unnecessary CAN activity.
+     * Set up device limits and set status frame intervals to reduce unnecessary CAN activity.
      */
-    private void setupStatusFrames() {
+    private void setupDevices() {
         if (this.contract.isDriveReady()) {
             // We need to re-set frame intervals after a device reset.
             if (this.motorController.getStickyFault(FaultID.kHasReset) && this.motorController.getLastError() != REVLibError.kHALError) {
@@ -114,6 +114,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
                 
                 this.motorController.clearFaults();
             }
+
+            this.motorController.setSmartCurrentLimit(40);
         }
 
         if (this.contract.areCanCodersReady() && this.encoder.hasResetOccurred()) {
@@ -354,7 +356,7 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
             //absoluteEncoderPosition.set(getAbsoluteEncoderPositionInDegrees());
         }
         if (contract.isDriveReady()) {
-            setupStatusFrames();
+            setupDevices();
             //motorEncoderPosition.set(getMotorControllerEncoderPosiitonInDegrees());
         }
 
