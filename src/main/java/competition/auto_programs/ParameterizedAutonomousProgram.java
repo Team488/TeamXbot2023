@@ -213,6 +213,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         driveToPrepareBalance.setKeyPointsProvider(oracle::getTrajectoryForPrepareToBalance);
         driveToPrepareBalance.setEnableConstantVelocity(true);
         driveToPrepareBalance.setConstantVelocity(defaultVelocity);
+        driveToPrepareBalance.setStopWhenFinished(false);
 
         var driveToActualBalance = swerveSimpleTrajectoryCommandProvider.get();
         driveToActualBalance.setMaxPower(0.75);
