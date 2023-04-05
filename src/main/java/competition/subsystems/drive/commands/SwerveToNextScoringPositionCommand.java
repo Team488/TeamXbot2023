@@ -1,6 +1,7 @@
 package competition.subsystems.drive.commands;
 
 import competition.operator_interface.OperatorInterface;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,12 +20,13 @@ public class SwerveToNextScoringPositionCommand extends SwerveToNearestScoringPo
     @Inject
     public SwerveToNextScoringPositionCommand(
             DriveSubsystem drive,
+            UnifiedArmSubsystem arm,
             PoseSubsystem pose,
             PropertyFactory pf,
             HeadingModule.HeadingModuleFactory headingModuleFactory,
             OperatorInterface oi
     ) {
-        super(drive, pose, pf, headingModuleFactory, oi);
+        super(drive, arm, pose, pf, headingModuleFactory, oi);
     }
 
     /**
@@ -40,7 +42,7 @@ public class SwerveToNextScoringPositionCommand extends SwerveToNearestScoringPo
         return findNextScoringPosition(pose.getCurrentPose2d(), pose.getAlliance(), this.direction);
     }
 
-    public static Pose2d findNextScoringPosition(Pose2d currentPose, DriverStation.Alliance alliance, TargetDirection direction) {
+    public Pose2d findNextScoringPosition(Pose2d currentPose, DriverStation.Alliance alliance, TargetDirection direction) {
         Pose2d nearestPosition = findNearestScoringPosition(currentPose, alliance);
         List<Pose2d> allScoringPositions = getScoringPositionPoses(alliance);
 

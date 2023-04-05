@@ -2,6 +2,7 @@ package competition.subsystems.drive.commands;
 
 import competition.auto_programs.AutoLandmarks;
 import competition.operator_interface.OperatorInterface;
+import competition.subsystems.arm.UnifiedArmSubsystem;
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,11 +25,16 @@ public class SwerveToNearestScoringPositionCommand extends SwerveSimpleTrajector
     private final DoubleProperty bufferSpaceProp;
     private final XRumbleManager rumbleManager;
 
+    private final UnifiedArmSubsystem arm;
+
+    private boolean specificGamePiece = false;
+
     private Pose2d targetPose;
 
     @Inject
     public SwerveToNearestScoringPositionCommand(
             DriveSubsystem drive,
+            UnifiedArmSubsystem arm,
             PoseSubsystem pose,
             PropertyFactory pf,
             HeadingModule.HeadingModuleFactory headingModuleFactory,
@@ -36,9 +42,14 @@ public class SwerveToNearestScoringPositionCommand extends SwerveSimpleTrajector
     ) {
         super(drive, pose, pf, headingModuleFactory);
         this.rumbleManager = oi.driverGamepad.getRumbleManager();
+        this.arm = arm;
 
         maxTravelDistanceProp = pf.createPersistentProperty("Maximum travel distance inches", 100);
         bufferSpaceProp = pf.createPersistentProperty("Buffer space", 3);
+    }
+
+    public final void setSpecificGamePiece(boolean enable) {
+        this.specificGamePiece = enable;
     }
 
     @Override
@@ -106,8 +117,36 @@ public class SwerveToNearestScoringPositionCommand extends SwerveSimpleTrajector
         );
     }
 
-    public static Pose2d findNearestScoringPosition(Pose2d currentPose, DriverStation.Alliance alliance) {
-        List<Pose2d> poses = getScoringPositionPoses(alliance);
+    public static List<Pose2d> getCubeScoringPositionPoses(DriverStation.Alliance alliance) {
+        return Arrays.asList(
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionTwo, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionFive, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionEight, alliance)
+        );
+    }
+
+    public static List<Pose2d> getConeScoringPositionPoses(DriverStation.Alliance alliance) {
+        return Arrays.asList(
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionOne, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionThree, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionFour, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionSix, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionSeven, alliance),
+                AutoLandmarks.convertBlueToRedIfNeeded(AutoLandmarks.blueScoringPositionNine, alliance)
+        );
+    }
+
+    public Pose2d findNearestScoringPosition(Pose2d currentPose, DriverStation.Alliance alliance) {
+        List<Pose2d> poses;
+
+        if (!specificGamePiece) {
+            poses = getScoringPositionPoses(alliance);
+        } else if (specificGamePiece && arm.cubeMode) {
+            poses = getCubeScoringPositionPoses(alliance);
+        } else {
+            poses = getConeScoringPositionPoses(alliance);
+        }
+
         return currentPose.nearest(poses);
     }
 }

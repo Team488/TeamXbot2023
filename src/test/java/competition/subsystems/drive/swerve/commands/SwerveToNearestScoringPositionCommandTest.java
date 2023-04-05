@@ -50,7 +50,7 @@ public class SwerveToNearestScoringPositionCommandTest extends BaseFullSwerveTes
     public void findNearestPositionForBlueAllianceTest(double currentX, double currentY, int expectedNearestPositionIndex) {
         List<Pose2d> scoringPoses = SwerveToNearestScoringPositionCommand.getScoringPositionPoses(DriverStation.Alliance.Blue);
 
-        Pose2d nearestPose = SwerveToNearestScoringPositionCommand.findNearestScoringPosition(
+        Pose2d nearestPose = command.findNearestScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Blue);
 
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);
@@ -72,7 +72,7 @@ public class SwerveToNearestScoringPositionCommandTest extends BaseFullSwerveTes
     public void findNearestPositionForRedAllianceTest(double currentX, double currentY, int expectedNearestPositionIndex) {
         List<Pose2d> scoringPoses = SwerveToNearestScoringPositionCommand.getScoringPositionPoses(DriverStation.Alliance.Red);
 
-        Pose2d nearestPose = SwerveToNearestScoringPositionCommand.findNearestScoringPosition(
+        Pose2d nearestPose = command.findNearestScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Red);
 
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);

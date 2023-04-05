@@ -91,7 +91,7 @@ public class OperatorCommandMap {
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
             BrakeCommand setWheelsToXMode,
-            SwerveToNearestScoringPositionCommand swerveNearestScoring,
+            Provider<SwerveToNearestScoringPositionCommand> swerveNearestScoringProvider,
             Provider<SwerveToNextScoringPositionCommand> swerveNextScoringProvider,
             MoveLeftInchByInchCommand moveLeft,
             MoveRightInchByInchCommand moveRight,
@@ -132,6 +132,7 @@ public class OperatorCommandMap {
         var povDown = oi.driverGamepad.getPovIfAvailable(180);
         var povLeft = oi.driverGamepad.getPovIfAvailable(270);
         var povRight = oi.driverGamepad.getPovIfAvailable(90);
+        var povUp = oi.driverGamepad.getPovIfAvailable(0);
 
         var brakesButton = oi.driverGamepad.getifAvailable(XboxButton.X);
         chordFactory.create(
@@ -154,7 +155,13 @@ public class OperatorCommandMap {
         chordFactory.create(
                 scoringPositionModeButton,
                 povDown
-        ).whileTrue(swerveNearestScoring);
+        ).whileTrue(swerveNearestScoringProvider.get());
+        var swerveNearestGamePieceScoringPosition = swerveNearestScoringProvider.get();
+        swerveNearestGamePieceScoringPosition.setSpecificGamePiece(true);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povUp
+        ).whileTrue(swerveNearestGamePieceScoringPosition);
         var swerveLeftScoringPosition = swerveNextScoringProvider.get();
         swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
         var swerveRightScoringPosition = swerveNextScoringProvider.get();
