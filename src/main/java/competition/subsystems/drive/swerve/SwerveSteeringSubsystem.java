@@ -80,6 +80,8 @@ public class SwerveSteeringSubsystem extends BaseSetpointSubsystem<Double> {
         if (electricalContract.isDriveReady()) {
             this.motorController = sparkMaxFactory.create(electricalContract.getSteeringNeo(swerveInstance), this.getPrefix(), "SteeringNeo");
             setMotorControllerPositionPidParameters();
+            // Current limit configured based on the expected current values we see when driving. Typical steering current is ~35A.
+            this.motorController.setSmartCurrentLimit(40);
             this.motorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
         }
         if (electricalContract.areCanCodersReady()) {
