@@ -598,8 +598,8 @@ public class OperatorCommandMap {
         var intakeCommand = gripperMotorSubsystem.createIntakeCommand();
 
         //var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
-
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(intakeCommand);
+        var intakeAndCloseClaw = intakeCommand.alongWith(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(intakeAndCloseClaw);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
