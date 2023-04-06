@@ -114,7 +114,7 @@ public class OperatorCommandMap {
                 () -> pose.setCurrentPosition(70, 102));
         ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
 
-        oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
+        oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetHeading);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.Start).onTrue(backwardHeading);
 
