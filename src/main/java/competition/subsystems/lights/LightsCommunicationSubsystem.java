@@ -14,6 +14,7 @@ import xbot.common.controls.actuators.XDigitalOutput;
 import xbot.common.controls.actuators.XDigitalOutput.XDigitalOutputFactory;
 import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
+import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
@@ -41,7 +42,6 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final BooleanProperty dio3Property;
     private final BooleanProperty dio4Property;
     private final BooleanProperty cubeDioProperty;
-
     private final CollectorSubsystem collector;
     private final UnifiedArmSubsystem arm;
 
@@ -132,7 +132,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
             }
         } else if (collector.getGamePieceCollected()) {
             currentState = LightsStateMessage.GamePieceCollected;
-        } else if(arm.isMaintainerAtGoal() && arm.upperArm.getArmPositionInDegrees() > 20){
+        } else if(arm.isMaintainerAtGoal() && arm.getCurrentXZCoordinates().x > 20){
             currentState = LightsStateMessage.ArmAtTargetPosition;
         }
         else if (dsEnabled) {
