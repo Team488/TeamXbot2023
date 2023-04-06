@@ -47,14 +47,14 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
     public void findNextPositionForBlueAllianceLeftTest(double currentX, double currentY, int expectedNearestPositionIndex, int expectedNextPositionIndex) {
         List<Pose2d> scoringPoses = SwerveToNextScoringPositionCommand.getScoringPositionPoses(DriverStation.Alliance.Blue);
 
-        Pose2d nearestPose = SwerveToNextScoringPositionCommand.findNearestScoringPosition(
+        Pose2d nearestPose = command.findNearestScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Blue);
 
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);
         assertEquals(Rotation2d.fromDegrees(-180), nearestPose.getRotation());
         assertTrue(nearestPose.getX() < 325);
 
-        Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
+        Pose2d nextPose = command.findNextScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
                 DriverStation.Alliance.Blue,
                 SwerveToNextScoringPositionCommand.TargetDirection.Left);
@@ -79,14 +79,14 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
     public void findNextPositionForBlueAllianceRightTest(double currentX, double currentY, int expectedNearestPositionIndex, int expectedNextPositionIndex) {
         List<Pose2d> scoringPoses = SwerveToNextScoringPositionCommand.getScoringPositionPoses(DriverStation.Alliance.Blue);
 
-        Pose2d nearestPose = SwerveToNextScoringPositionCommand.findNearestScoringPosition(
+        Pose2d nearestPose = command.findNearestScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Blue);
 
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);
         assertEquals(Rotation2d.fromDegrees(-180), nearestPose.getRotation());
         assertTrue(nearestPose.getX() < 325);
 
-        Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
+        Pose2d nextPose = command.findNextScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
                 DriverStation.Alliance.Blue,
                 SwerveToNextScoringPositionCommand.TargetDirection.Right);
@@ -111,14 +111,14 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
     public void findNextPositionForRedAllianceLeftTest(double currentX, double currentY, int expectedNearestPositionIndex, int expectedNextPositionIndex) {
         List<Pose2d> scoringPoses = SwerveToNextScoringPositionCommand.getScoringPositionPoses(DriverStation.Alliance.Red);
 
-        Pose2d nearestPose = SwerveToNextScoringPositionCommand.findNearestScoringPosition(
+        Pose2d nearestPose = command.findNearestScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Red);
 
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);
         assertEquals(Rotation2d.fromDegrees(0), nearestPose.getRotation());
         assertTrue(nearestPose.getX() > 325);
 
-        Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
+        Pose2d nextPose = command.findNextScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
                 DriverStation.Alliance.Red,
                 SwerveToNextScoringPositionCommand.TargetDirection.Left);
@@ -143,14 +143,14 @@ public class SwerveToNextScoringPositionCommandTest extends BaseFullSwerveTest {
     public void findNextPositionForRedAllianceRightTest(double currentX, double currentY, int expectedNearestPositionIndex, int expectedNextPositionIndex) {
         List<Pose2d> scoringPoses = SwerveToNextScoringPositionCommand.getScoringPositionPoses(DriverStation.Alliance.Red);
 
-        Pose2d nearestPose = SwerveToNextScoringPositionCommand.findNearestScoringPosition(
+        Pose2d nearestPose = command.findNearestScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)), DriverStation.Alliance.Red);
 
         assertEquals(scoringPoses.get(expectedNearestPositionIndex), nearestPose);
         assertEquals(Rotation2d.fromDegrees(0), nearestPose.getRotation());
         assertTrue(nearestPose.getX() > 325);
 
-        Pose2d nextPose = SwerveToNextScoringPositionCommand.findNextScoringPosition(
+        Pose2d nextPose = command.findNextScoringPosition(
                 new Pose2d(new Translation2d(currentX, currentY), new Rotation2d(0)),
                 DriverStation.Alliance.Red,
                 SwerveToNextScoringPositionCommand.TargetDirection.Right);

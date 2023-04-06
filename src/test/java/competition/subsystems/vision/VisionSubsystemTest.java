@@ -3,7 +3,9 @@ package competition.subsystems.vision;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public class VisionSubsystemTest extends BaseCompetitionTest {
                 0,
                 Arrays.asList(
                         createTargetWithId(32))
-                )));
+        ), new Pose2d()));
     }
 
     @Test
@@ -37,7 +39,18 @@ public class VisionSubsystemTest extends BaseCompetitionTest {
                         createTargetWithId(1),
                         createTargetWithId(8),
                         createTargetWithId(32))
-        )));
+        ), new Pose2d()));
+    }
+
+    @Test
+    public void testIsEstimatedPositionReliable() {
+        VisionSubsystem subsystem = getInjectorComponent().visionSubsystem();
+        assertFalse(subsystem.isEstimatedPoseReliable(new EstimatedRobotPose(
+                new Pose3d(),
+                0,
+                Arrays.asList(
+                        createTargetWithId(1))
+        ), new Pose2d(200,200,new Rotation2d())));
     }
 
     private PhotonTrackedTarget createTargetWithId(int id) {
