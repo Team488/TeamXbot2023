@@ -597,9 +597,9 @@ public class OperatorCommandMap {
         moveArmForDoubleSubstation.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
         var intakeCommand = gripperMotorSubsystem.createIntakeCommand();
 
-        var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
+        //var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
 
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(collectFromDoubleSubstation);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(intakeCommand);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 

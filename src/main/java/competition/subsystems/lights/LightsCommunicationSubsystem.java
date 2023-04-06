@@ -132,7 +132,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
             }
         } else if (collector.getGamePieceCollected()) {
             currentState = LightsStateMessage.GamePieceCollected;
-        } else if(arm.isMaintainerAtGoal() && arm.getCurrentXZCoordinates().x > 20){
+        } else if(arm.isMaintainerAtGoal() && arm.getCurrentXZCoordinates().x > 33){
             currentState = LightsStateMessage.ArmAtTargetPosition;
         }
         else if (dsEnabled) {
