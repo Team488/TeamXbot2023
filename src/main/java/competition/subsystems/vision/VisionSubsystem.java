@@ -42,6 +42,7 @@ public class VisionSubsystem extends BaseSubsystem {
     final BooleanProperty isInverted;
     final DoubleProperty yawOffset;
     final DoubleProperty waitForStablePoseTime;
+    final DoubleProperty errorThreshold;
     final TimeStableValidator frontReliablePoseIsStable;
     final TimeStableValidator rearReliablePoseIsStable;
     NetworkTable visionTable;
@@ -62,6 +63,7 @@ public class VisionSubsystem extends BaseSubsystem {
         yawOffset = pf.createPersistentProperty("Yaw offset", 0);
 
         waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.25, Property.PropertyLevel.Debug);
+        errorThreshold = pf.createPersistentProperty("Error threshold",200);
         frontReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
         rearReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
 
@@ -136,7 +138,7 @@ public class VisionSubsystem extends BaseSubsystem {
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
-            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get());
+            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
             var isStable = frontReliablePoseIsStable.checkStable(isReliable);
             if (isReliable && isStable) {
                 return estimatedPose;
@@ -151,7 +153,7 @@ public class VisionSubsystem extends BaseSubsystem {
         if (visionWorking) {
             rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = rearPhotonPoseEstimator.update();
-            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get());
+            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
             var isStable = rearReliablePoseIsStable.checkStable(isReliable);
             if (isReliable && isStable) {
                 return estimatedPose;
@@ -162,7 +164,7 @@ public class VisionSubsystem extends BaseSubsystem {
         }
     }
 
-    public boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
+    public boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose, Pose2d previousEstimatedPose) {
         if (estimatedPose.targetsUsed.size() == 0) {
             return false;
         }
@@ -176,6 +178,10 @@ public class VisionSubsystem extends BaseSubsystem {
             return false;
         }
 
+        double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
+        if(distance > errorThreshold.get()){
+            return false;
+        }
         // Two or more targets tends to be very reliable
         if (estimatedPose.targetsUsed.size() > 1) {
             return true;
