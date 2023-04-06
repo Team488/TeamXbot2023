@@ -72,8 +72,10 @@ public class PoseSubsystem extends BasePoseSubsystem {
         useRearCameraForPose = propManager.createPersistentProperty("Use rear april cam", true);
 
         // Min and max are taken from the X positions of the april tags at the double substation, adjusted by slightly less than half a robot
-        minimumValidX = propManager.createPersistentProperty("Minimum X position", (0.36195 * INCHES_IN_A_METER) + 15 /* ~half a robot */, Property.PropertyLevel.Debug);
-        maximumValidX = propManager.createPersistentProperty("Maximum X position", (16.178784 * INCHES_IN_A_METER) - 15 /* ~half a robot */, Property.PropertyLevel.Debug);
+        minimumValidX = propManager.createPersistentProperty("Minimum X position",
+                (0.36195 * INCHES_IN_A_METER) + 15 /* ~half a robot */, Property.PropertyLevel.Debug);
+        maximumValidX = propManager.createPersistentProperty("Maximum X position",
+                (16.178784 * INCHES_IN_A_METER) - 15 /* ~half a robot */, Property.PropertyLevel.Debug);
 
         // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
         // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
