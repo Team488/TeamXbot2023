@@ -172,13 +172,17 @@ public class VisionSubsystem extends BaseSubsystem {
         // Pose isn't reliable if we see a tag id that shouldn't be on the field
         var allTagIds = getTagListFromPose(estimatedPose);
         if (allTagIds.stream().anyMatch(id -> id < 1 || id > 8)) {
-            this.log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
+            log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
                     + getStringFromList(allTagIds));
             return false;
         }
 
         double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
-        if(distance > errorThreshold.get()){
+        if(distance > errorThreshold.get()) {
+            log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
+                    distance,
+                    previousEstimatedPose.getTranslation().toString(),
+                    estimatedPose.estimatedPose.getTranslation().toString()));
             return false;
         }
 
