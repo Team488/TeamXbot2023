@@ -183,9 +183,8 @@ public class VisionSubsystem extends BaseSubsystem {
         }
 
         if (logCounter++ % 20 == 0) {
-            var tags = getTagListFromPose(estimatedPose);
             log.info(String.format("Estimated pose %s from tags %s",
-                    estimatedPose.estimatedPose.toPose2d(), getStringFromList(tags)));
+                    estimatedPose.estimatedPose.toPose2d(), getStringFromList(allTagIds)));
         }
 
         // Two or more targets tends to be very reliable
