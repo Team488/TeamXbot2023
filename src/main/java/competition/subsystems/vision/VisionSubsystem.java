@@ -24,7 +24,6 @@ import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -51,7 +50,7 @@ public class VisionSubsystem extends BaseSubsystem {
     PhotonPoseEstimator photonPoseEstimator;
     PhotonPoseEstimator rearPhotonPoseEstimator;
     boolean visionWorking = false;
-
+    long logCounter = 0;
 
     @Inject
     public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager) {
@@ -141,6 +140,9 @@ public class VisionSubsystem extends BaseSubsystem {
             var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
             var isStable = frontReliablePoseIsStable.checkStable(isReliable);
             if (isReliable && isStable) {
+                if (logCounter++ % 20 == 0) {
+                    log.info(String.format("Front camera estimated pose: %s", estimatedPose.get().estimatedPose.toPose2d()));
+                }
                 return estimatedPose;
             }
             return Optional.empty();
@@ -156,6 +158,9 @@ public class VisionSubsystem extends BaseSubsystem {
             var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
             var isStable = rearReliablePoseIsStable.checkStable(isReliable);
             if (isReliable && isStable) {
+                if (logCounter++ % 20 == 0) {
+                    log.info(String.format("Rear camera estimated pose: %s", estimatedPose.get().estimatedPose.toPose2d()));
+                }
                 return estimatedPose;
             }
             return Optional.empty();
