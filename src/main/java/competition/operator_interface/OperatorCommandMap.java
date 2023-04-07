@@ -108,7 +108,7 @@ public class OperatorCommandMap {
 
         NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
                 () -> pose.setCurrentPosition(0, 0));
-        ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
+        // ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
 
         NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
                 () -> pose.setCurrentPosition(70, 102));
@@ -321,6 +321,12 @@ public class OperatorCommandMap {
         oi.experimentalInput.getifAvailable(30).onTrue(oracle.createFavoriteAutoThree()); // C
         oi.experimentalInput.getifAvailable(31).onTrue(oracle.createFavoriteAutoFour()); // V
         oi.experimentalInput.getifAvailable(32).onTrue(setParameterizedAutonomousProgram); // B
+
+        // Backup gamepad
+        oi.autoGamepad.getifAvailable(XboxButton.A).onTrue(oracle.createFavoriteAutoOne());
+        oi.autoGamepad.getifAvailable(XboxButton.B).onTrue(oracle.createFavoriteAutoTwo());
+        oi.autoGamepad.getifAvailable(XboxButton.X).onTrue(oracle.createFavoriteAutoThree());
+        oi.autoGamepad.getifAvailable(XboxButton.Y).onTrue(oracle.createFavoriteAutoFour());
 
         // -----------------------------------------
         // Time for a giant pile of chords to configure the auto program
