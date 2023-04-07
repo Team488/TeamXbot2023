@@ -179,10 +179,12 @@ public class VisionSubsystem extends BaseSubsystem {
 
         double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
         if(distance > errorThreshold.get()) {
-            log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
-                    distance,
-                    previousEstimatedPose.getTranslation().toString(),
-                    estimatedPose.estimatedPose.getTranslation().toString()));
+            if (logCounter++ % 20 == 0) {
+                log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
+                        distance,
+                        previousEstimatedPose.getTranslation().toString(),
+                        estimatedPose.estimatedPose.getTranslation().toString()));
+            }
             return false;
         }
 
