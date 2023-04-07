@@ -156,7 +156,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
 
         // Further restrict the lower arm
-        lowerArmPower = MathUtils.constrainDouble(lowerArmPower, -0.17, 0.17);
+        lowerArmPower *= 0.17;
 
         return new XYPair(
                 lowerArmPower,upperArmPower
