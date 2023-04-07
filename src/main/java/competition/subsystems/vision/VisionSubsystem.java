@@ -173,15 +173,20 @@ public class VisionSubsystem extends BaseSubsystem {
         var allTagIds = Arrays.asList(estimatedPose.targetsUsed.stream()
                 .map(target -> target.getFiducialId()).toArray(Integer[]::new));
         if (allTagIds.stream().anyMatch(id -> id < 1 || id > 8)) {
-            this.log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
+            log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
                     + String.join(", ", allTagIds.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toArray(String[]::new)));
             return false;
         }
 
         double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
-        if(distance > errorThreshold.get()){
+        if(distance > errorThreshold.get()) {
+            log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
+                    distance,
+                    previousEstimatedPose.getTranslation().toString(),
+                    estimatedPose.estimatedPose.getTranslation().toString()));
             return false;
         }
+
         // Two or more targets tends to be very reliable
         if (estimatedPose.targetsUsed.size() > 1) {
             return true;
