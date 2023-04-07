@@ -24,8 +24,8 @@ import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class VisionSubsystem extends BaseSubsystem {
@@ -51,7 +51,7 @@ public class VisionSubsystem extends BaseSubsystem {
     PhotonPoseEstimator photonPoseEstimator;
     PhotonPoseEstimator rearPhotonPoseEstimator;
     boolean visionWorking = false;
-
+    long logCounter = 0;
 
     @Inject
     public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager) {
@@ -170,21 +170,27 @@ public class VisionSubsystem extends BaseSubsystem {
         }
 
         // Pose isn't reliable if we see a tag id that shouldn't be on the field
-        var allTagIds = Arrays.asList(estimatedPose.targetsUsed.stream()
-                .map(target -> target.getFiducialId()).toArray(Integer[]::new));
+        var allTagIds = getTagListFromPose(estimatedPose);
         if (allTagIds.stream().anyMatch(id -> id < 1 || id > 8)) {
             log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
-                    + String.join(", ", allTagIds.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toArray(String[]::new)));
+                    + getStringFromList(allTagIds));
             return false;
         }
 
         double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
         if(distance > errorThreshold.get()) {
-            log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
-                    distance,
-                    previousEstimatedPose.getTranslation().toString(),
-                    estimatedPose.estimatedPose.getTranslation().toString()));
+            if (logCounter++ % 20 == 0) {
+                log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
+                        distance,
+                        previousEstimatedPose.getTranslation().toString(),
+                        estimatedPose.estimatedPose.getTranslation().toString()));
+            }
             return false;
+        }
+
+        if (logCounter++ % 20 == 0) {
+            log.info(String.format("Estimated pose %s from tags %s. Previous pose was %s.",
+                    estimatedPose.estimatedPose.toPose2d(), getStringFromList(allTagIds), previousEstimatedPose));
         }
 
         // Two or more targets tends to be very reliable
@@ -195,5 +201,14 @@ public class VisionSubsystem extends BaseSubsystem {
         // For a single target we need to be above reliability threshold and within 1m
         return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < customPhotonPoseEstimator.getMaximumPoseAmbiguityThreshold()
                 && estimatedPose.targetsUsed.get(0).getBestCameraToTarget().getTranslation().getX() < 1.5;
+    }
+
+    private List<Integer> getTagListFromPose(EstimatedRobotPose estimatedPose) {
+        return Arrays.asList(estimatedPose.targetsUsed.stream()
+                .map(target -> target.getFiducialId()).toArray(Integer[]::new));
+    }
+
+    private String getStringFromList(List<Integer> list) {
+        return String.join(", ", list.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toArray(String[]::new));
     }
 }
