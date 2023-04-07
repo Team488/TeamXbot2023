@@ -2,6 +2,7 @@ package competition.subsystems.vision;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -17,6 +18,18 @@ import org.photonvision.targeting.TargetCorner;
 import java.util.Arrays;
 
 public class VisionSubsystemTest extends BaseCompetitionTest {
+
+    @Test
+    public void testIsEstimatedPositionReliable() {
+        VisionSubsystem subsystem = getInjectorComponent().visionSubsystem();
+        assertTrue(subsystem.isEstimatedPoseReliable(new EstimatedRobotPose(
+                new Pose3d(),
+                0,
+                Arrays.asList(
+                        createTargetWithId(1))
+        ), new Pose2d(0,0,new Rotation2d())));
+    }
+
 
     @Test
     public void testIsEstimatedPoseReliableInvalidFiducialId() {
@@ -43,7 +56,7 @@ public class VisionSubsystemTest extends BaseCompetitionTest {
     }
 
     @Test
-    public void testIsEstimatedPositionReliable() {
+    public void testIsEstimatedPositionReliableOutOfRange() {
         VisionSubsystem subsystem = getInjectorComponent().visionSubsystem();
         assertFalse(subsystem.isEstimatedPoseReliable(new EstimatedRobotPose(
                 new Pose3d(),
