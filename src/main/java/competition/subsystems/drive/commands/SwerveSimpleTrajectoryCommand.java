@@ -196,7 +196,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     public boolean isFinished() {
         var goalVector = getGoalVector();
         // TODO: Move this threshold into a variable
-        boolean isAtNoStoppingGoal = goalVector.getMagnitude() < 6; // 6 inches
+        boolean isAtNoStoppingGoal = goalVector.getMagnitude() < 18; // 18 inches
 
         boolean finished = (stopWhenFinished ? drive.getPositionalPid().isOnTarget() : isAtNoStoppingGoal) && headingModule.isOnTarget()
                 && lastResult.isOnFinalPoint;

@@ -29,7 +29,7 @@ public class MoveCollectedGamepieceToArmCommandGroup extends SequentialCommandGr
             PropertyFactory pf) {
 
         pf.setPrefix(this.getClass().getName());
-        double coneClawIntakeTime = 0.35;
+        double coneClawIntakeTime = 0.2;
         double coneCollectorEjectTime = 0.35;
         double cubeCollectorEjectTime = 0.25;
         double cubeClawIntakeTime = 0.2; //we can change this number if needed
