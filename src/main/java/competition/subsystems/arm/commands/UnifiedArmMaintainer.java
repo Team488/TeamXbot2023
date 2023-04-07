@@ -152,7 +152,7 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
         double upperArmPower = MathUtils.deadband(
                 oi.operatorGamepad.getRightVector().y,
                 oi.getOperatorGamepadTypicalDeadband(),
-                (a)-> MathUtils.exponentAndRetainSign(a, 2));
+                (a)-> MathUtils.exponentAndRetainSign(a,4));
 
 
         // Further restrict the lower arm
