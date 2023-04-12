@@ -55,7 +55,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         if (contract.isCollectorReady()) {
             this.collectorMotor = sparkMaxFactory.createWithoutProperties(eContract.getCollectorMotor(), getPrefix(), "CollectorMotor");
             this.collectorSolenoid = xSolenoidFactory.create(eContract.getCollectorSolenoid().channel);
-            collectorMotor.setSmartCurrentLimit(7);
+            collectorMotor.setSmartCurrentLimit(12);
             pressureSensor = analogInputFactory.create(eContract.getPressureSensor().channel);
         }
         pf.setPrefix(this);
@@ -69,7 +69,7 @@ public class CollectorSubsystem extends BaseSubsystem {
         currentMotorVelocity = pf.createEphemeralProperty("currentMotorVelocity", 0);
         gamePieceCollected = pf.createEphemeralProperty("gamePieceCollected", false);
 
-        gamePieceCollectedValidator = new TimeStableValidator(0.75);
+        gamePieceCollectedValidator = new TimeStableValidator(0.6);
         gamePieceCollectedValidator.checkStable(false);
     }
 

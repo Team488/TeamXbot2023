@@ -18,6 +18,8 @@ import xbot.common.properties.PropertyFactory;
 public class OperatorInterface {
     public XXboxController driverGamepad;
     public XXboxController operatorGamepad;
+
+    public XXboxController autoGamepad;
     public XJoystick experimentalInput;
     
     final DoubleProperty driverDeadband;
@@ -35,6 +37,8 @@ public class OperatorInterface {
         operatorGamepad = controllerFactory.create(1);
         operatorGamepad.setLeftInversion(false, true);
         operatorGamepad.setRightInversion(false, true);
+
+        autoGamepad = controllerFactory.create(3);
 
         experimentalInput = joystickFactory.create(2, 32);
 

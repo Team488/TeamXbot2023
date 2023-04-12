@@ -52,7 +52,10 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Set initial position
         // ----------------------------
 
-        double defaultVelocity = 80;
+        // This controls how fast the robot moves through most of auto. We can't go
+        // much slower than this and still finish in 15s. But when testing auto it can
+        // be useful to set this to a small number like 10 to view the logic slowly.
+        double defaultVelocity = 100;
 
         // TODO: If we trust the april tags, we should have a branch here where we don't force the initial position (and
         // potentially the initial heading, if the april tags pose estimation gets really good).
@@ -210,6 +213,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         driveToPrepareBalance.setKeyPointsProvider(oracle::getTrajectoryForPrepareToBalance);
         driveToPrepareBalance.setEnableConstantVelocity(true);
         driveToPrepareBalance.setConstantVelocity(defaultVelocity);
+        driveToPrepareBalance.setStopWhenFinished(false);
 
         var driveToActualBalance = swerveSimpleTrajectoryCommandProvider.get();
         driveToActualBalance.setMaxPower(0.75);
@@ -226,13 +230,12 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
                 new WaitUntilCommand(() -> DriverStation.getMatchTime() < 1.0)
         );
         var driveToBalanceOrNot = new ConditionalCommand(
-                driveToBalance.withTimeout(4.5),
+                driveToBalance.withTimeout(4.5).andThen(balance),
                 new InstantCommand(),
                 oracle::getEnableBalance
         );
 
         this.addCommands(driveToBalanceOrNot);
-        this.addCommands(balance);
         this.addCommands(brake);
     }
 }

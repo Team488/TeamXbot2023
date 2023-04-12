@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import competition.auto_programs.support.AutonomousOracle;
 import competition.electrical_contract.ElectricalContract;
 import competition.subsystems.arm.UnifiedArmSubsystem;
+import competition.subsystems.arm.commands.SetArmsToKeyArmPositionCommand;
 import competition.subsystems.collector.CollectorSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import xbot.common.command.BaseSubsystem;
@@ -13,6 +14,7 @@ import xbot.common.controls.actuators.XDigitalOutput;
 import xbot.common.controls.actuators.XDigitalOutput.XDigitalOutputFactory;
 import xbot.common.controls.actuators.XPWM.XPWMFactory;
 import xbot.common.properties.BooleanProperty;
+import xbot.common.properties.DoubleProperty;
 import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.properties.StringProperty;
@@ -40,7 +42,6 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
     private final BooleanProperty dio3Property;
     private final BooleanProperty dio4Property;
     private final BooleanProperty cubeDioProperty;
-
     private final CollectorSubsystem collector;
     private final UnifiedArmSubsystem arm;
 
@@ -54,6 +55,7 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
         Enabled(2),
         GamePieceCollected(3),
         RobotDisabledWithBasicAuto(4),
+        ArmAtTargetPosition(5),
         RobotDisabledWithCustomizedAuto(6);
 
         private int value;
@@ -130,7 +132,10 @@ public class LightsCommunicationSubsystem extends BaseSubsystem {
             }
         } else if (collector.getGamePieceCollected()) {
             currentState = LightsStateMessage.GamePieceCollected;
-        } else if (dsEnabled) {
+        } else if(arm.isMaintainerAtGoal() && arm.getCurrentXZCoordinates().x > 33){
+            currentState = LightsStateMessage.ArmAtTargetPosition;
+        }
+        else if (dsEnabled) {
             currentState = LightsStateMessage.Enabled;
         }
 

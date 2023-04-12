@@ -257,7 +257,7 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
             // Use various ways of scaling down the drive power
 
             if (drive.isPrecisionTranslationActive()) {
-                translationIntent = translationIntent.scale(0.30);
+                translationIntent = translationIntent.scale(0.50);
             } else if (drive.isExtremePrecisionTranslationActive()) {
                 translationIntent = translationIntent.scale(0.15);
             }
@@ -276,7 +276,11 @@ public class SwerveDriveWithJoysticksCommand extends BaseCommand {
         if (drive.isCollectorRotationActive()) {
             centerOfRotationInches = new XYPair(arms.getCurrentXZCoordinates().x, 0);
         }
-        
+
+        if (drive.isGamePieceRotationActive()) {
+            centerOfRotationInches = new XYPair(35, 0);
+        }
+
         if (drive.isRobotOrientedDriveActive()) {
             drive.move(translationIntent, suggestedRotatePower);
         } else {

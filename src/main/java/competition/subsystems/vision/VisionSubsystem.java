@@ -19,10 +19,13 @@ import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class VisionSubsystem extends BaseSubsystem {
@@ -38,15 +41,17 @@ public class VisionSubsystem extends BaseSubsystem {
     final RobotAssertionManager assertionManager;
     final BooleanProperty isInverted;
     final DoubleProperty yawOffset;
-    final DoubleProperty waitForStableFixTime;
-    final TimeStableValidator fixIsStable;
+    final DoubleProperty waitForStablePoseTime;
+    final DoubleProperty errorThreshold;
+    final TimeStableValidator frontReliablePoseIsStable;
+    final TimeStableValidator rearReliablePoseIsStable;
     NetworkTable visionTable;
     AprilTagFieldLayout aprilTagFieldLayout;
     XbotPhotonPoseEstimator customPhotonPoseEstimator;
     PhotonPoseEstimator photonPoseEstimator;
     PhotonPoseEstimator rearPhotonPoseEstimator;
     boolean visionWorking = false;
-
+    long logCounter = 0;
 
     @Inject
     public VisionSubsystem(PropertyFactory pf, RobotAssertionManager assertionManager) {
@@ -57,8 +62,10 @@ public class VisionSubsystem extends BaseSubsystem {
         isInverted = pf.createPersistentProperty("Yaw inverted", true);
         yawOffset = pf.createPersistentProperty("Yaw offset", 0);
 
-        waitForStableFixTime = pf.createPersistentProperty("Fix stable time", 0.1);
-        fixIsStable = new TimeStableValidator(() -> waitForStableFixTime.get());
+        waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.15, Property.PropertyLevel.Debug);
+        errorThreshold = pf.createPersistentProperty("Error threshold",200);
+        frontReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
+        rearReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
 
         // TODO: Add resiliency to this subsystem, so that if the camera is not connected, it doesn't cause a pile
         // of errors. Some sort of VisionReady in the ElectricalContract may also make sense. Similarly,
@@ -131,7 +138,9 @@ public class VisionSubsystem extends BaseSubsystem {
             //return customPhotonPoseEstimator.update();
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
-            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
+            var isStable = frontReliablePoseIsStable.checkStable(isReliable);
+            if (isReliable && isStable) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -144,7 +153,9 @@ public class VisionSubsystem extends BaseSubsystem {
         if (visionWorking) {
             rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = rearPhotonPoseEstimator.update();
-            if (!estimatedPose.isEmpty() && this.isEstimatedPoseReliable(estimatedPose.get())) {
+            var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
+            var isStable = rearReliablePoseIsStable.checkStable(isReliable);
+            if (isReliable && isStable) {
                 return estimatedPose;
             }
             return Optional.empty();
@@ -153,9 +164,33 @@ public class VisionSubsystem extends BaseSubsystem {
         }
     }
 
-    private boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose) {
+    public boolean isEstimatedPoseReliable(EstimatedRobotPose estimatedPose, Pose2d previousEstimatedPose) {
         if (estimatedPose.targetsUsed.size() == 0) {
             return false;
+        }
+
+        // Pose isn't reliable if we see a tag id that shouldn't be on the field
+        var allTagIds = getTagListFromPose(estimatedPose);
+        if (allTagIds.stream().anyMatch(id -> id < 1 || id > 8)) {
+            log.warn("Ignoring vision pose with invalid tag id. Visible tags: "
+                    + getStringFromList(allTagIds));
+            return false;
+        }
+
+        double distance = previousEstimatedPose.getTranslation().getDistance(estimatedPose.estimatedPose.toPose2d().getTranslation());
+        if(distance > errorThreshold.get()) {
+            if (logCounter++ % 20 == 0) {
+                log.warn(String.format("Ignoring vision pose because distance is %f from our previous pose. Current pose: %s, vision pose: %s.",
+                        distance,
+                        previousEstimatedPose.getTranslation().toString(),
+                        estimatedPose.estimatedPose.getTranslation().toString()));
+            }
+            return false;
+        }
+
+        if (logCounter++ % 20 == 0) {
+            log.info(String.format("Estimated pose %s from tags %s. Previous pose was %s.",
+                    estimatedPose.estimatedPose.toPose2d(), getStringFromList(allTagIds), previousEstimatedPose));
         }
 
         // Two or more targets tends to be very reliable
@@ -166,5 +201,14 @@ public class VisionSubsystem extends BaseSubsystem {
         // For a single target we need to be above reliability threshold and within 1m
         return estimatedPose.targetsUsed.get(0).getPoseAmbiguity() < customPhotonPoseEstimator.getMaximumPoseAmbiguityThreshold()
                 && estimatedPose.targetsUsed.get(0).getBestCameraToTarget().getTranslation().getX() < 1.5;
+    }
+
+    private List<Integer> getTagListFromPose(EstimatedRobotPose estimatedPose) {
+        return Arrays.asList(estimatedPose.targetsUsed.stream()
+                .map(target -> target.getFiducialId()).toArray(Integer[]::new));
+    }
+
+    private String getStringFromList(List<Integer> list) {
+        return String.join(", ", list.stream().mapToInt(id -> id).mapToObj(id -> Integer.toString(id)).toArray(String[]::new));
     }
 }

@@ -91,7 +91,7 @@ public class OperatorCommandMap {
             PositionDriveWithJoysticksCommand positionDrive,
             VelocityDriveWithJoysticksCommand velocityDrive,
             BrakeCommand setWheelsToXMode,
-            SwerveToNearestScoringPositionCommand swerveNearestScoring,
+            Provider<SwerveToNearestScoringPositionCommand> swerveNearestScoringProvider,
             Provider<SwerveToNextScoringPositionCommand> swerveNextScoringProvider,
             MoveLeftInchByInchCommand moveLeft,
             MoveRightInchByInchCommand moveRight,
@@ -109,15 +109,7 @@ public class OperatorCommandMap {
         forwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(0)).getDegrees());
         backwardHeading.setHeadingToApply(() -> pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)).getDegrees());
 
-        NamedInstantCommand resetPosition = new NamedInstantCommand("Reset Position",
-                () -> pose.setCurrentPosition(0, 0));
-        ParallelCommandGroup resetPose = new ParallelCommandGroup(resetPosition, resetHeading);
-
-        NamedInstantCommand resetPositionCube = new NamedInstantCommand("Reset Position Cube",
-                () -> pose.setCurrentPosition(70, 102));
-        ParallelCommandGroup resetPoseCube = new ParallelCommandGroup(resetPositionCube, resetHeadingCube);
-
-        oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetPose);
+        oi.driverGamepad.getifAvailable(XboxButton.A).onTrue(resetHeading);
         oi.driverGamepad.getifAvailable(XboxButton.Back).onTrue(regularSwerve);
         oi.driverGamepad.getifAvailable(XboxButton.Start).onTrue(backwardHeading);
 
@@ -126,9 +118,16 @@ public class OperatorCommandMap {
         NamedInstantCommand disableCollectorRotation =
                 new NamedInstantCommand("Disable Collector Rotation", () -> drive.setCollectorOrientedTurningActive(false));
 
+        StartEndCommand enableGamePieceRotation = new StartEndCommand(
+                        () -> drive.setGamePieceOrientatedRotationActive(true),
+                        () -> drive.setGamePieceOrientatedRotationActive(false));
+
+        oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(enableGamePieceRotation);
+
         var povDown = oi.driverGamepad.getPovIfAvailable(180);
         var povLeft = oi.driverGamepad.getPovIfAvailable(270);
         var povRight = oi.driverGamepad.getPovIfAvailable(90);
+        var povUp = oi.driverGamepad.getPovIfAvailable(0);
 
         var brakesButton = oi.driverGamepad.getifAvailable(XboxButton.X);
         chordFactory.create(
@@ -145,16 +144,19 @@ public class OperatorCommandMap {
                 brakesButton
         ).whileTrue(setWheelsToXMode);
 
-        //oi.driverGamepad.getifAvailable(XboxButton.B).whileTrue(setWheelsToXMode);
-        oi.driverGamepad.getifAvailable(XboxButton.B).onTrue(setManualBalanceMode);
-
         brakesButton.whileTrue(setWheelsToXMode);
 
         var scoringPositionModeButton = oi.driverGamepad.getifAvailable(XboxButton.Y);
         chordFactory.create(
                 scoringPositionModeButton,
                 povDown
-        ).whileTrue(swerveNearestScoring);
+        ).whileTrue(swerveNearestScoringProvider.get());
+        var swerveNearestGamePieceScoringPosition = swerveNearestScoringProvider.get();
+        swerveNearestGamePieceScoringPosition.setSpecificGamePiece(true);
+        chordFactory.create(
+                scoringPositionModeButton,
+                povUp
+        ).whileTrue(swerveNearestGamePieceScoringPosition);
         var swerveLeftScoringPosition = swerveNextScoringProvider.get();
         swerveLeftScoringPosition.setDirection(SwerveToNextScoringPositionCommand.TargetDirection.Left);
         var swerveRightScoringPosition = swerveNextScoringProvider.get();
@@ -314,6 +316,13 @@ public class OperatorCommandMap {
         oi.experimentalInput.getifAvailable(30).onTrue(oracle.createFavoriteAutoThree()); // C
         oi.experimentalInput.getifAvailable(31).onTrue(oracle.createFavoriteAutoFour()); // V
         oi.experimentalInput.getifAvailable(32).onTrue(setParameterizedAutonomousProgram); // B
+
+        // Backup gamepad
+        oi.autoGamepad.getifAvailable(XboxButton.A).onTrue(oracle.createFavoriteAutoOne());
+        oi.autoGamepad.getifAvailable(XboxButton.B).onTrue(oracle.createFavoriteAutoTwo());
+        oi.autoGamepad.getifAvailable(XboxButton.X).onTrue(oracle.createFavoriteAutoThree());
+        oi.autoGamepad.getifAvailable(XboxButton.Y).onTrue(oracle.createFavoriteAutoFour());
+        oi.autoGamepad.getifAvailable(XboxButton.Start).onTrue(oracle.createFavoriteAutoFive());
 
         // -----------------------------------------
         // Time for a giant pile of chords to configure the auto program
@@ -590,9 +599,9 @@ public class OperatorCommandMap {
         moveArmForDoubleSubstation.setKeyPointFromKeyArmPosition(KeyArmPosition.LoadingTray, RobotFacing.Forward);
         var intakeCommand = gripperMotorSubsystem.createIntakeCommand();
 
-        var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
-
-        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(collectFromDoubleSubstation);
+        //var collectFromDoubleSubstation = moveArmForDoubleSubstation.alongWith(intakeCommand, closeClaw);
+        var intakeAndCloseClaw = intakeCommand.alongWith(closeClaw);
+        oi.operatorGamepad.getifAvailable(XboxButton.RightBumper).whileTrue(intakeAndCloseClaw);
         //reverse motor
         oi.operatorGamepad.getifAvailable(XboxButton.LeftBumper).whileTrue(gripperMotorSubsystem.setEject(-1.0));
 
