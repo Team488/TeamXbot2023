@@ -344,7 +344,7 @@ public class AutonomousOracle {
         // which may help us avoid some "grinding" against the scoring grid due to odometry issues.
         double xAdjustmentInInches = 0;
         if (secondGamePiece == UnifiedArmSubsystem.GamePieceMode.Cube) {
-            xAdjustmentInInches = 3;
+            xAdjustmentInInches = 1;
         }
         var scoringLandmark = createAdjustedLandmark(getLocationForScoringPositionIndex(
                 secondScoringLocationIndex), xAdjustmentInInches, 0);

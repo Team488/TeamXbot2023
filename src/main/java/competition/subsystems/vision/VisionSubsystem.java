@@ -62,7 +62,7 @@ public class VisionSubsystem extends BaseSubsystem {
         isInverted = pf.createPersistentProperty("Yaw inverted", true);
         yawOffset = pf.createPersistentProperty("Yaw offset", 0);
 
-        waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.15, Property.PropertyLevel.Debug);
+        waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.0, Property.PropertyLevel.Debug);
         errorThreshold = pf.createPersistentProperty("Error threshold",200);
         frontReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
         rearReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
@@ -139,7 +139,7 @@ public class VisionSubsystem extends BaseSubsystem {
             photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = photonPoseEstimator.update();
             var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
-            var isStable = frontReliablePoseIsStable.checkStable(isReliable);
+            var isStable = waitForStablePoseTime.get() == 0.0 || frontReliablePoseIsStable.checkStable(isReliable);
             if (isReliable && isStable) {
                 return estimatedPose;
             }
@@ -154,7 +154,7 @@ public class VisionSubsystem extends BaseSubsystem {
             rearPhotonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
             var estimatedPose = rearPhotonPoseEstimator.update();
             var isReliable = !estimatedPose.isEmpty() && isEstimatedPoseReliable(estimatedPose.get(), previousEstimatedRobotPose);
-            var isStable = rearReliablePoseIsStable.checkStable(isReliable);
+            var isStable = waitForStablePoseTime.get() == 0.0 || rearReliablePoseIsStable.checkStable(isReliable);
             if (isReliable && isStable) {
                 return estimatedPose;
             }
