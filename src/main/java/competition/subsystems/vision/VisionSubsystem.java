@@ -62,7 +62,7 @@ public class VisionSubsystem extends BaseSubsystem {
         isInverted = pf.createPersistentProperty("Yaw inverted", true);
         yawOffset = pf.createPersistentProperty("Yaw offset", 0);
 
-        waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.25, Property.PropertyLevel.Debug);
+        waitForStablePoseTime = pf.createPersistentProperty("Pose stable time", 0.15, Property.PropertyLevel.Debug);
         errorThreshold = pf.createPersistentProperty("Error threshold",200);
         frontReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());
         rearReliablePoseIsStable = new TimeStableValidator(() -> waitForStablePoseTime.get());

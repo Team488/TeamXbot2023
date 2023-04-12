@@ -622,7 +622,7 @@ public class AutonomousOracle {
             setEnableAcquireGamePiece(false);
             setEnableMoveToScore(false);
             setEnableSecondScore(false);
-            setEnableBalance(false);
+            setEnableBalance(true);
         }).ignoringDisable(true);
     }
 

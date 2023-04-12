@@ -319,6 +319,7 @@ public class OperatorCommandMap {
         oi.autoGamepad.getifAvailable(XboxButton.B).onTrue(oracle.createFavoriteAutoTwo());
         oi.autoGamepad.getifAvailable(XboxButton.X).onTrue(oracle.createFavoriteAutoThree());
         oi.autoGamepad.getifAvailable(XboxButton.Y).onTrue(oracle.createFavoriteAutoFour());
+        oi.autoGamepad.getifAvailable(XboxButton.Start).onTrue(oracle.createFavoriteAutoFive());
 
         // -----------------------------------------
         // Time for a giant pile of chords to configure the auto program
