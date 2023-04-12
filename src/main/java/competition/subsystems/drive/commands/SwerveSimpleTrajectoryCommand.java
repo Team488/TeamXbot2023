@@ -201,7 +201,7 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         boolean finished = (stopWhenFinished ? drive.getPositionalPid().isOnTarget() : isAtNoStoppingGoal) && headingModule.isOnTarget()
                 && lastResult.isOnFinalPoint;
         if (finished) {
-            log.info("Finished");
+            log.info(String.format("Finished, goal is %f away.", goalVector.getMagnitude()));
         }
         return finished;
     }
@@ -209,6 +209,9 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
+        if (interrupted) {
+            log.warn("Command interrupted");
+        }
         drive.stop();
     }
 }
