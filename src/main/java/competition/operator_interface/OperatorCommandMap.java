@@ -98,6 +98,9 @@ public class OperatorCommandMap {
             ManualBalanceModeCommand setManualBalanceMode
             ) {
 
+        debugSwerve.includeOnSmartDashboard();
+        nextModule.includeOnSmartDashboard();
+
         resetHeadingCube.setHeadingToApply(pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(-180)).getDegrees());
         SetRobotHeadingCommand forwardHeading = headingProvider.get();
         SetRobotHeadingCommand backwardHeading = headingProvider.get();

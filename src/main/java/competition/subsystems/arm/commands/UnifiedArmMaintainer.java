@@ -10,6 +10,7 @@ import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.MathUtils;
 import xbot.common.math.XYPair;
 import xbot.common.properties.DoubleProperty;
+import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 
 import javax.inject.Inject;
@@ -21,7 +22,8 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
     private final DoubleProperty lowerArmErrorThresholdToEngageBrake;
     private final DoubleProperty lowerArmErrorThresholdToDisengageBrake;
     private final TimeStableValidator lowerArmBrakeValidator;
-    private DoubleProperty upperArmPowerLimiter;
+    private final DoubleProperty upperArmPowerLimiter;
+    private final DoubleProperty cubeModeXZThreshold;
 
     @Inject
     public UnifiedArmMaintainer(
@@ -33,10 +35,12 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
         this.unifiedArm = subsystemToMaintain;
         this.oi = oi;
         pf.setPrefix(this);
+        pf.setDefaultLevel(Property.PropertyLevel.Debug);
         lowerArmErrorThresholdToEngageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToEngageBrake",2.0);
         lowerArmErrorThresholdToDisengageBrake = pf.createPersistentProperty("LowerArmErrorThresholdToDisengageBrake",4.0);
         lowerArmBrakeValidator = new TimeStableValidator(1);
         upperArmPowerLimiter = pf.createPersistentProperty("UpperArmPowerLimiter",0.5);
+        cubeModeXZThreshold = pf.createPersistentProperty("CubeModeXZThreshold", 4.0);
     }
 
     @Override
@@ -174,5 +178,25 @@ public class UnifiedArmMaintainer extends BaseMaintainerCommand<XYPair> {
 
     public double getLowerArmErrorThresholdToDisengageBrake() {
         return lowerArmErrorThresholdToDisengageBrake.get();
+    }
+
+    @Override
+    protected boolean getErrorWithinTolerance() {
+        // Check if we are within the "typical", e.g. "tight" tolerance
+        boolean superErrorWithinTolerance = super.getErrorWithinTolerance();
+
+        // Check to see if we are in cube or cone mode. If we are in cube mode, then we should be more permissive
+        // in terms of final position.
+        if (unifiedArm.isCubeMode()) {
+            // Find our actual X/Z target position
+            var targetPos = unifiedArm.convertOldArmAnglesToXZPositions(unifiedArm.getTargetValue());
+            var curentPos = unifiedArm.getCurrentXZCoordinatesAsTranslation2d();
+            double distance = targetPos.getDistance(curentPos);
+
+            return superErrorWithinTolerance || distance < cubeModeXZThreshold.get();
+        } else {
+            return superErrorWithinTolerance;
+        }
+
     }
 }
