@@ -16,6 +16,7 @@ import competition.subsystems.pose.PoseSubsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -109,7 +110,10 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Optionally acquire a game piece
         // ----------------------------
 
-        var collect = collector.getCollectThenRetractCommand();
+        // A variant of our usual collection that will actually end, due to racing against the game piece collection signal.
+        // Since the "retract" action happens during the end/interrupt of the main command, this should still trigger retracting the
+        // game piece into the body of the robot.
+        var collect = collector.getCollectThenRetractCommand().raceWith(new WaitUntilCommand(collector::getGamePieceCollected));
 
         var collectOrNot = new ConditionalCommand(
                 new WaitCommand(1.5).andThen(collect),
@@ -139,8 +143,17 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         drivePhaseOne.setEnableConstantVelocity(true);
         drivePhaseOne.setConstantVelocity(defaultVelocity);
 
-        var drivePhaseOneWithPotentialCollection = new ParallelDeadlineGroup(
-                drivePhaseOne,
+        // This needs to be constructed carefully to ensure it will complete, but also "hang" forever if we fail to
+        // collect a game piece. (That way, if we whiff for whatever reason, our robot will stop there - presumably
+        // very close to a game piece we can grab at the start of teleop).
+        // - DrivePhaseOne will end when it reaches the end of the trajectory, but to save a bit of time
+        //   we can stop early if we've collected a game piece.
+        // - The retractArmIfScored will finish once it is stable in its final position.
+        // - CollectOrNot will finish instantly (if disabled) or as soon as a game piece is collected.
+        // Since each command does have an exit condition, we should be safe to make this a parallel command group
+        // rather than a deadline group.
+        var drivePhaseOneWithPotentialCollection = new ParallelCommandGroup(
+                drivePhaseOne.raceWith(new WaitUntilCommand(collector::getGamePieceCollected)),
                 retractArmIfScored,
                 collectOrNot);
 
