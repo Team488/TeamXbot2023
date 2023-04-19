@@ -7,6 +7,7 @@ import org.junit.Test;
 import xbot.common.math.XYPair;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PoseSubsystemTest extends BaseCompetitionTest {
 
@@ -49,5 +50,13 @@ public class PoseSubsystemTest extends BaseCompetitionTest {
         pose.setAlliance(DriverStation.Alliance.Red);
         assertEquals(Rotation2d.fromDegrees(0), pose.rotateAngleBasedOnAlliance(Rotation2d.fromDegrees(180)));
         assertEquals(new XYPair(-1, -1).toString(), pose.rotateVectorBasedOnAlliance(new XYPair(1, 1)).toString());
+    }
+
+    @Test
+    public void testOdometrySnapping() {
+        pose.setCurrentPosition(0, 0);
+        pose.updateOdometry();
+
+        assertTrue(pose.getCurrentPose2d().getX() > 0);
     }
 }
