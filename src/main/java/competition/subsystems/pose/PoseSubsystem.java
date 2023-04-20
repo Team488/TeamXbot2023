@@ -5,12 +5,9 @@ import javax.inject.Singleton;
 
 import competition.subsystems.drive.DriveSubsystem;
 import competition.subsystems.vision.VisionSubsystem;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,12 +18,10 @@ import xbot.common.controls.sensors.XTimer;
 import xbot.common.logic.Latch;
 import xbot.common.logic.TimeStableValidator;
 import xbot.common.math.FieldPose;
-import xbot.common.math.MathUtils;
 import xbot.common.math.WrappedRotation2d;
 import xbot.common.math.XYPair;
 import xbot.common.properties.BooleanProperty;
 import xbot.common.properties.DoubleProperty;
-import xbot.common.properties.Property;
 import xbot.common.properties.PropertyFactory;
 import xbot.common.subsystems.pose.BasePoseSubsystem;
 
@@ -46,9 +41,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
     private final BooleanProperty useRearCameraForPose;
     private TimeStableValidator extremelyConfidentVisionValidator = new TimeStableValidator(10);
     private final DoubleProperty extremelyConfidentVisionDistanceUpdateInMetersProp;
-    private final DoubleProperty minimumValidX;
-    private final DoubleProperty maximumValidX;
-
     private final BooleanProperty isVisionPoseExtremelyConfidentProp;
     private final BooleanProperty allianceAwareFieldProp;
     private final BooleanProperty useVisionForPoseProp;
@@ -70,12 +62,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
         useVisionForPoseProp = propManager.createPersistentProperty("Enable Vision-Assisted Pose", true);
         useForwardCameraForPose = propManager.createPersistentProperty("Use forward april cam", true);
         useRearCameraForPose = propManager.createPersistentProperty("Use rear april cam", true);
-
-        // Min and max are taken from the X positions of the april tags at the double substation, adjusted by slightly less than half a robot
-        minimumValidX = propManager.createPersistentProperty("Minimum X position",
-                (0.36195 * INCHES_IN_A_METER) + 15 /* ~half a robot */, Property.PropertyLevel.Debug);
-        maximumValidX = propManager.createPersistentProperty("Maximum X position",
-                (16.178784 * INCHES_IN_A_METER) - 15 /* ~half a robot */, Property.PropertyLevel.Debug);
 
         // TODO: This is a hack to get the field visualization working. Eventually this is going to cause problems
         // once there are test cases that try and invoke the PoseSubsystem. Right now, the SmartDashboardCommandPutter
@@ -213,13 +199,6 @@ public class PoseSubsystem extends BasePoseSubsystem {
         var estimatedPosition = new Pose2d(
                 swerveOdometry.getEstimatedPosition().getTranslation(),
                 getCurrentHeading());
-
-        double estimatedXPositionInches = estimatedPosition.getX() * INCHES_IN_A_METER;
-        double constrainedXPositionInches = MathUtils.constrainDouble(estimatedXPositionInches, minimumValidX.get(), maximumValidX.get());
-        if (estimatedXPositionInches != constrainedXPositionInches) {
-            log.warn(String.format("Odometry X position %f is out of bounds. Snapping to field boundary.", estimatedPosition.getX()));
-            estimatedPosition = new Pose2d(new Translation2d(constrainedXPositionInches / INCHES_IN_A_METER, estimatedPosition.getY()), getCurrentHeading());
-        }
 
         // Convert back to inches
         double prevTotalDistanceX = totalDistanceX.get();
