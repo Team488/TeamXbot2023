@@ -561,8 +561,8 @@ public class AutonomousOracle {
             setInitialGamePiece(UnifiedArmSubsystem.GamePieceMode.Cone);
 
             setSecondGamePiece(UnifiedArmSubsystem.GamePieceMode.Cube);
-            //setSecondScoringMode(ScoringMode.High);
-            //setSecondScoringLocationIndex(8);
+            setSecondScoringMode(ScoringMode.Eject);
+            setSecondScoringLocationIndex(2);
 
             setMantlePrepPosition(MantlePrepPosition.OutsideCommunity);
 
