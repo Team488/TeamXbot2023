@@ -39,6 +39,8 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
 
     private final Field2d ghostDisplay;
 
+    private double chasePointInches = 24;
+
     @Inject
     public SwerveSimpleTrajectoryCommand(DriveSubsystem drive, PoseSubsystem pose, PropertyFactory pf, HeadingModuleFactory headingModuleFactory) {
         this.drive = drive;
@@ -90,6 +92,10 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
         this.stopWhenFinished = newValue;
     }
 
+    public void setChasePointInches(double chasePointInches) {
+        this.chasePointInches = chasePointInches;
+    }
+
     // --------------------------------------------------------------
     // Major Command Elements
     // --------------------------------------------------------------
@@ -106,10 +112,9 @@ public class SwerveSimpleTrajectoryCommand extends BaseCommand {
             keyPoints = getVelocityAdjustedSwervePoints(initialPoint, keyPoints, constantVelocity);
         }
 
-        interpolator.setMaximumDistanceFromChasePointInInches(24);
+        interpolator.setMaximumDistanceFromChasePointInInches(chasePointInches);
         interpolator.setKeyPoints(keyPoints);
         interpolator.initialize(initialPoint);
-
     }
 
 

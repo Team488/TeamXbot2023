@@ -240,6 +240,40 @@ public class AutonomousOracle {
     // Route composition
     // -------------------------------------------
 
+    public List<XbotSwervePoint> getTrajectoryForPreDrivePhaseOne() {
+        // We've seen that doing large translations (several feet) along with large rotations (180 degrees) leads
+        // to significant "skew" in the direction of rotation, which causes a lot of collisions, which in turn
+        // reduces autonomous accuracy.
+        // As a result, we are adding an extra "pre" phase that will move the robot slightly back from the grid
+        // (e.g. to one of the CommunitySideMidCheckPoints), rotate 180 degrees (if we are going for a game piece),
+        // and let the rest of the auto continue from that point.
+
+        ArrayList<XbotSwervePoint> points = new ArrayList<>();
+        Pose2d initialLandmark = AutoLandmarks.blueUpperCommunitySideMidCheckpoint;
+        switch(lane) {
+            default:
+            case Top:
+                initialLandmark = AutoLandmarks.blueUpperCommunitySideMidCheckpoint;
+                break;
+            case Middle:
+                initialLandmark = AutoLandmarks.blueToUpperAndLowerCommunityCheckpoint;
+                break;
+            case Bottom:
+                initialLandmark = AutoLandmarks.blueLowerCommunitySideMidCheckpoint;
+                break;
+        }
+
+        var initialOrientation = Rotation2d.fromDegrees(-180);
+
+        points.add(createXbotSwervePoint(initialLandmark, initialOrientation, 0.5));
+        if (enableAcquireGamePiece.get()) {
+            // rotate to face the game piece (so collection is possible)
+            points.add(createXbotSwervePoint(initialLandmark, Rotation2d.fromDegrees(0), 0.5));
+        }
+
+        return points;
+    }
+
     public List<XbotSwervePoint> getTrajectoryForDrivePhaseOne() {
         // Right now two major possibilities:
         // We are going to pick up a new game piece, so we should go to the natural point
@@ -260,7 +294,7 @@ public class AutonomousOracle {
             case Top:
                 points.add(createXbotSwervePoint(AutoLandmarks.blueUpperCommunitySideMidCheckpoint, Rotation2d.fromDegrees(-180), 1.0));
                 points.add(createXbotSwervePoint(
-                        createAdjustedLandmark(AutoLandmarks.blueGamePieceUpper, 12, 0),
+                        createAdjustedLandmark(AutoLandmarks.blueGamePieceUpper, 18, 0),
                         Rotation2d.fromDegrees(0), 1.0));
                 break;
             case Bottom:

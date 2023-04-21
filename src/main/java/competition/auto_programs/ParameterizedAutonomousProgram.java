@@ -10,6 +10,7 @@ import competition.subsystems.collector.CollectorSubsystem;
 import competition.subsystems.collector.commands.EjectCollectorCommand;
 import competition.subsystems.drive.commands.AutoBalanceCommand;
 import competition.subsystems.drive.commands.BrakeCommand;
+import competition.subsystems.drive.commands.RotateToHeadingCommand;
 import competition.subsystems.drive.commands.SwerveSimpleTrajectoryCommand;
 import competition.subsystems.drive.commands.VelocityMaintainerCommand;
 import competition.subsystems.pose.PoseSubsystem;
@@ -31,6 +32,8 @@ import javax.inject.Provider;
  */
 public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
+    double defaultVelocity = 100;
+
     @Inject
     public ParameterizedAutonomousProgram(
             AutonomousOracle oracle,
@@ -41,6 +44,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
             ScoreGamepieceCommandGroupFactory scoreGamepieceCommandGroupFactory,
             Provider<SimpleXZRouterCommand> simpleXZRouterCommandProvider,
             Provider<SwerveSimpleTrajectoryCommand> swerveSimpleTrajectoryCommandProvider,
+            RotateToHeadingCommand rotateToHeading,
             AutoBalanceCommand autoBalance,
             VelocityMaintainerCommand velocityMaintainer,
             Provider<MoveCollectedGamepieceToArmCommandGroup> moveCollectedGamepieceToArmCommandGroupProvider,
@@ -56,7 +60,6 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // This controls how fast the robot moves through most of auto. We can't go
         // much slower than this and still finish in 15s. But when testing auto it can
         // be useful to set this to a small number like 10 to view the logic slowly.
-        double defaultVelocity = 100;
 
         // TODO: If we trust the april tags, we should have a branch here where we don't force the initial position (and
         // potentially the initial heading, if the april tags pose estimation gets really good).
@@ -120,11 +123,9 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
                 new InstantCommand(),
                 oracle::getEnableAcquireGamePiece
         );
-
         // ----------------------------
         // Optionally drive somewhere interesting (outside for mobility, or towards a game piece)
         // ----------------------------
-
         // If we scored med/high, also lower the arm.
         var retractArm = simpleXZRouterCommandProvider.get();
         retractArm.setKeyPointFromKeyArmPosition(
@@ -136,12 +137,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
                 () -> oracle.getInitialScoringMode() != AutonomousOracle.ScoringMode.Eject
         );
 
-        var drivePhaseOne = swerveSimpleTrajectoryCommandProvider.get();
-        drivePhaseOne.setMaxPower(0.75);
-        drivePhaseOne.setMaxTurningPower(0.33);
-        drivePhaseOne.setKeyPointsProvider(oracle::getTrajectoryForDrivePhaseOne);
-        drivePhaseOne.setEnableConstantVelocity(true);
-        drivePhaseOne.setConstantVelocity(defaultVelocity);
+        SequentialCommandGroup drivePhaseOne = prepareDrivePhaseOne(oracle, swerveSimpleTrajectoryCommandProvider);
 
         // This needs to be constructed carefully to ensure it will complete, but also "hang" forever if we fail to
         // collect a game piece. (That way, if we whiff for whatever reason, our robot will stop there - presumably
@@ -171,12 +167,19 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         // Optionally drive back to scoring or other useful position
         // ----------------------------
 
-        var driveForScoring = swerveSimpleTrajectoryCommandProvider.get();
-        driveForScoring.setMaxPower(0.75);
-        driveForScoring.setMaxTurningPower(0.33);
-        driveForScoring.setKeyPointsProvider(oracle::getTrajectoryForScoring);
-        driveForScoring.setEnableConstantVelocity(true);
-        driveForScoring.setConstantVelocity(defaultVelocity);
+        var turnBackToGrid = rotateToHeading;
+        turnBackToGrid.setMaxPower(0.6);
+        turnBackToGrid.setGoalHeading(-180);
+
+
+        var driveBackToGrid = swerveSimpleTrajectoryCommandProvider.get();
+        driveBackToGrid.setMaxPower(0.75);
+        driveBackToGrid.setMaxTurningPower(0.33);
+        driveBackToGrid.setKeyPointsProvider(oracle::getTrajectoryForScoring);
+        driveBackToGrid.setEnableConstantVelocity(true);
+        driveBackToGrid.setConstantVelocity(defaultVelocity);
+
+        var driveForScoring = turnBackToGrid.andThen(driveBackToGrid);
 
         // If we're planning on scoring using the arm, we should move the game piece to the claw.
 
@@ -229,7 +232,7 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
         driveToPrepareBalance.setStopWhenFinished(false);
 
         var driveToActualBalance = swerveSimpleTrajectoryCommandProvider.get();
-        driveToActualBalance.setMaxPower(0.75);
+        driveToActualBalance.setMaxPower(0.90);
         driveToActualBalance.setMaxTurningPower(0.33);
         driveToActualBalance.setKeyPointsProvider(oracle::getTrajectoryForActualBalance);
         driveToActualBalance.setEnableConstantVelocity(true);
@@ -250,5 +253,28 @@ public class ParameterizedAutonomousProgram extends SequentialCommandGroup {
 
         this.addCommands(driveToBalanceOrNot);
         this.addCommands(brake);
+    }
+
+    private SequentialCommandGroup prepareDrivePhaseOne(
+            AutonomousOracle oracle,
+            Provider<SwerveSimpleTrajectoryCommand> swerveSimpleTrajectoryCommandProvider)
+    {
+        var preDrivePhaseOne = swerveSimpleTrajectoryCommandProvider.get();
+        preDrivePhaseOne.setMaxPower(0.5);
+        preDrivePhaseOne.setMaxTurningPower(0.6); // These power settings looked good for preparing to mantle, should work here.
+        preDrivePhaseOne.setKeyPointsProvider(oracle::getTrajectoryForPreDrivePhaseOne);
+        preDrivePhaseOne.setEnableConstantVelocity(true);
+        preDrivePhaseOne.setEnableConstantVelocity(true);
+        preDrivePhaseOne.setStopWhenFinished(false);
+
+        var coreDrivePhaseOne = swerveSimpleTrajectoryCommandProvider.get();
+        coreDrivePhaseOne.setMaxPower(0.75);
+        coreDrivePhaseOne.setMaxTurningPower(0.33);
+        coreDrivePhaseOne.setKeyPointsProvider(oracle::getTrajectoryForDrivePhaseOne);
+        coreDrivePhaseOne.setEnableConstantVelocity(true);
+        coreDrivePhaseOne.setConstantVelocity(defaultVelocity);
+        coreDrivePhaseOne.setChasePointInches(36); // Speed up a bit to compensate for adding the "pre" phase
+
+        return preDrivePhaseOne.andThen(coreDrivePhaseOne);
     }
 }
